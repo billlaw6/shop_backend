@@ -15,6 +15,13 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 from django.utils import timezone
 from pypinyin import lazy_pinyin, Style
+from pygments.lexers import get_all_lexers
+from pygments.styles import get_all_styles
+
+
+LEXERS = [item for item in get_all_lexers() if item[1]]
+LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in LEXERS])
+STYLE_CHOICES = sorted((item, item) for item in get_all_styles())
 
 
 class Category(models.Model):
@@ -33,10 +40,10 @@ class Category(models.Model):
                                         meta tag'), blank=True, null=False,
                                         default='')
     created_at = models.DateTimeField(_('created_at'), auto_now=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODE,
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL,
                                    related_name='created_categories')
     updated_at = models.DateTimeField(_('updated_at'), auto_now_add=True)
-    updated_by = models.ForeignKey(settings.AUTH_USER_MODE,
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL,
                                    related_name='updated_categories')
     highlighted = models.TextField()
 
@@ -77,10 +84,10 @@ class Product(models.Model):
     manufacturer = models.CharField(_('manufacturer'), max_length=300,
                                     blank=True, default='')
     created_at = models.DateTimeField(_('created_at'), auto_now=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODE,
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL,
                                    related_name='created_products')
     updated_at = models.DateTimeField(_('updated_at'), auto_now_add=True)
-    updated_by = models.ForeignKey(settings.AUTH_USER_MODE,
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL,
                                    related_name='updated_products')
     highlighted = models.TextField()
 
@@ -273,52 +280,3 @@ class Location(models.Model):
     def __str__(self):
         return self.country_region_name + '|' + self.state_name + '|'\
             + self.city_name + '|' + self.region_name
-
-
-class VisitLog(models.Model):
-    from_ip = models.GenericIPAddressField(_('from_ip'))
-    visit_url = models.URLField(_('visit_url'))
-    user = models.ForeignKey(settings.AUTH_USER_MODE, null=False, default='')
-    visit_date = models.DateTimeField(null=False, default='')
-    browser = models.CharField(
-        _('browser'),
-        max_length=64,
-        null=False, default='',
-        blank=True)
-    longitude = models.FloatField(
-        _('longitude'),
-        null=False, default=0, blank=True)
-    latitude = models.FloatField(
-        _('latitude'),
-        null=False,
-        default=0,
-     blank=True)
-
-    class Meta:
-        ordering = ('visit_date', 'from_ip',)
-        verbose_name = _('VisitLog')
-        verbose_name_plural = _('VisitLogs')
-
-    def __str__(self):
-        return self.user.username + '-' + self.from_ip + '-' + self.visit_date
-
-
-class Comment(models.Model):
-    product = models.ForeignKey(Product, related_name=_('comments'),
-                                blank=False, null=False,
-                                on_delete=models.CASCADE)
-    cell_phone = models.CharField(
-                                  _('cell_phone'),
-                                  max_length=15,
-                                  null=False,
-                                  default='',
-                                  blank=True)
-    author = models.CharField(_('author'), max_length=100)
-    content = models.TextField(_('content'), blank=True, null=False, default='')
-    created_at = models.DateTimeField(_('created_at'), default=timezone.now)
-
-    class Meta:
-        ordering = ('created_at',)
-
-    def __str__(self):
-        return self.cell_phone + '-' + self.name + '-' + self.content

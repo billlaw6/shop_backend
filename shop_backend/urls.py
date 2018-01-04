@@ -15,10 +15,29 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.contrib.auth.models import User
+from rest_framework import routers, serializers, viewsets
+from rest_framework.urlpatterns import format_suffix_patterns
+
+from dict_manage.views import UserViewSet
+
+
+# Routers provide an easy way of automatically determining the URL conf.
+router = routers.DefaultRouter()
+router.register(r'users', UserViewSet)
 
 urlpatterns = [
+    # Django urls
     url(r'^admin/', admin.site.urls),
+
+    # REST_FRAMEWORK urls
+    url(r'^', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls')),
+
+    # user_management_api urls
     url('', include('user_management.api.urls',
                     namespace='user_management_api')),
     url('', include('user_management.api.urls.verify_email')),
+
+    # My urls
 ]

@@ -38,8 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'user_management.api',
     'dict_manage.apps.DictManageConfig',
+    'user_manage.apps.UserManageConfig',
 ]
 
 MIDDLEWARE = [
@@ -132,3 +132,5 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
+
+AUTH_USER_MODEL = 'user_manage.MyUser'

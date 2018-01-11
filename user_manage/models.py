@@ -11,7 +11,7 @@
 # @history
 #
 
-from  django.db import models
+from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
@@ -19,8 +19,6 @@ from django.contrib.auth.models import User
 # Create your models here.
 class MyUser(models.Model):
     """
-    在django-user-management的基础上自定义User
-    https://github.com/incuna/django-user-management/blob/master/docs/installation.md
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     cell_phone = models.CharField(_('Cell phone'), max_length=20, default='')

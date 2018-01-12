@@ -9,4 +9,3 @@ export default {
     state.sitename = sitename
   }
 }
-

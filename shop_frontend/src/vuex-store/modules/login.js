@@ -33,9 +33,6 @@ const mutations = {
   },
   [types.SET_CURRENT_USER] (state, user) {
     state.user = user
-  },
-  [types.SET_USER_PERMISSIONS] (state, permissions) {
-    state.permissions = permissions
   }
 }
 
@@ -50,9 +47,6 @@ const actions = {
   },
   setUser ({ state, commit, rootState }, user) {
     commit(types.SET_CURRENT_USER, user)
-  },
-  setPermissions ({ state, commit, rootState }, permissions) {
-    commit(types.SET_USER_PERMISSIONS, permissions)
   }
 }
 

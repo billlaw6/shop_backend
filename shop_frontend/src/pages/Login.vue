@@ -1,5 +1,5 @@
 <template>
-  <i-form ref="formLogin" :model="formLogin" :rules="formLoginRules"  class="card-box">
+  <i-form ref="formLogin" :model="formLogin" :rules="loginDataRules"  class="card-box">
     <Form-item class="formLogin-title">
       <h3>系统登录</h3>
     </Form-item>
@@ -63,6 +63,7 @@
       handleSubmit (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
+            // 清除旧的无效Token
             window.sessionStorage.removeItem('accessToken')
             authLogin(this.formLogin).then((res) => {
               console.log(res)

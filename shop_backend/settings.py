@@ -137,3 +137,10 @@ REST_FRAMEWORK = {
 }
 
 # AUTH_USER_MODEL = 'user_manage.MyUser'
+
+CORS_ORIGIN_WHITELIST = (
+    'localhost:8080',
+    'localhost:8000',
+    '127.0.0.1:8080',
+    '127.0.0.1:8000',
+)

@@ -6,4 +6,3 @@ export const setSitename = ({ commit, state }, { sitename }) => {
   commit(types.SET_SITE_NAME, { sitename })
   console.log(state.sitename)
 }
-

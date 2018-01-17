@@ -9,19 +9,38 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/',
-      name: 'Login',
-      component: Login
+      path: '/login',
+      name: 'login',
+      component: Login,
+      meta: {
+        hidden: false
+      }
     },
     {
       path: '/401',
       name: 'p401',
-      component: p401
+      component: p401,
+      meta: {
+        requireAuth: true,
+        permission: 'add_group',
+        iconCls: 'ios-star',
+        leaf: true,
+        menu_name: '商品管理',
+        hidden: false
+      }
     },
     {
       path: '/404',
       name: 'p404',
-      component: p404
+      component: p404,
+      meta: {
+        requireAuth: true,
+        permission: 'add_group',
+        iconCls: 'ios-star',
+        leaf: true,
+        menu_name: '商品管理',
+        hidden: false
+      }
     }
   ]
 })

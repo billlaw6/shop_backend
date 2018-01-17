@@ -1,10 +1,12 @@
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
+
+from dict_manage.models import Product
 
 
 # Serializers define the API representation.
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class ProductSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
-        model = get_user_model()
-        fields = ('url', 'username', 'email', 'is_staff')
+        model = Product
+        fields = ('name', 'pinyin', 'py', 'brand', 'price', 'sale_price',
+                  'description', 'highlighted')

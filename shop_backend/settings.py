@@ -37,9 +37,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders',
+    # django-rest-auth
+    'rest_auth',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
+    # My apps
     'dict_manage.apps.DictManageConfig',
     'user_manage.apps.UserManageConfig',
 ]
@@ -109,6 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
+# LANGUAGE_CODE = 'en-us'
 LANGUAGE_CODE = 'en-us'
 
 # TIME_ZONE = 'UTC'
@@ -136,7 +144,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-# AUTH_USER_MODEL = 'user_manage.MyUser'
+AUTH_USER_MODEL = 'user_manage.MyUser'
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:8080',
@@ -144,3 +152,7 @@ CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:8080',
     '127.0.0.1:8000',
 )
+
+# django-rest-auth
+# http://django-rest-auth.readthedocs.io/en/latest/installation.html
+SITE_ID = 1

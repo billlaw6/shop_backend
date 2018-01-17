@@ -17,13 +17,17 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
 from rest_framework.authtoken import views as rest_views
+from rest_framework.schemas import get_schema_view
 
-from dict_manage.views import UserViewSet
+from user_manage.views import UserViewSet
+from dict_manage.views import ProductViewSet
 
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
+router.register(r'products', ProductViewSet)
+schema_view = get_schema_view(title='Shop API')
 
 urlpatterns = [
     # Django urls
@@ -31,8 +35,16 @@ urlpatterns = [
 
     # REST_FRAMEWORK urls
     url(r'^', include(router.urls)),
+    # coreapi url
+    url(r'^schema/$', schema_view),
+    # REST api 浏览登录注销页面http://www.django-rest-framework.org/#installation
     url(r'^api-auth/', include('rest_framework.urls')),
+    #
     url(r'^get-token/', rest_views.obtain_auth_token),
+
+    # Django_rest_auth urls
+    url(r'^rest-auth/', include('rest_auth.urls')),
+    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
 
     # My urls
 ]

@@ -1,0 +1,5 @@
+Shop开发记录
+  参考了Django-oscar，Django-shop等开源项目后，还是舍不得前后端分离的开发模式，仍然决定参考Django-oscar等项目从头开始自己完整地做一遍！ 后端采用Django+Djangorestframework 为主要框架，前端用vue+iview为主。
+  Djangorestframework框架自带/get-token/login/及/get-token/logout等基本的登录功能，但缺少较完善的注册、改密等用户管理功能，所以采用Djangorestframework中推荐的django-rest-auth[with_social]第三方插件，另外准备使用微信等第三方的oauth授权，先安装django-oauth-toolkit备用。另外，django-cors-headers是前后端分离开发必备模块。
+  安装coreapi用schema查看可用api。
+

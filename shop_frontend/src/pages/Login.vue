@@ -43,7 +43,7 @@
           password: 'liubin123456',
           remember: []
         },
-        formLoginRules: {
+        loginDataRules: {
           username: [
             { required: true, message: '请填写用户名', trigger: 'blur' }
           ],
@@ -73,6 +73,9 @@
                 this.$Message.error('用户名或密码错误!')
               } else {
                 window.sessionStorage.setItem('accessToken', data.token)
+                console.log('Login')
+                console.log(this.$route.query.redirect)
+                this.$router.push(this.$route.query.redirect)
               }
             }, (error) => {
               console.log('Error in authLogin: ' + error)

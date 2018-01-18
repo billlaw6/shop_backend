@@ -34,7 +34,7 @@
 
 <script>
   import { authLogin, authUser } from '../api/api'
-  import { mapState } from 'vuex'
+  import { mapState, mapActions } from 'vuex'
   export default {
     data () {
       return {
@@ -60,6 +60,11 @@
       })
     },
     methods: {
+      ...mapActions({
+        setToken: 'setToken',
+        setLoginStatus: 'setLoginStatus',
+        setUser: 'setUser'
+      }),
       handleSubmit (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
@@ -85,7 +90,9 @@
                     this.$Message.error('获取用户信息失败!')
                   } else {
                     console.log(data)
-                    window.sessionStorage.setItem('user', data)
+                    this.$store.dispatch('setLoginStatus', true)
+                    this.$store.dispatch('setUser', data)
+                    window.sessionStorage.setItem('user', JSON.stringify(data))
                     console.log(data.username)
                   }
                 }, (error) => {
@@ -118,6 +125,7 @@
         })
       },
       formLoginReset (name) {
+        // console.log('Reset '+ name)
         this.$refs[name].resetFields()
       }
     },

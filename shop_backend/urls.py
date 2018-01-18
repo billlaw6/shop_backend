@@ -34,7 +34,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     # REST_FRAMEWORK urls
-    url(r'^', include(router.urls)),
+    url(r'^rest-api/', include(router.urls)),
     # coreapi url
     url(r'^schema/$', schema_view),
     # REST api 浏览登录注销页面http://www.django-rest-framework.org/#installation

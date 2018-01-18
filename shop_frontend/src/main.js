@@ -16,10 +16,10 @@ axios.interceptors.request.use(
   config => {
     let accessToken = window.sessionStorage.accessToken
     if (accessToken) {
-      // console.log('setting accessToken to: ' + accessToken)
+      console.log('setting accessToken to: ' + accessToken)
       config.headers.Authorization = `Token ${accessToken}`
     } else {
-      // console.log('No accessToken')
+      console.log('No accessToken')
     }
     return config
   },
@@ -31,6 +31,7 @@ axios.interceptors.request.use(
 router.beforeEach((to, from, next) => {
   // 判断该路由是否需要登录权限
   let accessToken = window.sessionStorage.getItem('accessToken')
+  // window.sessionStorage.removeItem('user')
   let user = JSON.parse(window.sessionStorage.getItem('user'))
   let permissions = JSON.parse(window.sessionStorage.getItem('permissions'))
   if (to.matched.some(record => record.meta.requireAuth)) {

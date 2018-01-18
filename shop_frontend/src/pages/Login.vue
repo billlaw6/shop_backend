@@ -33,7 +33,7 @@
 </template>
 
 <script>
-  import { authLogin } from '../api/api'
+  import { authLogin, authUser } from '../api/api'
   import { mapState } from 'vuex'
   export default {
     data () {
@@ -66,16 +66,37 @@
             // 清除旧的无效Token
             window.sessionStorage.removeItem('accessToken')
             authLogin(this.formLogin).then((res) => {
-              console.log(res)
+              // console.log(res)
               let {data, status, statusText} = res
               if (status !== 200) {
                 this.loginMessage = statusText
                 this.$Message.error('用户名或密码错误!')
               } else {
-                window.sessionStorage.setItem('accessToken', data.token)
-                console.log('Login')
-                console.log(this.$route.query.redirect)
-                this.$router.push(this.$route.query.redirect)
+                // window.sessionStorage.setItem('accessToken', data.token)
+                window.sessionStorage.setItem('accessToken', data.key)
+                // console.log('Login')
+                // console.log(this.$route.query.redirect)
+                // 登录成功，设置全局用户
+                authUser().then((res) => {
+                  console.log(res)
+                  // window.sessionStorage.removeItem('user')
+                  let {data, status} = res
+                  if (status !== 200) {
+                    this.$Message.error('获取用户信息失败!')
+                  } else {
+                    console.log(data)
+                    window.sessionStorage.setItem('user', data)
+                    console.log(data.username)
+                  }
+                }, (error) => {
+                  console.log(error)
+                })
+                // 跳转至用户目标页或默认页
+                if (this.$route.query.redirect) {
+                  this.$router.push(this.$route.query.redirect)
+                } else {
+                  this.$router.push({name: 'p404'})
+                }
               }
             }, (error) => {
               console.log('Error in authLogin: ' + error)

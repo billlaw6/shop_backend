@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
-from rest_framework.authtoken import views as rest_views
+# from rest_framework.authtoken import views as rest_views
 from rest_framework.schemas import get_schema_view
 
 from user_manage.views import UserViewSet
@@ -39,8 +39,8 @@ urlpatterns = [
     url(r'^schema/$', schema_view),
     # REST api 浏览登录注销页面http://www.django-rest-framework.org/#installation
     url(r'^api-auth/', include('rest_framework.urls')),
-    #
-    url(r'^get-token/', rest_views.obtain_auth_token),
+    # http://www.django-rest-framework.org/api-guide/authentication/
+    # url(r'^api-token-auth/', rest_views.obtain_auth_token),
 
     # Django_rest_auth urls
     url(r'^rest-auth/', include('rest_auth.urls')),

@@ -1,19 +1,15 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import User
+# from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+# from django.contrib.auth.models import User
 
-from user_manage.models import MyUser
+from user_manage.models import ShopUser
 
 
 # Register your models here.
-class MyUserInline(admin.StackedInline):
-    model = MyUser
-    can_delete = False
-    verbose_name_plural = 'my_user'
-
-
-class UserAdmin(BaseUserAdmin):
-    inlines = (MyUserInline,)
+class ShopUserAdmin(admin.ModelAdmin):
+    fields = ['username', 'email', 'first_name', 'last_name', 'weixin',
+              'cell_phone', 'sina', 'expired_on', 'avatar', 'is_staff',
+              'is_superuser', 'is_active', 'date_joined', 'last_login']
 
 # admin.site.unregister(User)
-# admin.site.register(User, UserAdmin)
+admin.site.register(ShopUser, ShopUserAdmin)

@@ -34,7 +34,7 @@ export default new Router({
       name: 'p404',
       component: p404,
       meta: {
-        requireAuth: true,
+        requireAuth: false,
         permission: 'add_group',
         iconCls: 'ios-star',
         leaf: true,

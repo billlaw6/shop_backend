@@ -17,16 +17,30 @@ from django.contrib.auth.models import AbstractUser
 
 
 # Create your models here.
-class MyUser(AbstractUser):
+class ShopUser(AbstractUser):
     """
     验证方式不一样，所以必须自定义用户模型
     """
-    cell_phone = models.CharField(_('Cell phone'), max_length=20, default='')
-    weixin = models.CharField(_('weixin'), max_length=50, default='')
-    sina = models.CharField(_('sina'), max_length=50, default='')
-    expired_on = models.DateTimeField(_('Expired on'), default='1970-01-01')
+    email = models.EmailField(_('email address'), blank=True, unique=True)
+    cell_phone = models.CharField(_('Cell phone'), max_length=20, default='',
+                                  unique=True, blank=True)
+    weixin = models.CharField(_('weixin'), max_length=50, default='',
+                              unique=True, blank=True)
+    sina = models.CharField(_('sina'), max_length=50, default='', unique=True,
+                            blank=True)
+    expired_on = models.DateTimeField(_('Expired on'), default='2070-01-01')
     avatar = models.ImageField(_('User avatar'), upload_to='user_avatar',
                                width_field='width', height_field='height',
-                               null=True)
+                               blank=True, null=True)
     width = models.PositiveSmallIntegerField(default=20, blank=True)
     height = models.PositiveSmallIntegerField(default=20, blank=True)
+
+
+    EMAIL_FIELD = 'email'
+    # 决定UserModel._default_manager.get_by_natural_key()取哪个字段
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
+
+    class Meta:
+        verbose_name = _('Shop user')
+        verbose_name_plural = _('Shop users')

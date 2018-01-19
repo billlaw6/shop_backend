@@ -168,9 +168,11 @@ CORS_ORIGIN_WHITELIST = (
 SITE_ID = 1
 
 #
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = True
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
 EMAIL_HOST_USER = 'carryontop@163.com'
 EMAIL_HOST_PASSWORD = 'woaini2006'
-EMAIL_HOST = 'smtp.163.com'
-EMAIL_PORT = 465
+EMAIL_SUBJECT_PREFIX = u'carryon.top'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 25
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

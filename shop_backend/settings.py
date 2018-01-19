@@ -147,6 +147,7 @@ REST_FRAMEWORK = {
         # or allow read-only access for unauthenticated users.
         # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
         # 'rest_framework.permissions.IsAdminUser',
+        'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10
@@ -165,3 +166,11 @@ CORS_ORIGIN_WHITELIST = (
 # django-rest-auth
 # http://django-rest-auth.readthedocs.io/en/latest/installation.html
 SITE_ID = 1
+
+#
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'carryontop@163.com'
+EMAIL_HOST_PASSWORD = 'woaini2006'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 465

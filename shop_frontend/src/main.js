@@ -4,8 +4,8 @@ import Vue from 'vue'
 import router from './router'
 import iView from 'iview'
 // import 'iview/dist/styles/iviews.css'
-// import '../node_modules/.2.8.0@iview/dist/styles/iview.css'
-import '../node_modules/_iview@2.8.0@iview/dist/styles/iview.css'
+import '../node_modules/.2.8.0@iview/dist/styles/iview.css'
+// import '../node_modules/_iview@2.8.0@iview/dist/styles/iview.css'
 import store from './vuex-store/index'
 import axios from 'axios'
 import App from './App'
@@ -17,10 +17,10 @@ axios.interceptors.request.use(
   config => {
     let accessToken = window.sessionStorage.accessToken
     if (accessToken) {
-      console.log('setting accessToken to: ' + accessToken)
+      // console.log('setting accessToken to: ' + accessToken)
       config.headers.Authorization = `Token ${accessToken}`
     } else {
-      console.log('No accessToken')
+      // console.log('No accessToken')
     }
     return config
   },

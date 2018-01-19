@@ -21,11 +21,8 @@
     </Form-item>
     <Form-item class="login-no-bottom">
       <Row >
-        <i-col :xs="{ span: 4, offset: 6 }" >
+        <i-col :xs="{ span: 8, offset: 6 }" >
           <i-button type="primary" @click="handleSubmit('formLogin')">登录</i-button>
-        </i-col>
-        <i-col :xs="{ span: 4, offset: 6 }">
-          <i-button  type="primary" @click="formLoginReset('formLogin')">重置</i-button>
         </i-col>
       </Row>
     </Form-item>
@@ -49,7 +46,7 @@
           ],
           password: [
             { required: true, message: '请填写密码', trigger: 'blur' },
-            { type: 'string', min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
+            { type: 'string', min: 8, message: '密码长度不能小于8位', trigger: 'blur' }
           ]
         }
       }

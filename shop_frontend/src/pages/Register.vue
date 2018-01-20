@@ -9,7 +9,7 @@
         <Icon type="ios-person-outline" slot="prepend"></Icon>
       </i-input>
       </i-input>
-      {{ registerServerError.username }}
+      <li v-for="error in registerServerError.username">{{ error }}</li>
     </Form-item>
     <Form-item prop="password1">
       <i-input size="large" type="password" v-model="formRegister.password1" placeholder="密码">
@@ -20,13 +20,13 @@
       <i-input size="large" type="password" v-model="formRegister.password2" placeholder="密码确认">
         <Icon type="ios-locked-outline" slot="prepend"></Icon>
       </i-input>
-      {{ registerServerError.password }}
+      <li v-for="error in registerServerError.password">{{ error }}</li>
     </Form-item>
     <Form-item prop="email">
       <i-input size="large" type="email" v-model="formRegister.email" placeholder="邮箱">
         <Icon type="ios-email-outline" slot="prepend"></Icon>
       </i-input>
-      {{ registerServerError.email }}
+      <li v-for="error in registerServerError.email">{{ error }}</li>
     </Form-item>
     <Form-item class="register-no-bottom">
       <Row >
@@ -90,12 +90,12 @@
           if (valid) {
             authRegister(this.formRegister).then((res) => {
               console.log(res)
-              let {data, status} = res
-              if (status !== 200) {
+              let {data, status, statusText} = res
+              if (status !== 201) {
                 this.$Message.error('注册失败!')
               } else {
-                console.log('Register OK')
-                console.log(data)
+                console.log('Register OK, statusText: ' + statusText)
+                window.sessionStorage.setItem('accessToken', data.key)
                 authUser().then((res) => {
                   console.log(res)
                   // window.sessionStorage.removeItem('user')
@@ -141,6 +141,7 @@
     },
     mounted () {
       // console.log('Mounted')
+      this.registerServerError = {}
     }
   }
 </script>

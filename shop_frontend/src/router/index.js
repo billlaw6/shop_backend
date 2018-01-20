@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 const Login = resolve => require(['@/pages/Login.vue'], resolve)
 const Register = resolve => require(['@/pages/Register.vue'], resolve)
+const PassReset = resolve => require(['@/pages/PassReset.vue'], resolve)
+const PassChange = resolve => require(['@/pages/PassChange.vue'], resolve)
 const p401 = resolve => require(['@/pages/401.vue'], resolve)
 const p404 = resolve => require(['@/pages/404.vue'], resolve)
 
@@ -13,6 +15,22 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: Login,
+      meta: {
+        hidden: false
+      }
+    },
+    {
+      path: '/password/reset',
+      name: 'pass_reset',
+      component: PassReset,
+      meta: {
+        hidden: false
+      }
+    },
+    {
+      path: '/password/change',
+      name: 'pass_change',
+      component: PassChange,
       meta: {
         hidden: false
       }

@@ -37,7 +37,7 @@
       return {
         formLogin: {
           username: 'liubin',
-          password: 'liubin123456',
+          password: 'woaini2006',
           remember: []
         },
         loginDataRules: {
@@ -71,7 +71,7 @@
               // console.log(res)
               let {data, status, statusText} = res
               if (status !== 200) {
-                this.loginMessage = statusText
+                console.log(statusText)
                 this.$Message.error('用户名或密码错误!')
               } else {
                 // window.sessionStorage.setItem('accessToken', data.token)
@@ -129,9 +129,13 @@
     mounted () {
       if (sessionStorage.getItem('username')) {
         this.formLogin.username = JSON.parse(sessionStorage.getItem('username'))
+      } else {
+        this.formLogin.username = ''
       }
       if (sessionStorage.getItem('password')) {
         this.formLogin.password = JSON.parse(sessionStorage.getItem('password'))
+      } else {
+        this.formLogin.password = ''
       }
     }
   }

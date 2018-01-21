@@ -4,13 +4,8 @@
       <h3>修改密码</h3>
     </Form-item>
 
-    <Form-item prop="uid">
-      <i-input size="large" type="string" v-model="formPassChange.uid" placeholder="UID">
-        <Icon type="ios-lock-outline" slot="prepend"></Icon>
-      </i-input>
-    </Form-item>
-    <Form-item prop="token">
-      <i-input size="large" type="string" v-model="formPassChange.token" placeholder="token">
+    <Form-item prop="old_password">
+      <i-input size="large" type="password" v-model="formPassChange.old_password" placeholder="原密码" :autofocus=true>
         <Icon type="ios-lock-outline" slot="prepend"></Icon>
       </i-input>
     </Form-item>

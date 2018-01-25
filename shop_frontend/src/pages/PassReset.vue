@@ -10,8 +10,8 @@
       </i-input>
     </Form-item>
     <Form-item class="passreset-no-bottom">
-      <Row >
-        <i-col :xs="{ span: 8, offset: 6 }" >
+      <Row type="flex" justify="end" class="code-row-bg">
+        <i-col span="8">
           <i-button type="primary" @click="handleSubmit('formPassReset')">确认发送邮件</i-button>
         </i-col>
       </Row>

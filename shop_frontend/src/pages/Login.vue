@@ -15,14 +15,24 @@
       </i-input>
     </Form-item>
     <Form-item class="login-no-bottom">
-      <Checkbox-group v-model="formLogin.remember">
-        <Checkbox label="记住密码" name="remember"></Checkbox>
-      </Checkbox-group>
+      <Row type="flex" justify="space-between" class="code-row-bg">
+        <i-col col="12" >
+          <Checkbox-group v-model="formLogin.remember">
+            <Checkbox label="记住密码" name="remember"></Checkbox>
+          </Checkbox-group>
+        </i-col>
+        <i-col col="12" >
+          <router-link to="/pass_reset">忘记密码?</router-link>
+        </i-col>
+      </Row>
     </Form-item>
     <Form-item class="login-no-bottom">
-      <Row >
-        <i-col :xs="{ span: 8, offset: 6 }" >
+      <Row type="flex" justify="space-between" class="code-row-bg">
+        <i-col span="12">
           <i-button type="primary" @click="handleSubmit('formLogin')">登录</i-button>
+        </i-col>
+        <i-col span="12">
+          <router-link to="/register"><i-button type="primary">去注册</i-button></router-link>
         </i-col>
       </Row>
     </Form-item>
@@ -142,7 +152,7 @@
 </script>
 
 <style lang="stylus" scoped>
-  .card-box {
+  .card-box
     padding: 20px
     /*box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02);*/
     -webkit-border-radius: 5px
@@ -154,21 +164,16 @@
     margin: 180px auto
     width: 400px
     /* border: 2px solid #8492A6;*/
-  }
 
-  .title {
+  .title
     margin: 0px auto 40px auto
     text-align: center
     color: #505458
-  }
-  .formLogin-title {
+  .formLogin-title
     text-align: center
     font-seze: 28px
-  }
-  .formLogin-title h3{
+  .formLogin-title h3
     font-size: 18px
-  }
-  .login-no-bottom {
+  .login-no-bottom
     margin-bottom: 10px
-  }
 </style>

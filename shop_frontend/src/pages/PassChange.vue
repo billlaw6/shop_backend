@@ -25,8 +25,8 @@
       </i-input>
     </Form-item>
     <Form-item class="passreset-no-bottom">
-      <Row >
-        <i-col :xs="{ span: 8, offset: 6 }" >
+      <Row type="flex" justify="end" class="code-row-bg">
+        <i-col span="24" align="right">
           <i-button type="primary" @click="handleSubmit('formPassChange')">确认修改</i-button>
         </i-col>
       </Row>

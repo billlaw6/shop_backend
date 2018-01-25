@@ -1,28 +1,23 @@
 <template>
-  <i-form ref="formPassChange" :model="formPassChange" :rules="passChangeDataRules"  class="card-box">
-    <Form-item class="formPassChange-title">
+  <i-form ref="formPassResetConfirm" :model="formPassResetConfirm" :rules="passResetConfirmDataRules"  class="card-box">
+    <Form-item class="formPassResetConfirm-title">
       <h3>修改密码</h3>
     </Form-item>
 
-    <Form-item prop="old_password">
-      <i-input size="large" type="password" v-model="formPassChange.old_password" placeholder="原密码" :autofocus=true>
-        <Icon type="ios-lock-outline" slot="prepend"></Icon>
-      </i-input>
-    </Form-item>
     <Form-item prop="new_password1">
-      <i-input size="large" type="password" v-model="formPassChange.new_password1" placeholder="新密码">
+      <i-input size="large" type="password" v-model="formPassResetConfirm.new_password1" placeholder="新密码">
         <Icon type="ios-lock-outline" slot="prepend"></Icon>
       </i-input>
     </Form-item>
     <Form-item prop="new_password2">
-      <i-input size="large" type="password" v-model="formPassChange.new_password2" placeholder="新密码">
+      <i-input size="large" type="password" v-model="formPassResetConfirm.new_password2" placeholder="新密码">
         <Icon type="ios-lock-outline" slot="prepend"></Icon>
       </i-input>
     </Form-item>
     <Form-item class="passreset-no-bottom">
       <Row >
         <i-col :xs="{ span: 8, offset: 6 }" >
-          <i-button type="primary" @click="handleSubmit('formPassChange')">确认修改</i-button>
+          <i-button type="primary" @click="handleSubmit('formPassResetConfirm')">确认修改</i-button>
         </i-col>
       </Row>
     </Form-item>
@@ -30,17 +25,17 @@
 </template>
 
 <script>
-  import { authPassChange } from '../api/api'
+  import { authPassResetConfirm } from '../api/api'
   import { mapState, mapActions } from 'vuex'
   export default {
     data () {
       return {
-        formPassChange: {
+        formPassResetConfirm: {
           old_password: '',
           new_password1: '',
           new_password2: ''
         },
-        passChangeDataRules: {
+        passResetConfirmDataRules: {
           old_password: [
             { required: true, message: '请填写原始密码', trigger: 'blur' }
           ],
@@ -66,7 +61,7 @@
       handleSubmit (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
-            authPassChange(this.formPassChange).then((res) => {
+            authPassResetConfirm(this.formPassResetConfirm).then((res) => {
               // console.log(res)
               let {data, status, statusText} = res
               console.log(data)
@@ -82,10 +77,10 @@
                 }
               }
             }, (error) => {
-              console.log('Error in authPassChange: ' + error)
+              console.log('Error in authPassResetConfirm: ' + error)
               this.$Message.error('修改密码失败!')
             }).catch((error) => {
-              console.log('catched in authPassChange:' + error)
+              console.log('catched in authPassResetConfirm:' + error)
               this.$Message.error('修改密码失败!')
             })
           } else {
@@ -93,13 +88,13 @@
           }
         })
       },
-      formPassChangeChange (name) {
+      formPassResetConfirmChange (name) {
         // console.log('Change '+ name)
         this.$refs[name].resetFields()
       }
     },
     mounted () {
-      console.log('PassChange mounted')
+      console.log('PassResetConfirm mounted')
     }
   }
 </script>
@@ -124,11 +119,11 @@
     text-align: center
     color: #505458
   }
-  .formPassChange-title {
+  .formPassResetConfirm-title {
     text-align: center
     font-seze: 28px
   }
-  .formPassChange-title h3{
+  .formPassResetConfirm-title h3{
     font-size: 18px
   }
   .login-no-bottom {

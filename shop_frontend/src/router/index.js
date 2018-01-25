@@ -3,7 +3,10 @@ import Router from 'vue-router'
 const Login = resolve => require(['@/pages/Login.vue'], resolve)
 const Register = resolve => require(['@/pages/Register.vue'], resolve)
 const PassReset = resolve => require(['@/pages/PassReset.vue'], resolve)
+const PassResetConfirm = resolve => require(['@/pages/PassResetConfirm.vue'], resolve)
 const PassChange = resolve => require(['@/pages/PassChange.vue'], resolve)
+const Privacy = resolve => require(['@/pages/Privacy.vue'], resolve)
+const Protocal = resolve => require(['@/pages/Protocal.vue'], resolve)
 const p401 = resolve => require(['@/pages/401.vue'], resolve)
 const p404 = resolve => require(['@/pages/404.vue'], resolve)
 
@@ -20,7 +23,7 @@ export default new Router({
       }
     },
     {
-      path: '/password/reset',
+      path: '/pass_reset',
       name: 'pass_reset',
       component: PassReset,
       meta: {
@@ -28,7 +31,15 @@ export default new Router({
       }
     },
     {
-      path: '/password/change',
+      path: '/pass_reset_confirm',
+      name: 'pass_reset_confirm',
+      component: PassResetConfirm,
+      meta: {
+        hidden: false
+      }
+    },
+    {
+      path: '/password_change',
       name: 'pass_change',
       component: PassChange,
       meta: {
@@ -39,6 +50,22 @@ export default new Router({
       path: '/register',
       name: 'register',
       component: Register,
+      meta: {
+        hidden: false
+      }
+    },
+    {
+      path: '/protocal',
+      name: 'Protocal',
+      component: Protocal,
+      meta: {
+        hidden: false
+      }
+    },
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: Privacy,
       meta: {
         hidden: false
       }

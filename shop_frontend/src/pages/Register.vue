@@ -28,10 +28,24 @@
       </i-input>
       <li v-for="error in registerServerError.email">{{ error }}</li>
     </Form-item>
+    <Form-item class="login-no-bottom">
+      <Row type="flex" justify="space-between" class="code-row-bg">
+        <i-col col="12" >
+          <Checkbox-group v-model="formRegister.remember">
+            <Checkbox label="记住密码" name="remember">
+              同意<router-link to="/protocal">"服务条款"</router-link>和<router-link to="/privacy">"隐私权相关政策"</router-link>
+            </Checkbox>
+          </Checkbox-group>
+        </i-col>
+        <i-col col="12" >
+          <router-link to="/login">已有账号？</router-link>
+        </i-col>
+      </Row>
+    </Form-item>
     <Form-item class="register-no-bottom">
-      <Row >
-        <i-col :xs="{ span: 8, offset: 6 }" >
-          <i-button type="primary" @click="handleSubmit('formRegister')">注册</i-button>
+      <Row type="flex" justify="end" class="code-row-bg">
+        <i-col span="8" >
+          <i-button type="primary" @click="handleSubmit('formRegister')">提交</i-button>
         </i-col>
       </Row>
     </Form-item>

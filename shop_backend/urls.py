@@ -20,6 +20,7 @@ from rest_framework import routers
 from rest_framework.schemas import get_schema_view
 
 from user_manage.views import UserViewSet
+from user_manage.views import WeixinLogin
 from dict_manage.views import ProductViewSet
 
 
@@ -44,7 +45,8 @@ urlpatterns = [
 
     # Django_rest_auth urls
     url(r'^rest-auth/', include('rest_auth.urls')),
-    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
+    url(r'^rest-auth/registration/$', include('rest_auth.registration.urls')),
+    url(r'^rest-auth/weixin/$', WeixinLogin.as_view(), name='wx_login'),
 
     # My urls
 ]

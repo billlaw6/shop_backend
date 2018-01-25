@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'rest_auth.registration',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.weixin',
     # My apps
     'dict_manage.apps.DictManageConfig',
     'user_manage.apps.UserManageConfig',

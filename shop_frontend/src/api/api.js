@@ -12,3 +12,4 @@ export const authRegister = params => { return axios.post(`${base}/rest-auth/reg
 export const authPassReset = params => { return axios.post(`${base}/rest-auth/password/reset/`, params).then(res => res) }
 export const authPassResetConfirm = params => { return axios.post(`${base}/rest-auth/password/reset/confirm/`, params).then(res => res) }
 export const authPassChange = params => { return axios.post(`${base}/rest-auth/password/change/`, params).then(res => res) }
+export const authWeixinLogin = params => { return axios.post(`${base}/rest-auth/weixin/`, params).then(res => res) }

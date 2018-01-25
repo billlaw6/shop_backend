@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 const Login = resolve => require(['@/pages/Login.vue'], resolve)
+const OauthLogin = resolve => require(['@/pages/OauthLogin.vue'], resolve)
 const Register = resolve => require(['@/pages/Register.vue'], resolve)
 const PassReset = resolve => require(['@/pages/PassReset.vue'], resolve)
 const PassResetConfirm = resolve => require(['@/pages/PassResetConfirm.vue'], resolve)
@@ -18,6 +19,14 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: Login,
+      meta: {
+        hidden: false
+      }
+    },
+    {
+      path: '/oauthLogin',
+      name: 'oauthLogin',
+      component: OauthLogin,
       meta: {
         hidden: false
       }

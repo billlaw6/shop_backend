@@ -59,7 +59,7 @@
     data () {
       return {
         formRegister: {
-          username: 'bill_law6',
+          username: 'liubin',
           password1: 'woaini2006',
           password2: 'woaini2006',
           email: 'bill_law6@163.com'

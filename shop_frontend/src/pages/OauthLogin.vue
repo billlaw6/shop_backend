@@ -48,7 +48,7 @@
 </template>
 
 <script>
-  import { authLogin, authUser } from '../api/api'
+  import { authWeixinLogin, authUser } from '../api/api'
   import { mapState, mapActions } from 'vuex'
   export default {
     data () {
@@ -85,7 +85,7 @@
           if (valid) {
             // 清除旧的无效Token
             window.sessionStorage.removeItem('accessToken')
-            authLogin(this.formLogin).then((res) => {
+            authWeixinLogin(this.formLogin).then((res) => {
               // console.log(res)
               let {data, status, statusText} = res
               if (status !== 200) {
@@ -121,10 +121,10 @@
                 }
               }
             }, (error) => {
-              console.log('Error in authLogin: ' + error)
+              console.log('Error in authWeixinLogin: ' + error)
               this.$Message.error('用户名或密码错误')
             }).catch((error) => {
-              console.log('catched in authLogin:' + error)
+              console.log('catched in authWeixinLogin:' + error)
               this.$Message.error('用户名或密码错误')
             })
           } else {

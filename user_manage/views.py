@@ -1,3 +1,5 @@
+import hashlib
+from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -22,3 +24,22 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class WeixinLogin(SocialLoginView):
     adapter_class = WeixinOAuth2Adapter
+
+def weixin_token_check(request):
+    token = 'carryon.top'
+    timestamp = request.GET.get('timestamp', 'timestamp')
+    nonce = request.GET.get('nonce', 'nonce')
+    signature = request.GET.get('signature', 'signature')
+    echostr = request.GET.get('echostr', 'echostr')
+    tmpArr = sorted([timestamp, nonce, token])
+    tmpStr = ''.join(tmpArr)
+    hashStr = hashlib.sha1(tmpStr.encode("utf8"))
+    # print(tmpArr)
+    # print(signature)
+    # print(hashStr.hexdigest())
+    if signature == hashStr.hexdigest():
+        return HttpResponse(echostr)
+    else:
+        return HttpResponse('no match')
+
+

@@ -16,7 +16,7 @@
   "dependencies": {
     "axios": "^0.17.1",
     "canvas": "^1.6.9",
-    "iview": "^2.8.0",
+    "iview": "^2.9.0",
     "nib": "^1.1.2",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.1",

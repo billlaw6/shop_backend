@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-let base = `http://localhost:8000`
+// let base = `http://localhost:8000`
+let base = `http://123.56.115.20:80`
 
 // DjangoRestFramework自带登录
 // export const authLogin = params => { return axios.post(`${base}/api-token-auth/login/`, params).then(res => res) }

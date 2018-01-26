@@ -25,7 +25,7 @@ SECRET_KEY = 'd1ln%!y6c9439k8nt2i899!evk#l3f+ao)km-5iknqi&8zuq)g'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['123.56.115.20',]
 
 
 # Application definition
@@ -163,6 +163,7 @@ CORS_ORIGIN_WHITELIST = (
     'localhost:8000',
     '127.0.0.1:8080',
     '127.0.0.1:8000',
+    '123.56.115.20:8080',
 )
 
 # django-rest-auth

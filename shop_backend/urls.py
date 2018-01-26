@@ -45,8 +45,9 @@ urlpatterns = [
 
     # Django_rest_auth urls
     url(r'^rest-auth/', include('rest_auth.urls')),
-    url(r'^rest-auth/registration/$', include('rest_auth.registration.urls')),
-    url(r'^rest-auth/weixin/$', WeixinLogin.as_view(), name='wx_login'),
+    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
+    url(r'^rest-auth/weixin/', WeixinLogin.as_view(), name='wx_login'),
 
     # My urls
+    url(r'^', include('user_manage.urls')),
 ]

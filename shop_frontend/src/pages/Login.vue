@@ -38,10 +38,7 @@
     </Form-item>
     <Row type="flex" justify="space-between" class="code-row-bg">
       <i-col span="12">
-        <router-link to="/register"><i-button type="primary">去注册</i-button></router-link>
-      </i-col>
-      <i-col span="12">
-        <router-link to="/register"><i-button type="primary">去注册</i-button></router-link>
+        <a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx4a32725dfd171687&redirect_uri=http://123.56.115.20&response_type=code&scope=snsapi_base&state=123#wechat_redirect">微信登录</a>
       </i-col>
     </Row>
   </i-form>

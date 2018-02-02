@@ -29,9 +29,9 @@ class ShopUser(AbstractUser):
     sina = models.CharField(_('sina'), max_length=50, null=True, unique=True,
                             blank=True)
     expired_on = models.DateTimeField(_('Expired on'), default='2070-01-01')
-    avatar = models.ImageField(_('User avatar'), upload_to='user_avatar',
-                               width_field='width', height_field='height',
-                               blank=True, null=True)
+    # avatar = models.ImageField(_('User avatar'), upload_to='user_avatar',
+    #                            width_field='width', height_field='height',
+    #                            blank=True, null=True)
     width = models.PositiveSmallIntegerField(default=20, blank=True)
     height = models.PositiveSmallIntegerField(default=20, blank=True)
 

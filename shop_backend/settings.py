@@ -48,6 +48,12 @@ INSTALLED_APPS = [
     'rest_auth.registration',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.weixin',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.weibo',
+    # django-rest-framework-social-oauth2
+    # 'oauth2_provider',
+    # 'social_django',
+    # 'rest_framework_social_oauth2',
     # My apps
     'dict_manage.apps.DictManageConfig',
     'user_manage.apps.UserManageConfig',
@@ -77,6 +83,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # django-rest-framework-social-oauth2
+                # 'social_django.context_processors.backends',
+                # 'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -143,6 +152,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
+        # django-rest-framework-social-oauth2
+        # 'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        # 'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         # Use Django's standard `django.contrib.auth` permissions,
@@ -156,7 +168,22 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'user_manage.ShopUser'
-AUTHENTICATION_BACKENDS = ['user_manage.backends.ModelBackend']
+AUTHENTICATION_BACKENDS = [
+    'user_manage.backends.ModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+
+    # Facebook OAuth2
+    # 'social_core.backends.facebook.FacebookAppOauth2',
+    # 'social_core.backends.facebook.FacebookOauth2',
+
+    # django-rest-framework-social-oauth2
+    # 'rest_framework_social_oauth2.backends.DjangoOAuth2',
+
+    # Django
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:8080',
@@ -168,7 +195,24 @@ CORS_ORIGIN_WHITELIST = (
 
 # django-rest-auth
 # http://django-rest-auth.readthedocs.io/en/latest/installation.html
-SITE_ID = 1
+SITE_ID = 2
+# allauth setting
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_EMAIL_CONFIRMATION_COOLDOWN = 180
+# ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
+# ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_UNIQUE_EMAIL = True
+SOCIALACCOUNT_STORE_TOKENS = True
+SOCIALACCOUNT_PROVIDERS = {
+    'weixin': {
+        'AUTHORIZE_URL': 'https://open.weixin.qq.com/connect/oauth2/authorize',  # for media platform
+        # 'SCOPE': ['snsapi_base', 'snsapi_userinfo'],
+        'SCOPE': ['snsapi_userinfo'],
+    },
+}
 
 #
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

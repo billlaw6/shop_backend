@@ -4,9 +4,6 @@ from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from allauth.socialaccount.providers.weixin.client import WeixinOAuth2Client
-from allauth.socialaccount.providers.weixin.views import WeixinOAuth2Adapter
-from rest_auth.registration.views import SocialLoginView
 
 from user_manage.serializers import UserSerializer
 
@@ -28,9 +25,6 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
 
-class WeixinLogin(SocialLoginView):
-    adapter_class = WeixinOAuth2Adapter
-
 def weixin_token_check(request):
     token = 'carryon.top'
     timestamp = request.GET.get('timestamp', 'timestamp')
@@ -50,24 +44,25 @@ def weixin_token_check(request):
 def weixin_login(request):
     code = request.GET.get('code', None)
     state = request.GET.get('state', None)
-    if code and state:
-        wx_client = WeixinOAuth2Client(request,
-            'wx4a32725dfd171687',
-            '14123aca2110ec62e097ab8c1cb2734d',
-            'GET',
-            'https://api.weixin.qq.com/sns/oauth2/access_token',
-            'http://123.56.115.20/',
-            'snsapi_userinfo')
-        try:
-            access_token_info = wx_client.get_access_token(code)
-            access_token = json.load(access_token_info)
-            print(type('type of access_token: %s' % access_token))
-            print('access_token: %s ' % access_token['access_token'])
-            return HttpResponse('got access_token: %s' % access_token['access_token'])
-        except (Exception) as e:
-            print(e)
-            return HttpResponse('error')
-    else:
-        return HttpResponse('error')
+    # if code and state:
+    #     wx_client = WeixinOAuth2Client(request,
+    #         'wx4a32725dfd171687',
+    #         '14123aca2110ec62e097ab8c1cb2734d',
+    #         'GET',
+    #         'https://api.weixin.qq.com/sns/oauth2/access_token',
+    #         'http://123.56.115.20/',
+    #         'snsapi_userinfo')
+    #     try:
+    #         access_token_info = wx_client.get_access_token(code)
+    #         access_token = json.load(access_token_info)
+    #         print(type('type of access_token: %s' % access_token))
+    #         print('access_token: %s ' % access_token['access_token'])
+    #         return HttpResponse('got access_token: %s' % access_token['access_token'])
+    #     except (Exception) as e:
+    #         print(e)
+    #         return HttpResponse('error')
+    # else:
+        # return HttpResponse('error')
+    return HttpResponse('Weixin Login')
 
 

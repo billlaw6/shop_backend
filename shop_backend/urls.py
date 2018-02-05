@@ -19,7 +19,6 @@ from rest_framework import routers
 # from rest_framework.authtoken import views as rest_views
 from rest_framework.schemas import get_schema_view
 
-from user_manage.views import WeixinLogin
 from user_manage.views import UserViewSet
 from dict_manage.views import ProductViewSet
 
@@ -43,14 +42,8 @@ urlpatterns = [
     # http://www.django-rest-framework.org/api-guide/authentication/
     # url(r'^api-token-auth/', rest_views.obtain_auth_token),
 
-    # Django_rest_auth urls
-    url(r'^rest-auth/', include('rest_auth.urls')),
-    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
-    url(r'^rest-auth/weixin/', WeixinLogin.as_view(), name='wx_login'),
-    url(r'^accounts/', include('allauth.urls')),
-
     # Django_rest_framework_social_oauth2
-    # url(r'^auth/', include('rest_framework_social_oauth2.urls')),
+    url(r'^auth/', include('rest_framework_social_oauth2.urls')),
 
     # My urls
     url(r'^', include('user_manage.urls')),

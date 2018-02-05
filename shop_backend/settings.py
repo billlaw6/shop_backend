@@ -40,20 +40,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
-    # django-rest-auth
-    'rest_auth',
     'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'rest_auth.registration',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.weixin',
-    'allauth.socialaccount.providers.github',
-    'allauth.socialaccount.providers.weibo',
     # django-rest-framework-social-oauth2
-    # 'oauth2_provider',
-    # 'social_django',
-    # 'rest_framework_social_oauth2',
+    'oauth2_provider',
+    'social_django',
+    'rest_framework_social_oauth2',
     # My apps
     'dict_manage.apps.DictManageConfig',
     'user_manage.apps.UserManageConfig',
@@ -84,8 +75,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 # django-rest-framework-social-oauth2
-                # 'social_django.context_processors.backends',
-                # 'social_django.context_processors.login_redirect',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -153,8 +144,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
         # django-rest-framework-social-oauth2
-        # 'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-        # 'rest_framework_social_oauth2.authentication.SocialAuthentication',
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         # Use Django's standard `django.contrib.auth` permissions,
@@ -171,15 +162,14 @@ AUTH_USER_MODEL = 'user_manage.ShopUser'
 AUTHENTICATION_BACKENDS = [
     'user_manage.backends.ModelBackend',
     'django.contrib.auth.backends.ModelBackend',
-    # `allauth` specific authentication methods, such as login by e-mail
-    'allauth.account.auth_backends.AuthenticationBackend',
 
-    # Facebook OAuth2
-    # 'social_core.backends.facebook.FacebookAppOauth2',
-    # 'social_core.backends.facebook.FacebookOauth2',
+    # Social OAuth2 backends
+    'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.weibo.WeiboOAuth2',
+    'social_core.backends.weixin.WeixinOAuth2',
 
     # django-rest-framework-social-oauth2
-    # 'rest_framework_social_oauth2.backends.DjangoOAuth2',
+    'rest_framework_social_oauth2.backends.DjangoOAuth2',
 
     # Django
     'django.contrib.auth.backends.ModelBackend',
@@ -196,25 +186,7 @@ CORS_ORIGIN_WHITELIST = (
 # django-rest-auth
 # http://django-rest-auth.readthedocs.io/en/latest/installation.html
 SITE_ID = 2
-# allauth setting
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_REQUIRED = True
-# ACCOUNT_EMAIL_CONFIRMATION_COOLDOWN = 180
-# ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
-# ACCOUNT_LOGIN_ATTEMPTS_TIMEOUT = 300
-ACCOUNT_LOGOUT_REDIRECT_URL = '/'
-LOGIN_REDIRECT_URL = '/'
-ACCOUNT_UNIQUE_EMAIL = True
-SOCIALACCOUNT_STORE_TOKENS = True
-SOCIALACCOUNT_PROVIDERS = {
-    'weixin': {
-        'AUTHORIZE_URL': 'https://open.weixin.qq.com/connect/oauth2/authorize',  # for media platform
-        # 'SCOPE': ['snsapi_base', 'snsapi_userinfo'],
-        'SCOPE': ['snsapi_userinfo'],
-    },
-}
 
-#
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.163.com'
 EMAIL_HOST_USER = 'carryontop@163.com'
@@ -223,3 +195,13 @@ EMAIL_SUBJECT_PREFIX = u'carryon.top'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 25
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# https://github.com/PhilipGarnero/django-rest-framework-social-oauth2
+SOCIAL_AUTH_GITHUB_KEY = 'b19f4ff7146560185f3b'
+SOCIAL_AUTH_GITHUB_SECRET = '39b78edc6726ce2bd19540452511ceb307ac4cd3'
+SOCIAL_AUTH_WEIBO_KEY = '3814205163'
+SOCIAL_AUTH_WEIBO_SECRET = 'bd5c4a1e1e8f09f1c9f4caa3c515b203'
+SOCIAL_AUTH_WEIXIN_KEY = 'wx4a32725dfd171687'
+SOCIAL_AUTH_WEIXIN_SECRET = '14123aca2110ec62e097ab8c1cb2734d'
+
+SOCIAL_AUTH_GITHUB_SCOPE = ['email']

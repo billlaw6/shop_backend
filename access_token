@@ -1,0 +1,37 @@
+access_token: {'access_token': '6_RKo9fGzWRMePRS9DuwdZTPeYA6rVb_uRbeIixEGH7NKOkHcJYb11a7SgFNKZ9IvhZkSIhXsOBkKcfFDOLzdJb2vTvj7Ul96rTvGpbAchwEY', 'scope': 'snsapi_userinfo', 'expires_in': 7200, 'openid': 'oxpwht2d0SuyiTBqUSBHojho6Tn8', 'refresh_token': '6_cEN3ni5N5MRd7HwjayFeYfNTk7wTfoNAwzFBfBlybNI4EVAR_VKwWzuv0WQGt7yRtvDq-6l_nIDEM2wW_ff5dFbFppqMp0aI1duOTwkT4mI'} 
+
+
+https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx4a32725dfd171687&redirect_uri=http%3A%2F%2F123.56.115.20%2Faccounts%2Fweixin%2Flogin%2Fcallback%2F&response_type=code&scope=snsapi_userinfo+snsapi_base&state=2hrOw29DKLAV&connect_redirect=1#wechat_redirect
+
+{'access_token': '6_esPh9AF0JdgaGvuxXq9bhWOvFeTvALOv-YbgY2GgezPFYHUUJ0glmOTc2lUlfGWnnkspM4paVPRJ9rc9RlxE9T_UphjXIPQ50adoJIRcXtU', 'expires_in': 7200, 'scope': 'snsapi_userinfo', 'openid': 'oxpwht2d0SuyiTBqUSBHojho6Tn8', 'refresh_token': '6_W-tK4pKec9Tzz_-cqSSEf92nSlBq_bfLNAjK4axFxcC6Tifc33OZ1Ioentv1koYHqhb2HxKD6dwT1mwpiW781oOjxsmn-BQjyUwt3kV4AkE'}
+
+
+
+curl -X POST -d "client_id=PNQ0ft8m6uMDMJuBlkTh0W8l7McWvyJiKGaTBEAv&client_secret=PiCoNzMXia0ltcwLQxx5kKNEPvvfxZD5UQVAqec2hOVtWrSUcTmEPGSJm5AUu0O6FmsMEjeSAztPJJb7obVj4IWW3RaA0XKZD1DZIqKbxo1zJspb891BETlhZpj266le&grant_type=password&username=liubin&password=liubin123456" http://123.56.115.20/auth/token
+
+
+curl -X POST -d "grant_type=convert_token&client_id=PNQ0ft8m6uMDMJuBlkTh0W8l7McWvyJiKGaTBEAv&client_secret=PiCoNzMXia0ltcwLQxx5kKNEPvvfxZD5UQVAqec2hOVtWrSUcTmEPGSJm5AUu0O6FmsMEjeSAztPJJb7obVj4IWW3RaA0XKZD1DZIqKbxo1zJspb891BETlhZpj266le&backend=weixin&token=6_esPh9AF0JdgaGvuxXq9bhWOvFeTvALOv-YbgY2GgezPFYHUUJ0glmOTc2lUlfGWnnkspM4paVPRJ9rc9RlxE9T_UphjXIPQ50adoJIRcXtU" http://123.56.115.20/auth/token
+
+curl -H "Authorization: Bearer weixin 6_esPh9AF0JdgaGvuxXq9bhWOvFeTvALOv-                           YbgY2GgezPFYHUUJ0glmOTc2lUlfGWnnkspM4paVPRJ9rc9RlxE9T_UphjXIPQ50adoJIRcXtU " http://123.56.115.20:80/
+
+
+--微信
+curl -X POST -d "grant_type=convert_token&client_id=dRD3MTz0zIrrPrMzgx8j7ozv78wl2265Ymu8S0c6&client_secret=I8PwEkRktHTsfdGXhHOjl3WFqdm8BIzjf3ujNNtKT4JR63qBgVnsl4widKyr85mYd4dypZNonLN8LviSD8UsUqitLEqelZZ6qL16LMbcLpijtT8ddXhQIcjEsMGiINEj&backend=weixin&token=6_esPh9AF0JdgaGvuxXq9bhWOvFeTvALOv-YbgY2GgezPFYHUUJ0glmOTc2lUlfGWnnkspM4paVPRJ9rc9RlxE9T_UphjXIPQ50adoJIRcXtU" http://123.56.115.20/auth/convert-token
+
+
+curl -X POST -d "grant_type=convert_token&client_id=dRD3MTz0zIrrPrMzgx8j7ozv78wl2265Ymu8S0c6&client_secret=I8PwEkRktHTsfdGXhHOjl3WFqdm8BIzjf3ujNNtKT4JR63qBgVnsl4widKyr85mYd4dypZNonLN8LviSD8UsUqitLEqelZZ6qL16LMbcLpijtT8ddXhQIcjEsMGiINEj&backend=weixin&token=6_esPh9AF0JdgaGvuxXq9bhWOvFeTvALOv-YbgY2GgezPFYHUUJ0glmOTc2lUlfGWnnkspM4paVPRJ9rc9RlxE9T_UphjXIPQ50adoJIRcXtU" http://123.56.115.20/auth/convert-token
+
+
+{"grant_type":"convert_token",
+"client_id":"dRD3MTz0zIrrPrMzgx8j7ozv78wl2265Ymu8S0c6",
+"client_secret":"I8PwEkRktHTsfdGXhHOjl3WFqdm8BIzjf3ujNNtKT4JR63qBgVnsl4widKyr85mYd4dypZNonLN8LviSD8UsUqitLEqelZZ6qL16LMbcLpijtT8ddXhQIcjEsMGiINEj",
+"backend":"weixin",
+"token":"6_esPh9AF0JdgaGvuxXq9bhWOvFeTvALOv-YbgY2GgezPFYHUUJ0glmOTc2lUlfGWnnkspM4paVPRJ9rc9RlxE9T_UphjXIPQ50adoJIRcXtU"}
+
+
+{"grant_type":"convert_token",
+"client_id":"wx4a32725dfd171687",
+"client_secret":"14123aca2110ec62e097ab8c1cb2734d",
+"backend":"weixin",
+"token":"6_esPh9AF0JdgaGvuxXq9bhWOvFeTvALOv-YbgY2GgezPFYHUUJ0glmOTc2lUlfGWnnkspM4paVPRJ9rc9RlxE9T_UphjXIPQ50adoJIRcXtU"}
+

@@ -6,3 +6,6 @@ Shop开发记录
   注册新用户时总返回500的错，后发现时注册时要发送邮件，Django的邮箱设置没有设置好。
   使用django-rest-auth的/rest-auth/registration/时，在User对应表中删除相应账号信息后再用删除的邮箱注册时仍然报”A user is already registered with this e-mail address“，但用户名不报错，所以判断另外一个地方也存了邮箱地址。一步步跟踪源码发现在allauth的models.py文件中，对应的数据库表为account_emailaddress。删除其中的记录即可。
 
+2018-02-06
+  发现django-rest-auth提供的响应不是json格式，所以转向django-rest-framework-social-oauth2
+

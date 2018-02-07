@@ -42,4 +42,10 @@ curl -X POST -d "grant_type=convert_token&client_id=dRD3MTz0zIrrPrMzgx8j7ozv78wl
 "token":"6_esPh9AF0JdgaGvuxXq9bhWOvFeTvALOv-YbgY2GgezPFYHUUJ0glmOTc2lUlfGWnnkspM4paVPRJ9rc9RlxE9T_UphjXIPQ50adoJIRcXtU"}
 
 
+{"grant_type":"convert_token",
+"client_id":"CcLHcIbVN0tT6pPRm3aXjxyVuPcFJZpqJAsFhxH4",
+"client_secret":"QG6YEGg1uZUXkymvNAh0BTm3Nj24XOBQSdmX6cy4h6plzynTxyUkZMyOQbJyQhiqylyY4EslUzkrbYHfYY8HeYUAL9c0mTerLA1F6bpmL1VfHcsk6vV1G1aF4DYdmFWN",
+"backend":"weixin",
+"token":"6_esPh9AF0JdgaGvuxXq9bhWOvFeTvALOv-YbgY2GgezPFYHUUJ0glmOTc2lUlfGWnnkspM4paVPRJ9rc9RlxE9T_UphjXIPQ50adoJIRcXtU"}
+
 

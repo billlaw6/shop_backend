@@ -185,7 +185,7 @@ CORS_ORIGIN_WHITELIST = (
 
 # django-rest-auth
 # http://django-rest-auth.readthedocs.io/en/latest/installation.html
-SITE_ID = 2
+SITE_ID = 1
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.163.com'
@@ -205,6 +205,17 @@ SOCIAL_AUTH_WEIXIN_KEY = 'wx4a32725dfd171687'
 SOCIAL_AUTH_WEIXIN_SECRET = '14123aca2110ec62e097ab8c1cb2734d'
 
 SOCIAL_AUTH_GITHUB_SCOPE = ['email']
+SOCIAL_AUTH_GITHUB_PROFILE_EXTRA_PARAMS = {
+    'fields': 'id, name, email'
+}
+SOCIAL_AUTH_WEIBO_SCOPE = ['email']
+SOCIAL_AUTH_WEIXIN_PROFILE_EXTRA_PARAMS = {
+    'fields': 'id, name, email'
+}
+SOCIAL_AUTH_WEIXIN_SCOPE = ['email']
+SOCIAL_AUTH_WEIBO_PROFILE_EXTRA_PARAMS = {
+    'fields': 'id, name, email'
+}
 
 LOGGING = {
     'version': 1,
@@ -217,7 +228,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'ERROR'),
         },
     },
 }

@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from social_django.models import UserSocialAuth
 
 from user_manage.serializers import UserSerializer
 
@@ -12,7 +13,12 @@ from user_manage.serializers import UserSerializer
 
 # ViewSets define the view behavior.
 def home(request):
-    return HttpResponse('Home')
+    user = request.user
+    print('user: %s' % user)
+    # social_accounts = UserSocialAuth.objects.filter(id=user.id)
+    # print(social_accounts[0].extra_data)
+    # return HttpResponse(social_accounts[0].extra_data)
+    return HttpResponse('user :%s' % user.username)
 
 
 class UserViewSet(viewsets.ModelViewSet):

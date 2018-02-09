@@ -41,6 +41,9 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls')),
     # http://www.django-rest-framework.org/api-guide/authentication/
     # url(r'^api-token-auth/', rest_views.obtain_auth_token),
+    # django-rest-auth
+    url(r'^rest-auth/', include('rest_auth.urls')),
+    url(r'^rest-auth/registration/', include('rest_auth.registration.urls')),
 
     # Django_rest_framework_social_oauth2
     url(r'^auth/', include('rest_framework_social_oauth2.urls')),

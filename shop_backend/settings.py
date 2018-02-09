@@ -45,6 +45,11 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'social_django',
     'rest_framework_social_oauth2',
+    # django-rest-auth
+    'rest_auth',
+    'rest_auth.registration',
+    'allauth',
+    'allauth.account',
     # My apps
     'dict_manage.apps.DictManageConfig',
     'user_manage.apps.UserManageConfig',
@@ -159,8 +164,10 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'user_manage.ShopUser'
+# LOGIN_REDIRECT_URL Default: '/accounts/profile/'
+LOGIN_REDIRECT_URL = '/'
 AUTHENTICATION_BACKENDS = [
-    'user_manage.backends.ModelBackend',
+    # 'user_manage.backends.ModelBackend',
     'django.contrib.auth.backends.ModelBackend',
 
     # Social OAuth2 backends
@@ -212,10 +219,11 @@ SOCIAL_AUTH_WEIBO_SCOPE = ['email']
 SOCIAL_AUTH_WEIXIN_PROFILE_EXTRA_PARAMS = {
     'fields': 'id, name, email'
 }
-SOCIAL_AUTH_WEIXIN_SCOPE = ['email']
-SOCIAL_AUTH_WEIBO_PROFILE_EXTRA_PARAMS = {
-    'fields': 'id, name, email'
-}
+# SOCIAL_AUTH_WEIXIN_SCOPE = ['snsapi_userinfo']
+# SOCIAL_AUTH_WEIXIN_SCOPE = ['snsapi_base']
+# SOCIAL_AUTH_WEIBO_PROFILE_EXTRA_PARAMS = {
+#     'fields': 'id, name, email'
+# }
 
 LOGGING = {
     'version': 1,

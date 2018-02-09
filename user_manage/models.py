@@ -14,6 +14,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AbstractUser
+from social_django.models import UserSocialAuth
 
 
 # Create your models here.
@@ -24,10 +25,6 @@ class ShopUser(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     cell_phone = models.CharField(_('Cell phone'), max_length=20, null=True,
                                   unique=True, blank=True)
-    weixin = models.CharField(_('weixin'), max_length=50, null=True,
-                              unique=True, blank=True)
-    sina = models.CharField(_('sina'), max_length=50, null=True, unique=True,
-                            blank=True)
     expired_on = models.DateTimeField(_('Expired on'), default='2070-01-01')
     # avatar = models.ImageField(_('User avatar'), upload_to='user_avatar',
     #                            width_field='width', height_field='height',

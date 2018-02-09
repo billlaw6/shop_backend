@@ -32,6 +32,7 @@ class ModelBackend(object):
         if username is None:
             username = kwargs.get(UserModel.USERNAME_FIELD)
         try:
+            # get() returned more than one ShopUser -- it returned 2!
             user = UserModel._default_manager.get(Q(username=username) |
                                                   Q(email=username) |
                                                   Q(cell_phone=username))

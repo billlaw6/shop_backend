@@ -7,8 +7,8 @@ from user_manage.models import ShopUser
 
 # Register your models here.
 class ShopUserAdmin(admin.ModelAdmin):
-    fields = ['username', 'email', 'first_name', 'last_name', 'weixin',
-              'cell_phone', 'sina', 'expired_on', 'avatar', 'is_staff',
+    fields = ['username', 'email', 'first_name', 'last_name',
+              'cell_phone', 'expired_on', 'is_staff',
               'is_superuser', 'is_active', 'date_joined', 'last_login']
 
 # admin.site.unregister(User)

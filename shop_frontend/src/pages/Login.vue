@@ -38,7 +38,9 @@
     </Form-item>
     <Row type="flex" justify="space-between" class="code-row-bg">
       <i-col span="12">
-        <a href="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx4a32725dfd171687&redirect_uri=http://123.56.115.20&response_type=code&scope=snsapi_base&state=123#wechat_redirect">微信登录</a>
+        <a href="http://123.56.115.20/auth/login/weixin">微信登录</a>
+        <a href="http://123.56.115.20/auth/login/weibo">微博登录</a>
+        <a href="http://123.56.115.20/auth/login/github">GITHUB登录</a>
       </i-col>
     </Row>
   </i-form>

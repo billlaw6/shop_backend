@@ -9,8 +9,10 @@ import iView from 'iview'
 import '../node_modules/_iview@2.9.0@iview/dist/styles/iview.css'
 import store from './vuex-store/index'
 import axios from 'axios'
+import { currency } from './common/filters'
 import App from './App'
 
+Vue.filter('currency', currency)
 Vue.use(iView)
 
 // 如果本地有Token则每次请求都带上Token

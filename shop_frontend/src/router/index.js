@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+const Home = resolve => require(['@/pages/Home.vue'], resolve)
 const Login = resolve => require(['@/pages/Login.vue'], resolve)
 const OauthLogin = resolve => require(['@/pages/OauthLogin.vue'], resolve)
 const Register = resolve => require(['@/pages/Register.vue'], resolve)
@@ -15,6 +16,14 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/home',
+      name: 'home',
+      component: Home,
+      meta: {
+        hidden: false
+      }
+    },
     {
       path: '/login',
       name: 'login',

@@ -2,7 +2,8 @@ from django.contrib import admin
 # from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 # from django.contrib.auth.models import User
 
-from user_manage.models import ShopUser
+from django.contrib.auth import get_user_model
+# from user_manage.models import ShopUser
 
 
 # Register your models here.
@@ -12,4 +13,4 @@ class ShopUserAdmin(admin.ModelAdmin):
               'is_superuser', 'is_active', 'date_joined', 'last_login']
 
 # admin.site.unregister(User)
-admin.site.register(ShopUser, ShopUserAdmin)
+# admin.site.register(get_user_model(), ShopUserAdmin)

@@ -1,28 +1,70 @@
 <template>
-  <i-form ref="formPassReset" :model="formPassReset" :rules="passResetDataRules"  class="card-box">
-    <Form-item class="formPassReset-title">
-      <h3>重置密码</h3>
-    </Form-item>
-
-    <Form-item prop="email">
-      <i-input size="large" type="email" v-model="formPassReset.email" placeholder="安全邮箱" :autofocus=true>
-        <Icon type="ios-email-outline" slot="prepend"></Icon>
-      </i-input>
-    </Form-item>
-    <Form-item class="passreset-no-bottom">
-      <Row type="flex" justify="end" class="code-row-bg">
-        <i-col span="8">
-          <i-button type="primary" @click="handleSubmit('formPassReset')">确认发送邮件</i-button>
-        </i-col>
-      </Row>
-    </Form-item>
-  </i-form>
+  <Row type="flex" justify="center" align="middle" class="code-row-bg">
+    <Col span="16">
+      <Tabs class="passResetTabs">
+        <TabPane label="通过手机号找回">
+          <Steps :current="1">
+            <Step title="01" content="验证手机号"></Step>
+            <Step title="02" content="重置密码"></Step>
+          </Steps>
+          <i-form ref="formPassReset" :model="formPassReset" :rules="passResetDataRules"  class="card-box">
+            <Form-item prop="cell_phone">
+              <i-input size="large" type="text" v-model="formPassReset.cell_phone" placeholder="注册使用的手机号" :autofocus=true>
+                <span slot="prepend">0086</span>
+              </i-input>
+            </Form-item>
+            <Form-item prop="captcha">
+              <i-input size="large" type="text" v-model="formPassReset.captcha" placeholder="请输入右侧字符">
+              </i-input>
+            </Form-item>
+            <Form-item prop="verify_code">
+              <i-input size="large" type="text" v-model="formPassReset.verify_code" placeholder="请输入短信验证码">
+              </i-input>
+              <timer-btn ref="timerBtn" @click="sendVerifyCode()" :disabled="disabled"  :second="6">获取验证码</timer-btn>
+            </Form-item>
+            <Form-item>
+              <Row>
+                <i-col span="8">
+                  <i-button type="primary" @click="nextStep">下一步</i-button>
+                </i-col>
+              </Row>
+            </Form-item>
+          </i-form>
+        </TabPane>
+        <TabPane label="通过安全邮箱找回">
+          <Steps :current="1">
+            <Step title="01" content="验证安全邮箱"></Step>
+            <Step title="02" content="点击校验邮件链接"></Step>
+            <Step title="03" content="输入新密码"></Step>
+          </Steps>
+          <i-form ref="formPassReset" :model="formPassReset" :rules="passResetDataRules"  class="card-box">
+            <Form-item prop="email">
+              <i-input size="large" type="email" v-model="formPassReset.email" placeholder="安全邮箱" :autofocus=true>
+                <Icon type="ios-email-outline" slot="prepend"></Icon>
+              </i-input>
+            </Form-item>
+            <Form-item class="passreset-no-bottom">
+              <Row type="flex" justify="end" class="code-row-bg">
+                <i-col span="8">
+                  <i-button type="primary" @click="handleSubmit('formPassReset')">确认发送邮件</i-button>
+                </i-col>
+              </Row>
+            </Form-item>
+          </i-form>
+        </TabPane>
+      </Tabs>
+    </Col>
+  </Row>
 </template>
 
 <script>
   import { authPassReset } from '../api/api'
   import { mapState, mapActions } from 'vuex'
+  import TimerBtn from '../components/TimerBtn.vue'
   export default {
+    components: {
+      TimerBtn
+    },
     data () {
       return {
         formPassReset: {
@@ -78,6 +120,10 @@
       formPassResetReset (name) {
         // console.log('Reset '+ name)
         this.$refs[name].resetFields()
+      },
+      nextStep () {
+        console.log('next step')
+        this.current = 2
       }
     },
     mounted () {
@@ -96,23 +142,9 @@
     background-clip: padding-box
     margin-bottom: 20px
     background-color: #F9FAFC
-    margin: 180px auto
-    width: 400px
     /* border: 2px solid #8492A6;*/
   }
 
-  .title {
-    margin: 0px auto 40px auto
-    text-align: center
-    color: #505458
-  }
-  .formPassReset-title {
-    text-align: center
-    font-seze: 28px
-  }
-  .formPassReset-title h3{
-    font-size: 18px
-  }
   .login-no-bottom {
     margin-bottom: 10px
   }

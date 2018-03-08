@@ -1,61 +1,96 @@
 <template>
-  <i-form class="card-box" ref="formRegister" :model="formRegister" :rules="registerDataRules">
-    <Form-item class="formRegister-title">
-      <h3>注册</h3>
-    </Form-item>
-
-    <Form-item prop="username">
-      <i-input size="large" type="text" v-model="formRegister.username" placeholder="用户名" :autofocus="true">
-        <Icon type="ios-person-outline" slot="prepend"></Icon>
-      </i-input>
-      </i-input>
-      <li v-for="error in registerServerError.username">{{ error }}</li>
-    </Form-item>
-    <Form-item prop="password1">
-      <i-input size="large" type="password" v-model="formRegister.password1" placeholder="密码">
-        <Icon type="ios-locked-outline" slot="prepend"></Icon>
-      </i-input>
-    </Form-item>
-    <Form-item prop="password2">
-      <i-input size="large" type="password" v-model="formRegister.password2" placeholder="密码确认">
-        <Icon type="ios-locked-outline" slot="prepend"></Icon>
-      </i-input>
-      <li v-for="error in registerServerError.password">{{ error }}</li>
-    </Form-item>
-    <Form-item prop="email">
-      <i-input size="large" type="email" v-model="formRegister.email" placeholder="邮箱">
-        <Icon type="ios-email-outline" slot="prepend"></Icon>
-      </i-input>
-      <li v-for="error in registerServerError.email">{{ error }}</li>
-    </Form-item>
-    <Form-item class="login-no-bottom">
+  <Row type="flex" justify="center" align="middle" class="code-row-bg">
+    <Col span="7">
+      <Tabs class="registerTabs">
+        <TabPane label="手机号注册">
+          <i-form class="card-box" ref="formRegister" :model="formRegister" :rules="registerDataRules">
+            <Form-item class="register-no-bottom">
+              <Row type="flex" justify="end" class="code-row-bg">
+                  <i-button type="primary" @click="handleSubmit('formRegister')" :long="true">提交</i-button>
+              </Row>
+            </Form-item>
+          </i-form>
+        </TabPane>
+        <TabPane label="用户名注册">
+          <i-form class="card-box" ref="formRegister" :model="formRegister" :rules="registerDataRules">
+            <Form-item prop="username">
+              <i-input size="large" type="text" v-model="formRegister.username" placeholder="用户名" :autofocus="true">
+                <Icon type="ios-person-outline" slot="prepend"></Icon>
+              </i-input>
+              </i-input>
+              <li v-for="error in registerServerError.username">{{ error }}</li>
+            </Form-item>
+            <Form-item prop="password1">
+              <i-input size="large" type="password" v-model="formRegister.password1" placeholder="密码">
+                <Icon type="ios-locked-outline" slot="prepend"></Icon>
+              </i-input>
+            </Form-item>
+            <Form-item prop="password2">
+              <i-input size="large" type="password" v-model="formRegister.password2" placeholder="密码确认">
+                <Icon type="ios-locked-outline" slot="prepend"></Icon>
+              </i-input>
+              <li v-for="error in registerServerError.password">{{ error }}</li>
+            </Form-item>
+            <Form-item prop="email">
+              <i-input size="large" type="email" v-model="formRegister.email" placeholder="邮箱">
+                <Icon type="ios-email-outline" slot="prepend"></Icon>
+              </i-input>
+              <li v-for="error in registerServerError.email">{{ error }}</li>
+            </Form-item>
+            <Form-item class="login-no-bottom">
+              <Row type="flex" justify="space-between" class="code-row-bg">
+                <i-col col="12" >
+                  <Checkbox-group v-model="formRegister.remember">
+                    <Checkbox label="记住密码" name="remember">
+                      同意<router-link to="/protocal">"服务条款"</router-link>和<router-link to="/privacy">"隐私权相关政策"</router-link>
+                    </Checkbox>
+                  </Checkbox-group>
+                </i-col>
+              </Row>
+            </Form-item>
+            <Form-item class="register-no-bottom">
+              <Row type="flex" justify="end" class="code-row-bg">
+                  <i-button type="primary" @click="handleSubmit('formRegister')" :long="true">提交</i-button>
+              </Row>
+            </Form-item>
+          </i-form>
+        </TabPane>
+      </Tabs>
+    </Col>
+    <Col span="1" class="vertical-divider">
+      <!--<hr/>-->
+      或
+    </Col>
+    <Col span="5">
+      已有账号：<br/>
+      <router-link to="/login">直接登录<Icon type="forward"></Icon></router-link>
+      <br/><br/><br/><br/><br/>
+      使用以下账号直接登录：<br/>
       <Row type="flex" justify="space-between" class="code-row-bg">
-        <i-col col="12" >
-          <Checkbox-group v-model="formRegister.remember">
-            <Checkbox label="记住密码" name="remember">
-              同意<router-link to="/protocal">"服务条款"</router-link>和<router-link to="/privacy">"隐私权相关政策"</router-link>
-            </Checkbox>
-          </Checkbox-group>
+        <i-col span="8">
+          <Icon src="../assets/weibo.png" size="10"></Icon>
+          <a href="http://123.56.115.20/auth/login/weixin">微信</a>
         </i-col>
-        <i-col col="12" >
-          <router-link to="/login">已有账号？</router-link>
+        <i-col span="8">
+          <a href="http://123.56.115.20/auth/login/weibo">微博</a>
         </i-col>
-      </Row>
-    </Form-item>
-    <Form-item class="register-no-bottom">
-      <Row type="flex" justify="end" class="code-row-bg">
-        <i-col span="8" >
-          <i-button type="primary" @click="handleSubmit('formRegister')">提交</i-button>
+        <i-col span="8">
+          <a href="http://123.56.115.20/auth/login/github">GITHUB</a>
         </i-col>
       </Row>
-    </Form-item>
-  </i-form>
+    </Col>
+  </Row>
+
 </template>
 
 <script>
   import { authRegister, authUser } from '../api/api'
   import { mapState, mapActions } from 'vuex'
+  import TimerBtn from '../components/TimerBtn.vue'
   export default {
+    components: {
+      TimerBtn
+    },
     data () {
       return {
         formRegister: {
@@ -161,29 +196,26 @@
 </script>
 
 <style lang="stylus" scoped>
-  .card-box {
+  .registerTabs
+    width: 100%
+    margin: 3px
+
+  .card-box
     padding: 20px
     -webkit-border-radius: 5px
     border-radius: 5px
     -moz-border-radius: 5px
     background-clip: padding-box
-    margin-bottom: 20px
     background-color: #F9FAFC
-    margin: 180px auto
-    width: 400px
     /* border: 2px solid #8492A6;*/
-  }
 
-  .title {
-    margin: 0px auto 40px auto
+  .login-no-bottom
+    margin-bottom: 10px
+
+  .vertical-divider
     text-align: center
-    color: #505458
-  }
-  .formRegister-title {
-    text-align: center
-    font-seze: 28px
-  }
-  .formRegister-title h3{
-    font-size: 18px
-  }
+    hr
+      width: 2px
+      height: 100px
+      display: inline-block
 </style>

@@ -1,49 +1,90 @@
 <template>
-  <i-form ref="formLogin" :model="formLogin" :rules="loginDataRules"  class="card-box">
-    <Form-item class="formLogin-title">
-      <h3>系统登录</h3>
-    </Form-item>
-
-    <Form-item prop="username">
-      <i-input size="large" type="text" v-model="formLogin.username" placeholder="用户名" :autofocus=true>
-        <Icon type="ios-person-outline" slot="prepend"></Icon>
-      </i-input>
-    </Form-item>
-    <Form-item prop="password">
-      <i-input size="large"  type="password" v-model="formLogin.password" placeholder="密码">
-        <Icon type="ios-locked-outline" slot="prepend"></Icon>
-      </i-input>
-    </Form-item>
-    <Form-item class="login-no-bottom">
+  <Row type="flex" justify="center" align="middle" class="code-row-bg">
+    <Col span="7">
+      <Tabs class="loginTabs">
+        <TabPane label="密码登录">
+          <i-form ref="formLogin" :model="formLogin" :rules="loginDataRules"  class="card-box">
+            <Form-item prop="username">
+              <i-input size="large" type="text" v-model="formLogin.username" placeholder="用户名" :autofocus=true>
+                <Icon type="ios-person-outline" slot="prepend"></Icon>
+              </i-input>
+            </Form-item>
+            <Form-item prop="password">
+              <i-input size="large"  type="password" v-model="formLogin.password" placeholder="密码">
+                <Icon type="ios-locked-outline" slot="prepend"></Icon>
+              </i-input>
+            </Form-item>
+            <Form-item class="login-no-bottom">
+              <Row type="flex" justify="space-between" class="code-row-bg">
+                <i-col col="12" >
+                  <Checkbox-group v-model="formLogin.remember">
+                    <Checkbox label="记住密码" name="remember"></Checkbox>
+                  </Checkbox-group>
+                </i-col>
+                <i-col col="12" pull="2" >
+                  <router-link to="/pass_reset">忘记密码?</router-link>
+                </i-col>
+              </Row>
+            </Form-item>
+            <Form-item class="login-no-bottom">
+              <i-button type="primary" @click="handleSubmit('formLogin')" :long="true">登录</i-button>
+            </Form-item>
+          </i-form>
+        </TabPane>
+        <TabPane label="验证码登录">
+          <i-form ref="formLogin" :model="formLogin" :rules="loginDataRules"  class="card-box">
+            <Form-item prop="username">
+              <i-input size="large" type="text" v-model="formLogin.username" placeholder="用户名" :autofocus=true>
+                <Icon type="ios-person-outline" slot="prepend"></Icon>
+              </i-input>
+            </Form-item>
+            <Form-item prop="password">
+              <i-input size="large"  type="password" v-model="formLogin.password" placeholder="密码">
+                <Icon type="ios-locked-outline" slot="prepend"></Icon>
+              </i-input>
+            </Form-item>
+            <Form-item class="login-no-bottom">
+              <Row type="flex" justify="space-between" class="code-row-bg">
+                <i-col col="12" >
+                  <Checkbox-group v-model="formLogin.remember">
+                    <Checkbox label="记住密码" name="remember"></Checkbox>
+                  </Checkbox-group>
+                </i-col>
+                <i-col col="12" pull="2" >
+                  <router-link to="/pass_reset">忘记密码?</router-link>
+                </i-col>
+              </Row>
+            </Form-item>
+            <Form-item class="login-no-bottom">
+              <i-button type="primary" @click="handleSubmit('formLogin')" :long="true">登录</i-button>
+            </Form-item>
+          </i-form>
+        </TabPane>
+      </Tabs>
+    </Col>
+    <Col span="1" class="vertical-divider">
+      <!--<hr/>-->
+      或
+    </Col>
+    <Col span="5">
+      还没有账号：<br/>
+      <router-link to="/register">立即注册<Icon type="forward"></Icon></router-link>
+      <br/><br/><br/><br/><br/>
+      使用以下账号直接登录：<br/>
       <Row type="flex" justify="space-between" class="code-row-bg">
-        <i-col col="12" >
-          <Checkbox-group v-model="formLogin.remember">
-            <Checkbox label="记住密码" name="remember"></Checkbox>
-          </Checkbox-group>
+        <i-col span="8">
+          <Icon src="../assets/weibo.png" size="10"></Icon>
+          <a href="http://123.56.115.20/auth/login/weixin">微信</a>
         </i-col>
-        <i-col col="12" pull="2" >
-          <router-link to="/pass_reset">忘记密码?</router-link>
+        <i-col span="8">
+          <a href="http://123.56.115.20/auth/login/weibo">微博</a>
+        </i-col>
+        <i-col span="8">
+          <a href="http://123.56.115.20/auth/login/github">GITHUB</a>
         </i-col>
       </Row>
-    </Form-item>
-    <Form-item class="login-no-bottom">
-      <Row type="flex" justify="space-between" class="code-row-bg">
-        <i-col span="12">
-          <i-button type="primary" @click="handleSubmit('formLogin')">登录</i-button>
-        </i-col>
-        <i-col span="12">
-          <router-link to="/register"><i-button type="primary">去注册</i-button></router-link>
-        </i-col>
-      </Row>
-    </Form-item>
-    <Row type="flex" justify="space-between" class="code-row-bg">
-      <i-col span="12">
-        <a href="http://123.56.115.20/auth/login/weixin">微信登录</a>
-        <a href="http://123.56.115.20/auth/login/weibo">微博登录</a>
-        <a href="http://123.56.115.20/auth/login/github">GITHUB登录</a>
-      </i-col>
-    </Row>
-  </i-form>
+    </Col>
+  </Row>
 </template>
 
 <script>
@@ -159,6 +200,9 @@
 </script>
 
 <style lang="stylus" scoped>
+  .loginTabs
+    width: 100%
+    margin: 3px
   .card-box
     padding: 20px
     /*box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02);*/
@@ -168,19 +212,17 @@
     background-clip: padding-box
     margin-bottom: 20px
     background-color: #F9FAFC
-    margin: 180px auto
-    width: 400px
+    margin: 18px auto
+    width: auto
     /* border: 2px solid #8492A6;*/
 
-  .title
-    margin: 0px auto 40px auto
-    text-align: center
-    color: #505458
-  .formLogin-title
-    text-align: center
-    font-seze: 28px
-  .formLogin-title h3
-    font-size: 18px
   .login-no-bottom
     margin-bottom: 10px
+
+  .vertical-divider
+    text-align: center
+    hr
+      width: 2px
+      height: 100px
+      display: inline-block
 </style>

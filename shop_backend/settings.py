@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     # My apps
     'dict_manage.apps.DictManageConfig',
     'user_manage.apps.UserManageConfig',
+    'utils.apps.UtilsConfig',
 ]
 
 MIDDLEWARE = [
@@ -163,12 +164,13 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
-AUTH_USER_MODEL = 'user_manage.ShopUser'
+# AUTH_USER_MODEL = 'user_manage.ShopUser'
 # LOGIN_REDIRECT_URL Default: '/accounts/profile/'
 LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/logged_out'
 AUTHENTICATION_BACKENDS = [
     # 'user_manage.backends.ModelBackend',
-    'django.contrib.auth.backends.ModelBackend',
 
     # Social OAuth2 backends
     'social_core.backends.github.GithubOAuth2',
@@ -204,6 +206,9 @@ EMAIL_PORT = 25
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # https://github.com/PhilipGarnero/django-rest-framework-social-oauth2
+# Will not be updated in the pipeline process
+SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['username']
+
 SOCIAL_AUTH_GITHUB_KEY = 'b19f4ff7146560185f3b'
 SOCIAL_AUTH_GITHUB_SECRET = '39b78edc6726ce2bd19540452511ceb307ac4cd3'
 SOCIAL_AUTH_WEIBO_KEY = '3814205163'
@@ -219,11 +224,11 @@ SOCIAL_AUTH_WEIBO_SCOPE = ['email']
 SOCIAL_AUTH_WEIXIN_PROFILE_EXTRA_PARAMS = {
     'fields': 'id, name, email'
 }
-# SOCIAL_AUTH_WEIXIN_SCOPE = ['snsapi_userinfo']
+
+# Default scope: snsapi_login
+SOCIAL_AUTH_WEIXIN_IGNORE_DEFAULT_SCOPE = True
+SOCIAL_AUTH_WEIXIN_SCOPE = ['snsapi_userinfo']
 # SOCIAL_AUTH_WEIXIN_SCOPE = ['snsapi_base']
-# SOCIAL_AUTH_WEIBO_PROFILE_EXTRA_PARAMS = {
-#     'fields': 'id, name, email'
-# }
 
 LOGGING = {
     'version': 1,

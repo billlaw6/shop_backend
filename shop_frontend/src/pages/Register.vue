@@ -7,6 +7,12 @@
             <Form-item class="register-no-bottom">
               <Row type="flex" justify="end" class="code-row-bg">
                   <i-button type="primary" @click="handleSubmit('formRegister')" :long="true">提交</i-button>
+                  <captcha></captcha>
+              </Row>
+            </Form-item>
+            <Form-item class="register-no-bottom">
+              <Row type="flex" justify="end" class="code-row-bg">
+                  <i-button type="primary" @click="handleSubmit('formRegister')" :long="true">提交</i-button>
               </Row>
             </Form-item>
           </i-form>
@@ -87,9 +93,11 @@
   import { authRegister, authUser } from '../api/api'
   import { mapState, mapActions } from 'vuex'
   import TimerBtn from '../components/TimerBtn.vue'
+  import Captcha from '../components/Captcha.vue'
   export default {
     components: {
-      TimerBtn
+      TimerBtn,
+      Captcha
     },
     data () {
       return {

@@ -1,5 +1,5 @@
 <template>
-  <button :disabled="disabled || time > 0" :second="6">
+  <button @click="run" :disabled="disabled || time > 0" :second="second">
     {{ text }}
   </button>
 </template>
@@ -7,10 +7,18 @@
 <script>
   export default {
     name: 'TimerBtn',
-    data () {
-      return {
-        second: 6,
-        time: 0
+    props: {
+      disabled: {
+        type: Boolean,
+        default: false
+      },
+      time: {
+        type: Number,
+        default: 0
+      },
+      second: {
+        type: Number,
+        default: 60
       }
     },
     methods: {
@@ -32,3 +40,6 @@
     }
   }
 </script>
+
+<style lang="stylus" scoped>
+</style>

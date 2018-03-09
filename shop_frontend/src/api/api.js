@@ -14,3 +14,4 @@ export const authPassReset = params => { return axios.post(`${base}/rest-auth/pa
 export const authPassResetConfirm = params => { return axios.post(`${base}/rest-auth/password/reset/confirm/`, params).then(res => res) }
 export const authPassChange = params => { return axios.post(`${base}/rest-auth/password/change/`, params).then(res => res) }
 export const authWeixinLogin = params => { return axios.post(`${base}/rest-auth/weixin/`, params).then(res => res) }
+export const getCaptcha = params => { return axios.get(`${base}/get_captcha`, params).then(res => res) }

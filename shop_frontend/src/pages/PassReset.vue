@@ -7,20 +7,33 @@
             <Step title="01" content="验证手机号"></Step>
             <Step title="02" content="重置密码"></Step>
           </Steps>
-          <i-form ref="formPassReset" :model="formPassReset" :rules="passResetDataRules"  class="card-box">
+          <i-form ref="formPhonePassReset" :model="formPhonePassReset" :rules="passPhoneResetDataRules"  class="card-box">
             <Form-item prop="cell_phone">
-              <i-input size="large" type="text" v-model="formPassReset.cell_phone" placeholder="注册使用的手机号" :autofocus=true>
+              <i-input size="large" type="text" v-model="formPhonePassReset.cell_phone" placeholder="注册使用的手机号" :autofocus=true>
                 <span slot="prepend">0086</span>
               </i-input>
             </Form-item>
             <Form-item prop="captcha">
-              <i-input size="large" type="text" v-model="formPassReset.captcha" placeholder="请输入右侧字符">
-              </i-input>
+              <Row>
+                <Col span='10'>
+                  <i-input size="large" type="text" v-model="formPhonePassReset.captcha" placeholder="请输入右侧字符">
+                  </i-input>
+                </Col>
+                <Col span='14'>
+                  <captcha :height="40"></captcha>
+                </Col>
+              </Row>
             </Form-item>
             <Form-item prop="verify_code">
-              <i-input size="large" type="text" v-model="formPassReset.verify_code" placeholder="请输入短信验证码">
-              </i-input>
-              <timer-btn ref="timerBtn" @click="sendVerifyCode()" :disabled="disabled"  :second="6">获取验证码</timer-btn>
+              <Row>
+                <Col span='10'>
+                  <i-input size="large" type="text" v-model="formPhonePassReset.verify_code" placeholder="请输入短信验证码">
+                  </i-input>
+                </Col>
+                <Col span='14'>
+                  <timer-btn :second="6"></timer-btn>
+                </Col>
+              </Row>
             </Form-item>
             <Form-item>
               <Row>
@@ -37,16 +50,16 @@
             <Step title="02" content="点击校验邮件链接"></Step>
             <Step title="03" content="输入新密码"></Step>
           </Steps>
-          <i-form ref="formPassReset" :model="formPassReset" :rules="passResetDataRules"  class="card-box">
+          <i-form ref="formEmailPassReset" :model="formEmailPassReset" :rules="passEmailResetDataRules"  class="card-box">
             <Form-item prop="email">
-              <i-input size="large" type="email" v-model="formPassReset.email" placeholder="安全邮箱" :autofocus=true>
+              <i-input size="large" type="email" v-model="formEmailPassReset.email" placeholder="安全邮箱" :autofocus=true>
                 <Icon type="ios-email-outline" slot="prepend"></Icon>
               </i-input>
             </Form-item>
             <Form-item class="passreset-no-bottom">
               <Row type="flex" justify="end" class="code-row-bg">
                 <i-col span="8">
-                  <i-button type="primary" @click="handleSubmit('formPassReset')">确认发送邮件</i-button>
+                  <i-button type="primary" @click="handleSubmit('formEmailPassReset')">确认发送邮件</i-button>
                 </i-col>
               </Row>
             </Form-item>
@@ -61,18 +74,36 @@
   import { authPassReset } from '../api/api'
   import { mapState, mapActions } from 'vuex'
   import TimerBtn from '../components/TimerBtn.vue'
+  import Captcha from '../components/Captcha.vue'
   export default {
     components: {
-      TimerBtn
+      TimerBtn,
+      Captcha
     },
     data () {
       return {
-        formPassReset: {
+        formEmailPassReset: {
           email: ''
         },
-        passResetDataRules: {
+        passEmailResetDataRules: {
           email: [
             { required: true, message: '请填写安全邮箱地址', trigger: 'blur' }
+          ]
+        },
+        formPhonePassReset: {
+          cell_phone: '',
+          captcha: '',
+          verify_code: ''
+        },
+        passPhoneResetDataRules: {
+          cell_phone: [
+            { required: true, message: '请填写注册使用的手机号', trigger: 'blur' }
+          ],
+          captcha: [
+            { required: true, message: '请填写右边图片字母', trigger: 'blur' }
+          ],
+          verify_code: [
+            { required: true, message: '请填写手机收到的校验码', trigger: 'blur' }
           ]
         }
       }

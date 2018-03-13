@@ -1,7 +1,16 @@
 <template>
-  <div :class="captcha" >
-    <img :src="image_data" alt="CAPTCHA" @click="getCaptcha" :length="length" :width="width" :height="height" :fontsize="fontsize">
-  </div>
+  <FormItem prop="verify_code">
+    <Row>
+      <div :class="captcha" >
+        <Col span="12">
+          <Input size="large" type="text" v-model="captcha.code" placeholder="验证码"></Input>
+        </Col>
+        <Col span="12">
+          <img :src="image_data" alt="CAPTCHA" @click="getCaptcha" :length="length" :width="width" :height="height" :fontsize="fontsize">
+        </Col>
+      </div>
+    </Row>
+  </FormItem>
 </template>
 
 <script>
@@ -35,8 +44,8 @@
           fontsize: this.fontsize
         },
         captcha: {
-          img: null,
-          code: null
+          img: '',
+          code: ''
         }
       }
     },

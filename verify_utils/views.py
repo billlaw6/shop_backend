@@ -5,7 +5,8 @@ import io
 from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 
-from utils.captcha import SimpleCaptcha
+from verify_utils.captcha import SimpleCaptcha
+from verify_utils.models import CaptchaRecord
 
 
 # Create your views here.
@@ -38,6 +39,12 @@ def get_captcha(request):
     rsp['code'] = md.hexdigest()
     # bytes->str: decode解码
     rsp['img'] = base64.b64encode(buffer.getvalue()).decode()
+    if 'HTTP_X_FORWARDED_FOR' in request.META:
+        ip = request.META['HTTP_X_FORWARDED_FOR']
+    else:
+        ip = request.META['REMOTE_ADDR']
+    cr = CaptchaRecord(client_ip=ip, captcha=text, encrypted_captcha=md.hexdigest())
+    cr.save()
     return HttpResponse(json.dumps(rsp))
 
 

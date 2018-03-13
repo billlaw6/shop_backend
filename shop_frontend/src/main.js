@@ -3,10 +3,12 @@
 import Vue from 'vue'
 import router from './router'
 import iView from 'iview'
+import mavonEditor from 'mavon-editor'
 // import 'iview/dist/styles/iviews.css'
 // import '../node_modules/.2.8.0@iview/dist/styles/iview.css'
 // import '../node_modules/_iview@2.8.0@iview/dist/styles/iview.css'
 import '../node_modules/_iview@2.9.0@iview/dist/styles/iview.css'
+import '../node_modules/mavon-editor/dist/css/index.css'
 import store from './vuex-store/index'
 import axios from 'axios'
 import { currency } from './common/filters'
@@ -14,6 +16,7 @@ import App from './App'
 
 Vue.filter('currency', currency)
 Vue.use(iView)
+Vue.use(mavonEditor)
 
 // 如果本地有Token则每次请求都带上Token
 axios.interceptors.request.use(

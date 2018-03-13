@@ -1,13 +1,15 @@
 <template>
   <div class="layout">
-    <link rel="prefetch" href="http://123.56.115.20:8080/#/login">
     <Layout>
       <Header class="layout-header-bar">
         <Menu mode="horizontal" theme="primary" active-name="1" :accordion="true">
           <MenuItem name="logo">
             <div class="layout-logo">
-              <Icon type="home"></Icon>主页
+              <img src="../assets/logo_top_baidu.png" alt="Logo">
             </div>
+          </MenuItem>
+          <MenuItem name="navToggle">
+            <Icon @click.native="collapsedSider" :class="rotateIcon" type="navicon-round" size="46" style="vertical-align: middle"></Icon>
           </MenuItem>
           <!-- 对已登录用户显示用户信息 -->
           <div class="account-info">
@@ -44,42 +46,48 @@
           </div>
         </Menu>
       </Header>
-      <Layout :style="{padding: '0 24px 24px'}">
-        <Content :style="{padding: '24px', minHeight: '280px', background: '#fff'}">
-        <!--
-          <Carousel v-model="value2" 
-                  :height="setting.height"
-                  :loop="setting.loop"
-                  :autoplay="setting.autoplay"
-                  :autoplay-speed="setting.autoplaySpeed"
-                  :dots="setting.dots"
-                  :radius-dot="setting.radiusDot"
-                  :trigger="setting.trigger"
-                  :arrow="setting.arrow"
-                  :easing="setting.easing">
-            <CarouselItem>
-              <div class="demo-carousel">
-                <img src="../assets/1.jpg" alt="1">
-              </div>
-            </CarouselItem>
-            <CarouselItem>
-              <div class="demo-carousel">
-                <img src="../assets/2.jpg" alt="2">
-              </div>
-            </CarouselItem>
-            <CarouselItem>
-              <div class="demo-carousel">
-                <img src="../assets/3.jpg" alt="3">
-              </div>
-            </CarouselItem>
-          </Carousel>
-         -->
-          <article>
-            <h1>Consectetur eaque ex ipsam soluta?</h1>
-            Dolor eveniet quisquam quidem vitae autem, aliquid delectus, rem fuga aspernatur quaerat molestias alias molestiae! Ab rem temporibus expedita illo fugiat eos non. Neque ipsum quam nam sed in incidunt!
-          </article>
-          <web-camera></web-camera>
-        </Content>
+      <Layout>
+        <template v-show="user">
+          <Sider ref="siderMenu" hide-trigger collapsible :collapsed-width="78" breakpoint="sm" v-model="isCollapsed">
+            <Menu active-name="1-2" theme="light" width="auto" :open-names="['1']" :class="menuitemClasses">
+              <Submenu name="1">
+                <template slot="title">
+                  <Icon type="ios-navigate"></Icon>
+                  Item1
+                </template>
+                <MenuItem name="1-1">Option 1</MenuItem>
+                <MenuItem name="1-2">Option 2</MenuItem>
+                <MenuItem name="1-3">Option 3</MenuItem>
+              </Submenu>
+              <Submenu name="2">
+                <template slot="title">
+                  <Icon type="ios-keypad"></Icon>
+                  Item 2
+                </template>
+                <MenuItem name="2-1">Option 1</MenuItem>
+                <MenuItem name="2-2">Option 2</MenuItem>
+              </Submenu>
+              <Submenu name="3">
+                <template slot="title">
+                  <Icon type="ios-keypad"></Icon>
+                  Item 3
+                </template>
+                <MenuItem name="3-1">Option 1</MenuItem>
+                <MenuItem name="3-2">Option 2</MenuItem>
+              </Submenu>
+            </Menu>
+          </Sider>
+        </template>
+        <Layout :style="{padding: '0 24px 24px'}">
+          <Breadcrumb :style="{margin: '24px 0'}">
+            <BreadcrumbItem> Elit?  </BreadcrumbItem>
+            <BreadcrumbItem> Consectetur.  </BreadcrumbItem>
+            <BreadcrumbItem> Consectetur?  </BreadcrumbItem>
+          </Breadcrumb>
+          <Content :style="{padding: '24px', minHeight: '280px', background: '#fff'}">
+            <mavon-editor v-model="editorContent"/>
+          </Content>
+        </Layout>
       </Layout>
       <Footer class="layout-footer-center">2011-2016 &copy; TalkingData</Footer>
     </Layout>
@@ -87,29 +95,17 @@
 </template>
 
 <script>
-  import WebCamera from '../components/WebCamera.vue'
+  import Navigation from '../components/Navigation.vue'
   import { mapState } from 'vuex'
 
   export default {
     components: {
-      WebCamera
+      Navigation
     },
     data () {
       return {
         isCollapsed: false,
-        editorContent: '',
-        value2: 0,
-        setting: {
-          height: 'auto',
-          loop: true,
-          autoplay: true,
-          autoplaySpeed: 2000,
-          dots: 'inside',
-          radiusDot: false,
-          trigger: 'click',
-          arrow: 'hover',
-          easing: 'ease'
-        }
+        editorContent: ''
       }
     },
     computed: {

@@ -1,69 +1,73 @@
 <template>
   <Row type="flex" justify="center" align="middle" class="code-row-bg">
-    <Col span="16">
+    <Col span="12">
       <Tabs class="passResetTabs">
         <TabPane label="通过手机号找回">
-          <Steps :current="1">
-            <Step title="01" content="验证手机号"></Step>
-            <Step title="02" content="重置密码"></Step>
-          </Steps>
-          <i-form ref="formPhonePassReset" :model="formPhonePassReset" :rules="passPhoneResetDataRules"  class="card-box">
-            <Form-item prop="cell_phone">
-              <i-input size="large" type="text" v-model="formPhonePassReset.cell_phone" placeholder="注册使用的手机号" :autofocus=true>
-                <span slot="prepend">0086</span>
-              </i-input>
-            </Form-item>
-            <Form-item prop="captcha">
-              <Row>
-                <Col span='10'>
-                  <i-input size="large" type="text" v-model="formPhonePassReset.captcha" placeholder="请输入右侧字符">
-                  </i-input>
-                </Col>
-                <Col span='14'>
-                  <captcha :height="40"></captcha>
-                </Col>
-              </Row>
-            </Form-item>
-            <Form-item prop="verify_code">
-              <Row>
-                <Col span='10'>
-                  <i-input size="large" type="text" v-model="formPhonePassReset.verify_code" placeholder="请输入短信验证码">
-                  </i-input>
-                </Col>
-                <Col span='14'>
-                  <timer-btn :second="6"></timer-btn>
-                </Col>
-              </Row>
-            </Form-item>
-            <Form-item>
-              <Row>
-                <i-col span="8">
-                  <i-button type="primary" @click="nextStep">下一步</i-button>
-                </i-col>
-              </Row>
-            </Form-item>
-          </i-form>
+          <Row>
+            <Steps :current="1">
+              <Step title="01" content="验证手机号"></Step>
+              <Step title="02" content="重置密码"></Step>
+            </Steps>
+          </Row>
+          <Row>
+            <Form ref="formPhonePassReset" :model="formPhonePassReset" :rules="passPhoneResetDataRules"  class="card-box">
+              <FormItem prop="cell_phone">
+                <Input size="large" type="text" v-model="formPhonePassReset.cell_phone" placeholder="注册使用的手机号" :autofocus=true>
+                  <span slot="prepend">0086</span>
+                </Input>
+              </FormItem>
+              <FormItem prop="captcha">
+                <Row>
+                  <Col span='10'>
+                    <Input size="large" type="text" v-model="formPhonePassReset.captcha" placeholder="请输入右侧字符">
+                    </Input>
+                  </Col>
+                  <Col span='14'>
+                    <captcha :height="40"></captcha>
+                  </Col>
+                </Row>
+              </FormItem>
+              <FormItem prop="verify_code">
+                <Row>
+                  <Col span='10'>
+                    <Input size="large" type="text" v-model="formPhonePassReset.verify_code" placeholder="请输入短信验证码">
+                    </Input>
+                  </Col>
+                  <Col span='14'>
+                    <timer-btn :second="6"></timer-btn>
+                  </Col>
+                </Row>
+              </FormItem>
+              <FormItem>
+                <Row>
+                  <Col span="8">
+                    <Button type="primary" @click="nextStep">下一步</Button>
+                  </Col>
+                </Row>
+              </FormItem>
+            </Form>
+          </Row>
         </TabPane>
         <TabPane label="通过安全邮箱找回">
-          <Steps :current="1">
-            <Step title="01" content="验证安全邮箱"></Step>
-            <Step title="02" content="点击校验邮件链接"></Step>
-            <Step title="03" content="输入新密码"></Step>
-          </Steps>
-          <i-form ref="formEmailPassReset" :model="formEmailPassReset" :rules="passEmailResetDataRules"  class="card-box">
-            <Form-item prop="email">
-              <i-input size="large" type="email" v-model="formEmailPassReset.email" placeholder="安全邮箱" :autofocus=true>
-                <Icon type="ios-email-outline" slot="prepend"></Icon>
-              </i-input>
-            </Form-item>
-            <Form-item class="passreset-no-bottom">
-              <Row type="flex" justify="end" class="code-row-bg">
-                <i-col span="8">
-                  <i-button type="primary" @click="handleSubmit('formEmailPassReset')">确认发送邮件</i-button>
-                </i-col>
-              </Row>
-            </Form-item>
-          </i-form>
+          <Row>
+            <Steps :current="1">
+              <Step title="01" content="验证安全邮箱"></Step>
+              <Step title="02" content="点击校验邮件链接"></Step>
+              <Step title="03" content="输入新密码"></Step>
+            </Steps>
+          </Row>
+          <Row>
+            <Form ref="formEmailPassReset" :model="formEmailPassReset" :rules="passEmailResetDataRules"  class="card-box">
+              <FormItem prop="email">
+                <Input size="large" type="email" v-model="formEmailPassReset.email" placeholder="安全邮箱" :autofocus=true>
+                  <Icon type="ios-email-outline" slot="prepend"></Icon>
+                </Input>
+              </FormItem>
+              <FormItem>
+                <Button type="primary" @click="nextStep">下一步</Button>
+              </FormItem>
+            </Form>
+          </Row>
         </TabPane>
       </Tabs>
     </Col>

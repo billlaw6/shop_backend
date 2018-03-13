@@ -12,13 +12,14 @@
         type: Boolean,
         default: false
       },
-      time: {
-        type: Number,
-        default: 0
-      },
       second: {
         type: Number,
         default: 60
+      }
+    },
+    data () {
+      return {
+        time: 0
       }
     },
     methods: {

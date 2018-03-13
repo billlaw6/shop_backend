@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 const Home = resolve => require(['@/pages/Home.vue'], resolve)
+const Product = resolve => require(['@/pages/Product.vue'], resolve)
 const Login = resolve => require(['@/pages/Login.vue'], resolve)
 const OauthLogin = resolve => require(['@/pages/OauthLogin.vue'], resolve)
 const Register = resolve => require(['@/pages/Register.vue'], resolve)
@@ -20,6 +21,14 @@ export default new Router({
       path: '/home',
       name: 'home',
       component: Home,
+      meta: {
+        hidden: false
+      }
+    },
+    {
+      path: '/product',
+      name: 'product',
+      component: Product,
       meta: {
         hidden: false
       }

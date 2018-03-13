@@ -50,5 +50,5 @@ urlpatterns = [
 
     # My urls
     url(r'^', include('user_manage.urls')),
-    url(r'^', include('utils.urls')),
+    url(r'^', include('verify_utils.urls')),
 ]

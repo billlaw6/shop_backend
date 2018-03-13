@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     # My apps
     'dict_manage.apps.DictManageConfig',
     'user_manage.apps.UserManageConfig',
-    'utils.apps.UtilsConfig',
+    'verify_utils.apps.VerifyUtilsConfig',
 ]
 
 MIDDLEWARE = [

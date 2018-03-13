@@ -95,7 +95,7 @@ class SimpleCaptcha(object):
 
         self.image = Image.new('RGB', self.size, self.bgcolor)
         # font = ImageFont.truetype('./VERDANA.TTF', self.fontsize)
-        font = ImageFont.truetype('/home/liubin/shop_backend/utils/VERDANA.TTF', self.fontsize)
+        font = ImageFont.truetype('/home/liubin/shop_backend/verify_utils/VERDANA.TTF', self.fontsize)
         # font = ImageFont.load_default().font
         draw = ImageDraw.Draw(self.image)
         xy = self._center_coords(draw, font)

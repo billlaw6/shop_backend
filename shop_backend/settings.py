@@ -73,7 +73,7 @@ ROOT_URLCONF = 'shop_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['shop_frontend'],
+        'DIRS': ['shop_frontend/dist'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -138,11 +138,11 @@ USE_L10N = True
 # USE_TZ = True
 USE_TZ = False
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_URL = os.path.join(BASE_DIR, 'shop_frontend/')
+# 静态文件由nginx提供了，并且在HTML文件中写链接，不用django模板，所以此处不用配置
+# STATIC_URL = os.path.join(BASE_DIR, 'shop_frontend/dist/')
 
 # REST_FRAMEWORK settings
 REST_FRAMEWORK = {

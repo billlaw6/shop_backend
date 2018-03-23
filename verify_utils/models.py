@@ -24,6 +24,7 @@ class CaptchaRecord(models.Model):
     """
     client_ip = models.GenericIPAddressField(_('IP address'), protocol='both', unpack_ipv4=False)
     captcha = models.CharField(_('Captcha'), max_length=20)
+
     encrypted_captcha = models.CharField(_('Encrypted captcha'), max_length=50)
     created_at = models.DateTimeField(_('Created at'), default=timezone.now, db_index=True)
 

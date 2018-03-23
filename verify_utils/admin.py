@@ -3,7 +3,7 @@ from verify_utils.models import CaptchaRecord, VerifyCodeRecord
 
 
 # Register your models here.
-class ShopUserAdmin(admin.ModelAdmin):
+class CaptchaRecordAdmin(admin.ModelAdmin):
     fields = ['client_ip', 'captcha', 'encripted_captcha', 'created_at']
 
 admin.site.register(CaptchaRecord, CaptchaRecordAdmin)

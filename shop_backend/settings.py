@@ -142,7 +142,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 # 静态文件由nginx提供了，并且在HTML文件中写链接，不用django模板，所以此处不用配置
-# STATIC_URL = os.path.join(BASE_DIR, 'shop_frontend/dist/')
+STATIC_URL = os.path.join(BASE_DIR, 'shop_frontend/static/')
 
 # REST_FRAMEWORK settings
 REST_FRAMEWORK = {
@@ -165,13 +165,12 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
-# AUTH_USER_MODEL = 'user_manage.ShopUser'
+AUTH_USER_MODEL = 'user_manage.ShopUser'
 # LOGIN_REDIRECT_URL Default: '/accounts/profile/'
 LOGIN_REDIRECT_URL = '/'
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
-SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/logged_out'
 AUTHENTICATION_BACKENDS = [
-    # 'user_manage.backends.ModelBackend',
+    'user_manage.backends.EmailModelBackend',
+    'user_manage.backends.CellPhoneModelBackend',
 
     # Social OAuth2 backends
     'social_core.backends.github.GithubOAuth2',
@@ -209,6 +208,8 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # https://github.com/PhilipGarnero/django-rest-framework-social-oauth2
 # Will not be updated in the pipeline process
 SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['username']
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/logged_out'
 
 SOCIAL_AUTH_GITHUB_KEY = 'b19f4ff7146560185f3b'
 SOCIAL_AUTH_GITHUB_SECRET = '39b78edc6726ce2bd19540452511ceb307ac4cd3'

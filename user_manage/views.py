@@ -1,7 +1,7 @@
 import hashlib
 import json
 from django.http import HttpResponse
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, logout as core_logout
 from rest_framework import viewsets, authentication, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -22,6 +22,11 @@ def home(request):
     # print(social_accounts[0].extra_data)
     # return HttpResponse(social_accounts[0].extra_data)
     return HttpResponse('user :%s' % user.username)
+
+def logout(request):
+    # 千万别重名，否则死循环
+    core_logout(request)
+    return HttpResponse('logged out')
 
 def logged_out(request):
     return HttpResponse('logged out')

@@ -12,4 +12,7 @@ Shop开发记录
 2018-02-13
   调试微信的OAuth2登录最后发现，social_core/backends/weixin.py文件中AUTHORIZATION_URL地址不对，参考微信官方文档修改后即可登录成功。
 
+2018-03-26
+  https://www.zhihu.com/question/22991085
+  微信扫码登录的开发权限需要在微信开放平台中进行企业资质认证（个人用户无法获得）
 

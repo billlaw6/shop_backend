@@ -14,9 +14,12 @@
 #
 
 from django.db import models
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import AbstractUser
 from social_django.models import UserSocialAuth
+from pypinyin import lazy_pinyin, Style
 
 
 # Create your models here.
@@ -42,3 +45,39 @@ class ShopUser(AbstractUser):
     class Meta:
         verbose_name = _('Shop user')
         verbose_name_plural = _('Shop users')
+
+
+class Group(models.Model):
+    name = models.CharField(max_length=128)
+    pinyin = models.CharField(max_length=50, blank=True, null=False, default='')
+    py = models.CharField(max_length=50, blank=True, null=False, default='')
+    members = models.ManyToManyField(
+        ShopUser,
+        through='Membership',
+        through_fields=('group', 'shop_user'),
+    )
+    created_at = models.DateTimeField(_('created_at'), auto_now=True)
+    created_by = models.ForeignKey(get_user_model(),
+                                   related_name='created_groups')
+
+    def save(self, *args, **kwargs):
+        self.pinyin = ''.join(lazy_pinyin(self.name))
+        self.py = ''.join(lazy_pinyin(self.name, style=Style.FIRST_LETTER))
+        super(Group, self).save(*args, **kwargs)
+
+    class Meta:
+        ordering = ('created_at',)
+
+    def __str__(self):
+        return self.name
+
+
+class Membership(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    shop_user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    inviter = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="membership_invites",
+    )
+    invite_reason = models.CharField(max_length=128)

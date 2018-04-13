@@ -42,10 +42,10 @@ def weixin_token_check(request):
     signature = request.GET.get('signature', 'signature')
     echostr = request.GET.get('echostr', 'echostr')
     tmp_arr = sorted([timestamp, nonce, token])
-    tmp_str = ''.join(tmpArr)
-    hash_str = hashlib.sha1(tmpStr.encode("utf8"))
+    tmp_str = ''.join(tmp_arr)
+    hash_str = hashlib.sha1(tmp_str.encode("utf8"))
     # print(hash_str.hexdigest())
-    if signature == hashStr.hexdigest():
+    if signature == hash_str.hexdigest():
         return HttpResponse(echostr)
     else:
         return HttpResponse('no match')
@@ -61,14 +61,14 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
 
-# class UserInfo(APIView):
-#     """
-#     返回当前登录用户信息
-#     * Require token authentication.
-#     * Only authenticated users are able to access thie view
-#     """
-#     authentication_classes = (authentication.SessionAuthentication, authentication.TokenAuthentication,)
-#     permission_classes = [IsAuthenticated]
-#     def get(self, request, format=None):
-#         serializer = UserSerializer(request.user, context={'request': request})
-#         return Response(JSONRenderer().render(serializer.data))
+class UserInfo(APIView):
+    """
+    返回当前登录用户信息
+    * Require token authentication.
+    * Only authenticated users are able to access thie view
+    """
+    authentication_classes = (authentication.SessionAuthentication, authentication.TokenAuthentication,)
+    permission_classes = [IsAuthenticated]
+    def get(self, request, format=None):
+        serializer = UserSerializer(request.user, context={'request': request})
+        return Response(JSONRenderer().render(serializer.data))

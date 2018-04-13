@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     # My apps
+    'weixin.apps.WeixinConfig',
     'dict_manage.apps.DictManageConfig',
     'user_manage.apps.UserManageConfig',
     'verify_utils.apps.VerifyUtilsConfig',
@@ -300,3 +301,6 @@ LOGGING = {
 #         }
 #     }
 # }
+
+WEIXIN_APPID = 'wx4a32725dfd171687'
+WEIXIN_APPSECRET = '14123aca2110ec62e097ab8c1cb2734d'

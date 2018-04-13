@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 
 from django.contrib.auth import get_user_model
-from user_manage.models import ShopUser
+from user_manage.models import ShopUser, Group
 
 
 # Register your models here.
@@ -14,3 +14,9 @@ class ShopUserAdmin(admin.ModelAdmin):
 
 # admin.site.unregister(User)
 admin.site.register(get_user_model(), ShopUserAdmin)
+
+
+class GroupAdmin(admin.ModelAdmin):
+    fields = ['name', 'pinyin', 'py']
+
+admin.site.register(Group, GroupAdmin)

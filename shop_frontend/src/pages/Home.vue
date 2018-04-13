@@ -46,6 +46,9 @@
       </Header>
       <Layout :style="{padding: '0 24px 24px'}">
         <Content :style="{padding: '24px', minHeight: '280px', background: '#fff'}">
+        <weixin-user-info openid='oxpwht2d0SuyiTBqUSBHojho6Tn8'></weixin-user-info> 
+        <h1>User List</h1>
+        <weixin-user-list next_openid=''></weixin-user-list> 
         <!--
           <Carousel v-model="value2" 
                   :height="setting.height"
@@ -78,7 +81,9 @@
             <h1>Consectetur eaque ex ipsam soluta?</h1>
             Dolor eveniet quisquam quidem vitae autem, aliquid delectus, rem fuga aspernatur quaerat molestias alias molestiae! Ab rem temporibus expedita illo fugiat eos non. Neque ipsum quam nam sed in incidunt!
           </article>
+          <!--
           <web-camera></web-camera>
+          -->
         </Content>
       </Layout>
       <Footer class="layout-footer-center">2011-2016 &copy; TalkingData</Footer>
@@ -88,11 +93,15 @@
 
 <script>
   import WebCamera from '../components/WebCamera.vue'
+  import WeixinUserInfo from '../components/WeixinUserInfo.vue'
+  import WeixinUserList from '../components/WeixinUserList.vue'
   import { mapState } from 'vuex'
 
   export default {
     components: {
-      WebCamera
+      WebCamera,
+      WeixinUserInfo,
+      WeixinUserList
     },
     data () {
       return {

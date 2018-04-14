@@ -143,7 +143,11 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 # 静态文件由nginx提供了，并且在HTML文件中写链接，不用django模板，所以此处不用配置
-STATIC_URL = os.path.join(BASE_DIR, 'shop_frontend/static/')
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'shop_frontend/dist/')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'shop_frontend/dist/static')
+]
 
 # REST_FRAMEWORK settings
 REST_FRAMEWORK = {

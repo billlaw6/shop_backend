@@ -22,6 +22,7 @@ urlpatterns = [
     # ex: /weixin/
     url(r'^$', views.WeChatAutoReply.as_view(), name='we_chat'),
     # ex: /weixin/user_list
+    url(r'^menu/$', views.WeChatMenu.as_view(), name='menu'),
     url(r'^user_list/$', views.UserList.as_view(), name='user_list'),
     url(r'^user_info/$', views.UserInfo.as_view(), name='user_info'),
     url(r'^batch_user_info/$', views.BatchUserInfo.as_view(), name='batch_user_info'),

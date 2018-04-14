@@ -74,6 +74,21 @@ class WeChatAutoReply(View):
         return HttpResponse(message, content_type='application/xml')
 
 
+class WeChatMenu(View):
+    """
+    微信公众号菜单页
+    """
+    @csrf_exempt
+    def dispatch(self, *args, **kwargs):
+        return super(WeChatMenu, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        """
+        """
+        print("menu 1")
+        return render(request, 'index.html')
+
+
 class UserList(View):
     """
     返回json格式的关注了公众号的用户openid列表
@@ -130,6 +145,7 @@ class UserInfo(View):
         user_api = UserAPI(tg.get_token().access_token)
         user_info= user_api.get_user_info(openid=data['openid'])
         return HttpResponse(user_info, content_type='application/json')
+
 
 class BatchUserInfo(View):
     """

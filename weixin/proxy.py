@@ -110,7 +110,8 @@ class MessageEventHandler(object):
             result['to_user'] = tree.find('ToUserName').text
             result['create_time'] = tree.find('CreateTime').text
             result['msg_type'] = tree.find('MsgType').text
-            result['msg_id'] = tree.find('MsgId').text
+            if tree.find('MsgId') is not None:
+                result['msg_id'] = tree.find('MsgId').text
             if result['msg_type'] == 'text':
                 result['content'] = tree.find('Content').text
             elif result['msg_type'] == 'image':
@@ -278,12 +279,15 @@ class MenuAPI(object):
         # print(url)
         if json_data is None:
             # 无参数时用默认菜单
-            button1 = {'type':'click', 'name':'我', 'key':'me'}
-            button2_sub1 = {'type':'view', 'name':'你', 'url': 'http://123.56.115.20:8000'}
-            button2_sub2 = {'type':'view', 'name':'他', 'url': 'http://123.56.115.20:8000'}
-            button2_sub3 = {'type':'click', 'name':'赞', 'key': 'good'}
-            button2 = {'name': '菜单', 'sub_button': [button2_sub1,button2_sub2,button2_sub3]}
-            button3 = {'name': '菜单', 'sub_button': [button2_sub1,button2_sub2,button2_sub3]}
+            button1 = {'type':'view', 'name':'微官网', 'url':'http://123.56.115.20:8080/#/home'}
+            button2_sub1 = {'type':'view', 'name':'我的订单', 'url': 'http://123.56.115.20:8080/#/my_order'}
+            button2_sub2 = {'type':'view', 'name':'我的礼券', 'url': 'http://123.56.115.20:8080/#/my_coupon'}
+            button2_sub3 = {'type':'view', 'name':'我的优享', 'url': 'http://123.56.115.20:8080/#/my_info'}
+            button2 = {'name': '个人专区', 'sub_button': [button2_sub1,button2_sub2,button2_sub3]}
+            button3_sub1 = {'type':'view', 'name':'你', 'url': 'http://123.56.115.20:8080/#/home'}
+            button3_sub2 = {'type':'view', 'name':'他', 'url': 'http://123.56.115.20:8080/#/shop'}
+            button3_sub3 = {'type':'click', 'name':'赞', 'key': 'good'}
+            button3 = {'name': '分享有礼', 'sub_button': [button3_sub1,button3_sub2,button3_sub3]}
             buttons = {'button':[button1,button2,button3]}
             json_data = json.dumps(buttons, ensure_ascii=False)
         try:
@@ -702,6 +706,92 @@ class UserAPI(object):
         json_data = { 'openid_list': ['openid1', 'openid2'...] }
         """
         url = """https://api.weixin.qq.com/cgi-bin/tags/members/batchunblacklist?access_token={token}""".format(token=self.access_token)
+        try:
+            r = requests.post(url, json_data.encode('utf-8'))
+            return r
+        except Exception as e:
+            print(e)
+            raise e
+
+
+class MerchantAPI(object):
+    """
+    微信门店商品管理接口
+    待写
+    """
+    def __init__(self, access_token=None, *args, **kwargs):
+        if access_token is None:
+            raise InvalidTokenException('Invalid access token')
+        self.access_token = access_token
+
+    def create_merchant(self, json_data=None, *args, **kwargs):
+        """
+        """
+        url = """https://api.weixin.qq.com/merchant/create?access_token={}""".format(self.access_token)
+        try:
+            r = requests.post(url, json_data.encode('utf-8'))
+            return r
+        except Exception as e:
+            print(e)
+            raise e
+
+    def delete_merchant(self, json_data=None, *args, **kwargs):
+        """
+        json_data = { "product_id": "alsdkfjasldfjs" }
+        """
+        url = """https://api.weixin.qq.com/merchant/del?access_token={}""".format(self.access_token)
+        try:
+            r = requests.post(url, json_data.encode('utf-8'))
+            return r
+        except Exception as e:
+            print(e)
+            raise e
+
+    def update_merchant(self, json_data=None, *args, **kwargs):
+        """
+        """
+        url = """https://api.weixin.qq.com/merchant/update?access_token={}""".format(self.access_token)
+        try:
+            r = requests.post(url, json_data.encode('utf-8'))
+            return r
+        except Exception as e:
+            print(e)
+            raise e
+
+    def get_merchant(self, json_data=None, *args, **kwargs):
+        """
+        """
+        url = """https://api.weixin.qq.com/merchant/get?access_token={}""".format(self.access_token)
+        if json_data is None:
+            try:
+                r = requests.get(url)
+                return r
+            except Exception as e:
+                print(e)
+                raise e
+        else:
+            try:
+                r = requests.post(url, json_data.encode('utf-8'))
+                return r
+            except Exception as e:
+                print(e)
+                raise e
+
+    def get_merchant_by_status(self, json_data=None, *args, **kwargs):
+        """
+        """
+        url = """https://api.weixin.qq.com/merchant/getbystatus?access_token={}""".format(self.access_token)
+        try:
+            r = requests.post(url, json_data.encode('utf-8'))
+            return r
+        except Exception as e:
+            print(e)
+            raise e
+
+    def mod_product_status(self, json_data=None,  *args, **kwargs):
+        """
+        """
+        url = """https://api.weixin.qq.com/merchant/modproductstatus?access_token={}""".format(self.access_token)
         try:
             r = requests.post(url, json_data.encode('utf-8'))
             return r

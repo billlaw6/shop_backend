@@ -146,7 +146,7 @@ USE_TZ = False
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'shop_frontend/dist/')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'shop_frontend/dist/static')
+    os.path.join(BASE_DIR, 'shop_frontend/dist/static/')
 ]
 
 # REST_FRAMEWORK settings
@@ -164,7 +164,7 @@ REST_FRAMEWORK = {
         # or allow read-only access for unauthenticated users.
         # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
         # 'rest_framework.permissions.IsAdminUser',
-        'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10

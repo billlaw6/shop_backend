@@ -1,10 +1,5 @@
 <template>
   <div>
-    UserList
-    <div>{{userList.count}}</div>
-    <div>{{userList.total}}</div>
-    <div>{{userList.data}}</div>
-    <div>{{userList.next_openid}}</div>
     <Table :columns="columns" :data="data" size="small" ref="table"></Table>
     <br>
     <Button type="primary" size="large" @click="exportData(1)"><Icon type="iso-download-outline"></Icon>Export source data</Button>
@@ -32,42 +27,50 @@
           {
             'title': '国家',
             'key': 'country',
-            'fixed': 'left',
-            'width': 200
+            'fixed': 'left'
           },
           {
             'title': '省',
             'key': 'province',
             'fixed': 'left',
             'sortable': true,
-            'width': 200,
             filters: [
               {
                 label: '北京',
-                value: '北京'
+                value: 'bj'
+              },
+              {
+                label: '上海',
+                value: 'sh'
               }
-            ]
+            ],
+            filterMultiple: true,
+            filterMethod (value, row) {
+              // 比较时注意变量类型
+              if (value === 'bj') {
+                return row.province === '北京'
+              } else if (value === 'sh') {
+                return row.sex === '上海'
+              }
+            }
           },
           {
             'title': '城市',
             'key': 'city',
             'fixed': 'left',
-            'sortable': true,
-            'width': 200
+            'sortable': true
           },
           {
             'title': '昵称',
             'key': 'nickname',
             'fixed': 'left',
-            'sortable': true,
-            'width': 200
+            'sortable': true
           },
           {
             'title': '性别',
             'key': 'sex',
             'fixed': 'left',
             'sortable': true,
-            'width': 200,
             filters: [
               {
                 label: '男',

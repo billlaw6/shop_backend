@@ -26,6 +26,9 @@ class Product(models.Model):
     py = models.CharField(max_length=64, blank=True, null=False, default='')
     brand = models.CharField(_('brand'), max_length=64, null=False, default='',
                              blank=True)
+    # 这里带一张主图片，减少请求次数或关联查询
+    image = models.ImageField(_('image'), upload_to='shop_frontend/dist/static/img',
+                              blank=False, null=False)
     price = models.DecimalField(_('price'), max_digits=9, decimal_places=2,
                                 default=0.00)
     sale_price = models.DecimalField(_('sale_price'), max_digits=9,

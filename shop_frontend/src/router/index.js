@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 const Home = resolve => require(['@/pages/Home.vue'], resolve)
+const Shop = resolve => require(['@/pages/Shop.vue'], resolve)
 const Product = resolve => require(['@/pages/Product.vue'], resolve)
 const Login = resolve => require(['@/pages/Login.vue'], resolve)
 const OauthLogin = resolve => require(['@/pages/OauthLogin.vue'], resolve)
@@ -16,6 +17,7 @@ const p404 = resolve => require(['@/pages/404.vue'], resolve)
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/home',
@@ -26,8 +28,16 @@ export default new Router({
       }
     },
     {
-      path: '/product',
+      path: '/shop',
+      name: 'shop',
+      component: Shop,
+      meta: {
+        hidden: false
+      }
+    },
+    {
       name: 'product',
+      path: '/product/:id',
       component: Product,
       meta: {
         hidden: false

@@ -1,5 +1,8 @@
 <template>
   <div class="products">
+    Product
+    <h1> {{ $route.params.id }} </h1>
+    <product-detail></product-detail>
     <div class="product">
       <div class="picture">
         <img src="" alt="1">
@@ -46,11 +49,13 @@
 <script>
   import TimerBtn from '../components/TimerBtn.vue'
   import Captcha from '../components/Captcha.vue'
+  import ProductDetail from '../components/ProductDetail.vue'
 
   export default {
     components: {
       TimerBtn,
-      Captcha
+      Captcha,
+      ProductDetail
     },
     data () {
       return {

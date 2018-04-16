@@ -50,7 +50,7 @@ urlpatterns = [
     url(r'^auth/', include('rest_framework_social_oauth2.urls')),
 
     # Entry URL Vue combine
-    url(r'^$', TemplateView.as_view(template_name="index.html")),
+    # url(r'^$', TemplateView.as_view(template_name="index.html")),
 
     # My urls
     url(r'^user_manage/', include('user_manage.urls')),

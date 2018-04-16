@@ -1,55 +1,14 @@
 <template>
   <div class="layout">
-    <link rel="prefetch" href="http://123.56.115.20:8080/#/login">
+    <head>
+      <title>欢迎光临正岩苔茶微官网</title>
+    </head>
     <Layout>
-      <Header class="layout-header-bar">
-        <Menu mode="horizontal" theme="primary" active-name="1" :accordion="true">
-          <MenuItem name="logo">
-            <div class="layout-logo">
-              <Icon type="home"></Icon>主页
-            </div>
-          </MenuItem>
-          <!-- 对已登录用户显示用户信息 -->
-          <div class="account-info">
-            <template v-if="user">
-              <MenuItem name="userInfo">
-                <Dropdown trigger="click" placement="bottom-end" style="margin-left: 20px">
-                  <a href="javascript:void(0)">
-                    {{ user.username }}
-                    <Avatar src="../assets/logo.png" alt="Logo"/>
-                    <Icon type="arrow-down-b"></Icon>
-                  </a>
-                  <DropdownMenu slot="list">
-                    <DropdownItem>修改密码</DropdownItem>
-                    <DropdownItem v-on:click="logout">退出</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </MenuItem>
-              <MenuItem name="msgInfo">
-                <Icon type="ios-navigate"></Icon>
-                消息中心
-              </MenuItem>
-            </template>
-            <template v-else>
-              <MenuItem name="register">
-                您好！
-                <Icon type="person-add"></Icon>
-                免费注册 
-              </MenuItem>
-              <MenuItem name="login">
-                <Icon type="ios-play"></Icon>
-                直接登录
-              </MenuItem>
-            </template>
-          </div>
-        </Menu>
-      </Header>
       <Layout :style="{padding: '0 24px 24px'}">
         <Content :style="{padding: '24px', minHeight: '280px', background: '#fff'}">
-        <weixin-user-info openid='oxpwht2d0SuyiTBqUSBHojho6Tn8'></weixin-user-info> 
+
         <h1>User List</h1>
         <weixin-user-list next_openid=''></weixin-user-list> 
-        <!--
           <Carousel v-model="value2" 
                   :height="setting.height"
                   :loop="setting.loop"
@@ -76,7 +35,6 @@
               </div>
             </CarouselItem>
           </Carousel>
-         -->
           <article>
             <h1>Consectetur eaque ex ipsam soluta?</h1>
             Dolor eveniet quisquam quidem vitae autem, aliquid delectus, rem fuga aspernatur quaerat molestias alias molestiae! Ab rem temporibus expedita illo fugiat eos non. Neque ipsum quam nam sed in incidunt!

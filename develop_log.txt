@@ -16,3 +16,7 @@ Shop开发记录
   https://www.zhihu.com/question/22991085
   微信扫码登录的开发权限需要在微信开放平台中进行企业资质认证（个人用户无法获得）
 
+2018-04-18
+  做商城界面时页面设计排版的短板卡得我很难受，还好GITHUB上有无私的开源者。参考vue2-shop和vivo-shop设计，UI框架尝试使用mint ui。
+  https://github.com/nemo-tree/vue2-shop
+  https://github.com/Mynameisfwk/vivo-shop

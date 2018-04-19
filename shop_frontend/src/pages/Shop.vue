@@ -5,6 +5,9 @@
       </Header>
       <Layout :style="{padding: '0 24px 24px'}">
         <Content :style="{padding: '24px', minHeight: '280px', background: '#fff'}">
+          <img src="../assets/WechatIMG7.jpeg" alt="banner1">
+          <img src="../assets/WechatIMG8.jpeg" alt="banner1">
+          <vue-table></vue-table>
           <product-list></product-list>
         </Content>
       </Layout>
@@ -15,11 +18,13 @@
 
 <script>
   import ProductList from '../components/ProductList.vue'
+  import VueTable from '../components/VueTable.vue'
   import { mapState } from 'vuex'
 
   export default {
     components: {
-      ProductList
+      ProductList,
+      VueTable
     },
     data () {
       return {
@@ -57,26 +62,9 @@
 </script>
 
 <style lang="stylus" scoped>
-  @import '../styles/vars'
-  .layout
-    border: 1px solid #d7dde4
-    background: Primary
-    position: relative
-    border-radius: 4px
-    overflow: hidden
+  @import '../common/vars'
+  img
     width: 100%
-  .layout-header-bar
-    background-color: Primary
-  .layout-logo
-    border-radius: 3px
-    float: left
-    position: relative
-    img
-      vertical-align: middle
-  .account-info
-    float: right
-    position: relative
-  .layout-footer-center
-    text-align: center
+    height: auto
 </style>
 

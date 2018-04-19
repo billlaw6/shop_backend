@@ -110,7 +110,7 @@
 </script>
 
 <style lang="stylus" scoped>
-  @import '../styles/vars'
+  @import '../common/vars'
   .layout
     border: 1px solid #d7dde4
     background: Primary

@@ -2,38 +2,19 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import router from './router'
-import iView from 'iview'
-import mavonEditor from 'mavon-editor'
-// import 'iview/dist/styles/iviews.css'
-// import '../node_modules/.2.8.0@iview/dist/styles/iview.css'
-// import '../node_modules/_iview@2.8.0@iview/dist/styles/iview.css'
-import '../node_modules/_iview@2.9.0@iview/dist/styles/iview.css'
-import '../node_modules/mavon-editor/dist/css/index.css'
+// import mavonEditor from 'mavon-editor'
+// import '../node_modules/mavon-editor/dist/css/index.css'
 import store from './vuex-store/index'
-import axios from 'axios'
-import { currency } from './common/filters'
+import api from '@/http/api.js'       // 基于axios的http请求
+import Mint from 'mint-ui' // 饿了么移动端开源UI框架
+import 'mint-ui/lib/style.css'
 import App from './App'
 
-Vue.filter('currency', currency)
-Vue.use(iView)
-Vue.use(mavonEditor)
+require('@/http/mock') // 启用mock数据，只能放import语句后面
 
-// 如果本地有Token则每次请求都带上Token
-axios.interceptors.request.use(
-  config => {
-    let accessToken = window.sessionStorage.accessToken
-    if (accessToken) {
-      // console.log('setting accessToken to: ' + accessToken)
-      config.headers.Authorization = `Token ${accessToken}`
-    } else {
-      // console.log('No accessToken')
-    }
-    return config
-  },
-  err => {
-    return Promise.reject(err)
-  }
-)
+Vue.use(Mint)
+Vue.config.productionTip = false
+Vue.prototype.$api = api // this.$api即是http里的api
 
 router.beforeEach((to, from, next) => {
   // 判断该路由是否需要登录权限
@@ -64,8 +45,6 @@ router.beforeEach((to, from, next) => {
     next()
   }
 })
-
-Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({

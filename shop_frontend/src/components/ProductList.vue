@@ -1,5 +1,9 @@
 <template>
   <div>
+    <Input size="large" type="text" v-model="keyword" placeholder="搜索" :autofocus=true></Input>
+    <div @click="sort_by_price_desc()">按价格降序</div>
+    <div @click="sort_by_price_asce()">按价格升序</div>
+    <div @click="sort_by_online_desc()">按上架时间</div>
     <Row>
       <Col v-for="(product, index) in productList.results" :key="index" span="12">
         <router-link :to='"/product/"+product.id'>
@@ -7,6 +11,7 @@
           <div class="product-name">{{ product.name }}</div>
         </router-link>
         <div class="product-price">{{ product.price | currency }}</div>
+        <div class="updated_at">{{ product.updated_at.replace('T', ' ').slice(0, 16) }}</div>
       </Col>
     </Row>
   </div>
@@ -33,6 +38,21 @@
         ).catch((error) => {
           console.log('catched in productList:' + error)
         })
+      },
+      sort_by_price_desc () {
+        return this.productList.results.sort(function (a, b) {
+          return b.price - a.price
+        })
+      },
+      sort_by_price_asce () {
+        return this.productList.results.sort(function (a, b) {
+          return a.price - b.price
+        })
+      },
+      sort_by_online_desc () {
+        return this.productList.results.sort(function (a, b) {
+          return Date.parse(b.updated_at) - Date.parse(a.updated_at)
+        })
       }
     },
     filters: {
@@ -49,5 +69,14 @@
 </script>
 
 <style lang="stylus" scoped>
-
+  @import '../common/vars'
+  img
+    width: 100%
+    height: auto
+  .product-name
+    color: $content-color
+    font-size: $font-size
+  .product-price
+    color: $error-color
+    font-size: $font-size
 </style>

@@ -1,15 +1,17 @@
 <template>
   <div>
-    <Table :columns="columns" :data="data" size="small" ref="table"></Table>
+    <Table :columns="columns" :data="tableData" size="small" ref="table"></Table>
     <br>
     <Button type="primary" size="large" @click="exportData(1)"><Icon type="iso-download-outline"></Icon>Export source data</Button>
     <Button type="primary" size="large" @click="exportData(2)"><Icon type="iso-download-outline"></Icon>Export sorting and filtered data</Button>
     <Button type="primary" size="large" @click="exportData(3)"><Icon type="iso-download-outline"></Icon>Export custom data</Button>
+    <vue-table :data="tableData" :columns="columns"></vue-table>
   </div>
 </template>
 
 <script>
   import { weixinUserList, weixinBatchUserInfo } from '../api/api'
+  import VueTable from '../components/VueTable.vue'
 
   export default {
     name: 'WeixinUserList',
@@ -20,16 +22,21 @@
         default: ''
       }
     },
+    components: {
+      VueTable
+    },
     data () {
       return {
         userList: {},
         columns: [
           {
+            'name': '国家',
             'title': '国家',
             'key': 'country',
             'fixed': 'left'
           },
           {
+            'name': '省',
             'title': '省',
             'key': 'province',
             'fixed': 'left',
@@ -55,18 +62,21 @@
             }
           },
           {
+            'name': '城市',
             'title': '城市',
             'key': 'city',
             'fixed': 'left',
             'sortable': true
           },
           {
+            'name': '昵称',
             'title': '昵称',
             'key': 'nickname',
             'fixed': 'left',
             'sortable': true
           },
           {
+            'name': '性别',
             'title': '性别',
             'key': 'sex',
             'fixed': 'left',
@@ -92,7 +102,8 @@
             }
           }
         ],
-        data: []
+        tableData: [],
+        vueTableData: {}
       }
     },
     methods: {
@@ -105,7 +116,8 @@
             weixinBatchUserInfo(this.userList).then(
               (res) => {
                 console.log(res)
-                this.data = res.data.user_info_list
+                this.tableData = res.data.user_info_list
+                this.vueTableData.data = res.data.user_info_list
               },
               (error) => {
                 console.log(error)

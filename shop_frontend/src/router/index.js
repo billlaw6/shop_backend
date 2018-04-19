@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+const Index = resolve => require(['@/pages/Index.vue'], resolve)
 const Home = resolve => require(['@/pages/Home.vue'], resolve)
 const Shop = resolve => require(['@/pages/Shop.vue'], resolve)
 const Product = resolve => require(['@/pages/Product.vue'], resolve)
@@ -19,6 +20,14 @@ Vue.use(Router)
 export default new Router({
   mode: 'history',
   routes: [
+    {
+      path: '/',
+      name: 'index',
+      component: Index,
+      meta: {
+        hidden: false
+      }
+    },
     {
       path: '/home',
       name: 'home',

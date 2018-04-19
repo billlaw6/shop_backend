@@ -69,14 +69,4 @@
 </script>
 
 <style lang="stylus" scoped>
-  @import '../common/vars'
-  img
-    width: 100%
-    height: auto
-  .product-name
-    color: $content-color
-    font-size: $font-size
-  .product-price
-    color: $error-color
-    font-size: $font-size
 </style>

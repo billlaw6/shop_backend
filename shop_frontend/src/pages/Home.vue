@@ -110,26 +110,5 @@
 </script>
 
 <style lang="stylus" scoped>
-  @import '../common/vars'
-  .layout
-    border: 1px solid #d7dde4
-    background: Primary
-    position: relative
-    border-radius: 4px
-    overflow: hidden
-    width: 100%
-  .layout-header-bar
-    background-color: Primary
-  .layout-logo
-    border-radius: 3px
-    float: left
-    position: relative
-    img
-      vertical-align: middle
-  .account-info
-    float: right
-    position: relative
-  .layout-footer-center
-    text-align: center
 </style>
 

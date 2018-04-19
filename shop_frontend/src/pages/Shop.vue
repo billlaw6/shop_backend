@@ -5,8 +5,6 @@
       </Header>
       <Layout :style="{padding: '0 24px 24px'}">
         <Content :style="{padding: '24px', minHeight: '280px', background: '#fff'}">
-          <img src="../assets/WechatIMG7.jpeg" alt="banner1">
-          <img src="../assets/WechatIMG8.jpeg" alt="banner1">
           <vue-table></vue-table>
           <product-list></product-list>
         </Content>

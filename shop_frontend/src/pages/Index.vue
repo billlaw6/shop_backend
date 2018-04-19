@@ -49,11 +49,10 @@
 </script>
 
 <style lang="stylus" scoped>
-  @import '../common/vars.styl'
+  @import '../common/vars'
   .index
     width: 100%
     padding-bottom: 14vw
     background-color: $background-color
-    font: $background-color
 </style>
 

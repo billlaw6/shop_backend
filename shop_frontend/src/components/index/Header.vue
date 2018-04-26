@@ -11,8 +11,10 @@
 </script>
 
 <style lang="stylus" scoped>
-  .mt-header
+  @import '../../common/vars'
+  .mint-header
     padding: 6.8vw 4.8vw
     background-color: $background-color
-    color: $content-color
+    color: $content-color!important
+    i-font-size(font-size, 40px)
 </style>

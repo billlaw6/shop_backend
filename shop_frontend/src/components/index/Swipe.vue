@@ -13,6 +13,12 @@
 </script>
 
 <style lang="stylus" scoped>
-  .swiper
-    height: 500px
+  @import '../../common/vars'
+  .mint-swipe
+    width: 100%
+    height: 50vw
+    a, img
+      display: block
+      width: 100%
+      height: 100%
 </style>

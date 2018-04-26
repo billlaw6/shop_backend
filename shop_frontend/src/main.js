@@ -4,9 +4,11 @@ import Vue from 'vue'
 import router from './router'
 // import mavonEditor from 'mavon-editor'
 // import '../node_modules/mavon-editor/dist/css/index.css'
-import store from './vuex-store/index'
+// import store1 from './vuex-store/index'
+import store from '@/vuex-store/store'
 import api from '@/http/api.js'       // 基于axios的http请求
 import Mint from 'mint-ui' // 饿了么移动端开源UI框架
+import './assets/font-awesome-4.7.0/css/font-awesome.min.css'
 import 'mint-ui/lib/style.css'
 import App from './App'
 

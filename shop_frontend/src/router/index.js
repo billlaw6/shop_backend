@@ -1,6 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 const Index = resolve => require(['@/pages/Index.vue'], resolve)
+const Detail = resolve => require(['@/pages/Detail.vue'], resolve)
+const Cart = resolve => require(['@/pages/Cart.vue'], resolve)
+const Category = resolve => require(['@/pages/Category.vue'], resolve)
+const CategoryMain = resolve => require(['@/components/category/Main.vue'], resolve)
+const User = resolve => require(['@/pages/User.vue'], resolve)
 const Home = resolve => require(['@/pages/Home.vue'], resolve)
 const Shop = resolve => require(['@/pages/Shop.vue'], resolve)
 const Product = resolve => require(['@/pages/Product.vue'], resolve)
@@ -27,6 +32,44 @@ export default new Router({
       meta: {
         hidden: false
       }
+    },
+    {
+      path: '/detail',
+      name: 'detail',
+      component: Detail,
+      meta: {
+        hidden: false
+      }
+    },
+    {
+      path: '/category',
+      name: 'category',
+      component: Category,
+      redirect: '/category/all',
+      children: [{
+        path: '/category/:tab',
+        component: CategoryMain
+      }],
+      meta: {
+        hidden: false
+      }
+    },
+    {
+      path: '/cart',
+      name: 'cart',
+      component: Cart,
+      meta: {
+        hidden: false
+      }
+    },
+    {
+      path: '/user',
+      name: 'user',
+      component: User
+      // meta: {
+      //   requireAuth: true,
+      //   hidden: false
+      // }
     },
     {
       path: '/home',

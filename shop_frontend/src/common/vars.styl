@@ -12,6 +12,7 @@ $error-color = #ed3f14
 
 $title-color = #1c2438
 $content-color = #495060
+$checked-color = #ff4500
 $subcolor-color = #80848f
 $disabled-color = #bbbec4
 $border-color = #dddee1
@@ -29,6 +30,11 @@ i-vendor(prop, args)
   -moz-{prop}: args
   {prop}: args
 
+i-vendor-value(prop, value)
+  {prop}: -webkit- + 'value'
+  {prop}: -moz- + 'value'
+  {prop}: value
+
 border-radius()
   i-vendor('border-radius', arguments)
 
@@ -36,17 +42,17 @@ box-shadow()
   i-vendor('box-shadow', arguments)
 
 i-font-size(name, size)
-  {name}: round(size / 2)
+  {name}: round(size / 2)px
   [data-dpr="2"] &
-    {name}: size
+    {name}: size px
   [data-dpr="2.5"] &
-    {name}: round(size * 2.5 / 2)
+    {name}: round(size * 2.5 / 2) px
   [data-dpr="2.75"] &
-    {name}: round(size * 2.75 / 2)
+    {name}: round(size * 2.75 / 2) px
   [data-dpr="3"] &
-    {name}: round(size * 3 / 2)
+    {name}: round(size * 3 / 2) px
   [data-dpr="4"] &
-    {name}: size * 2
+    {name}: size * 2 px
 
 padding-top()
   padding-top: 6vw
@@ -64,7 +70,7 @@ border-top()
   i-font-size(border-top-width, 1)
 
 // 下边框
-f-border-bottom()
+border-bottom()
   border-bottom-color: rgba(185, 185, 185, .14)
   border-bottom-style: solid
   i-font-size(border-bottom-width, 1)

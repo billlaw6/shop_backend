@@ -17,7 +17,6 @@
 
 <style lang="stylus" scoped>
   @import '../../common/vars'
-  @import '../../assets/index/style.css'
 
   header
     background-color: #F8FCFF

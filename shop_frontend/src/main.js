@@ -2,46 +2,52 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import router from './router'
-// import mavonEditor from 'mavon-editor'
-// import '../node_modules/mavon-editor/dist/css/index.css'
-// import store1 from './vuex-store/index'
-import store from '@/vuex-store/store'
+import store from '@/vuex-store/index'
 import api from '@/http/api.js'       // 基于axios的http请求
-import Mint from 'mint-ui' // 饿了么移动端开源UI框架
-import './assets/font-awesome-4.7.0/css/font-awesome.min.css'
-import 'mint-ui/lib/style.css'
+// import Mint from 'mint-ui' // 饿了么移动端开源UI框架
+// import 'mint-ui/lib/style.css'
+import iView from 'iview'
+import 'iview/dist/styles/iview.css'
+import './assets/font-awesome-4.7.0/css/font-awesome.min.css' // 免费图标
 import App from './App'
 
-require('@/http/mock') // 启用mock数据，只能放import语句后面
+require('@/common/filters') // 启用mock数据，只能放import语句后面
+// require('@/http/mock') // 启用mock数据，只能放import语句后面
 
-Vue.use(Mint)
+// Vue.use(Mint)
+Vue.use(iView)
 Vue.config.productionTip = false
 Vue.prototype.$api = api // this.$api即是http里的api
 
 router.beforeEach((to, from, next) => {
-  // 判断该路由是否需要登录权限
   let accessToken = window.sessionStorage.getItem('accessToken')
   // window.sessionStorage.removeItem('user')
   let user = JSON.parse(window.sessionStorage.getItem('user'))
   let permissions = JSON.parse(window.sessionStorage.getItem('permissions'))
-  if (to.matched.some(record => record.meta.requireAuth)) {
-    // console.log('page require Authorization here')
-    if (accessToken && user) {
-      if (to.meta.permission === 'undefined') {
-        console.log(permissions.some(to.meta.permission))
-        next()
-      } else if (permissions.some(record => record.codename === to.meta.permission)) {
-        console.log('Has permission')
-        next()
+  // 判断该路由是否需要登录权限
+  if (to.meta.requireAuth) {
+    console.log('page require Authorization here')
+    // 判断用户是否有指定权限
+    if (to.matched.some(record => record.meta.requireAuth)) {
+      if (accessToken && user) {
+        if (to.meta.permission === 'undefined') {
+          console.log(permissions.some(to.meta.permission))
+          next()
+        } else if (permissions.some(record => record.codename === to.meta.permission)) {
+          console.log('Has permission')
+          next()
+        } else {
+          console.log('Lack of permission')
+          next({ path: from.path })
+        }
       } else {
-        console.log('Lack of permission')
-        next({ path: from.path })
+        next({
+          name: 'login',
+          query: { redirect: to.fullPath }
+        })
       }
     } else {
-      next({
-        name: 'login',
-        query: { redirect: to.fullPath }
-      })
+      next()
     }
   } else {
     next()

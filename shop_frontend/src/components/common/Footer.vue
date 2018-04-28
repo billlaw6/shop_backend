@@ -1,25 +1,6 @@
 <template lang="html">
   <!-- gotoRouter:点击后路由跳转到与id名相同的route.name所对应的路径 -->
-  <footer class="footer" @click.stop='gotoRouter'>
-    <mt-tabbar v-model="selected" fixed>
-    <mt-tab-item id="index">
-      <i slot="icon" class="icon-index"></i>
-        首页 
-    </mt-tab-item>
-    <mt-tab-item id="category">
-      <i slot="icon" class="icon-category"></i>
-        分类
-    </mt-tab-item>
-    <mt-tab-item id="cart">
-      <i slot="icon" class="icon-car"></i>
-        购物车
-    </mt-tab-item>
-    <mt-tab-item id="user">
-      <i class="fa fa-user-o fa-2x"></i>
-        我的
-    </mt-tab-item>
-  </mt-tabbar>
-  </footer>
+  <Footer class="layout-footer-center">2011-2016 &copy; TalkingData</Footer>
 </template>
 
 <script>
@@ -60,7 +41,6 @@
 
 <style lang="stylus" scoped>
   @import '../../common/vars'
-  @import '../../assets/index/style.css'
 
   .mint-tab-item-label:hover
     color:#333

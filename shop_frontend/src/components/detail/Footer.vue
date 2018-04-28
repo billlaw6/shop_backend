@@ -14,8 +14,6 @@
 </template>
 
 <script>
-  import { Toast, MessageBox } from 'mint-ui'
-
   export default {
     computed: {
       count () {

@@ -1,11 +1,25 @@
 import Mock from 'mockjs'
 let Random = Mock.Random
-let base = `http://api.com`
+let base = `http://123.56.115.20`
+let products = Mock.mock(`${base}/rest-api/products/`, {
+  'count|1-100': 1,
+  'results|10-100': [{
+    'id|+1': 1, // 属性值1用来确定类型
+    'name': '@name',
+    'pinyin|4': 'pinyin',
+    'price|99-9999': 100,
+    'sale_price|99-9999': 100,
+    'py|4': 'py',
+    'image': Random.image('200x200', '#dec4e0', '#333', 'png', ''),
+    'description': Random.paragraph()
+  }]
+})
+
 let index = Mock.mock(`${base}/index`, {
-  // "user|5-10": [{
+  // 'user|5-10': [{
   //   'name': '@cname', //中文名称
   //   'age|1-100': 100, //100以内随机整数  属性值100只用来确定类型
-  //   'birthday': '@date("yyyy-MM-dd")', //日期
+  //   'birthday': '@date('yyyy-MM-dd')', //日期
   //   'city': '@city(true)'//中国城市
   // }],
   'swiper|4': [
@@ -90,4 +104,4 @@ let category = Mock.mock('http://api.com/category', {
   }]
 })
 
-export {index, detail, category}
+export {products, index, detail, category}

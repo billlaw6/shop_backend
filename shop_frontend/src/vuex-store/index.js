@@ -5,13 +5,16 @@ import createLogger from 'vuex/dist/logger'
 import * as actions from './actions'
 import * as getters from './getters'
 import mutations from './mutations'
+
 import login from './modules/login'
+import detail from './modules/detail'
+import category from './modules/category'
 
 Vue.use(Vuex)
 
 // rootState
 const state = {
-  sitename: '小蜗牛直销管理系统',
+  sitename: '',
   baseUrl: 'http://localhost:8000',
   mediaRoot: 'http://localhost:8000/media/'
 }
@@ -24,7 +27,9 @@ export default new Vuex.Store({
   getters,
   actions,
   modules: {
-    login: login
+    login: login,
+    detail: detail,
+    category: category
   },
   strict: debug,
   plugins: debug ? [createLogger()] : []

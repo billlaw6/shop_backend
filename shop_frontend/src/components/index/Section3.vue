@@ -13,13 +13,13 @@
           </div>
           <p class="start">Starts at {{k.start}}</p>
         </div>
-        <router-link :to="{name:'分类页'}" class="section3-list-right">
+        <router-link :to="{name:'category'}" class="section3-list-right">
           <img v-lazy="k.imgPath">
           <span>${{k.price}}</span>
         </router-link>
       </li>
     </ul>
-    <router-link :to="{name:'分类页'}" class="section3-banner">
+    <router-link :to="{name:'category'}" class="section3-banner">
       <img v-lazy="section3.banner" alt="">
     </router-link>
   </section>

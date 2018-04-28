@@ -20,3 +20,7 @@ Shop开发记录
   做商城界面时页面设计排版的短板卡得我很难受，还好GITHUB上有无私的开源者。参考vue2-shop和vivo-shop设计，UI框架尝试使用mint ui。
   https://github.com/nemo-tree/vue2-shop
   https://github.com/Mynameisfwk/vivo-shop
+
+2018-04-28
+  基本框架搭好后突然发现mint-ui组件少得可怜，并且排版好像和UI组件库没关系，所以换回Iview组件库。
+

@@ -26,7 +26,7 @@ const formatSex = Vue.filter('formatSex', function (row, column) {
   return row.sex === 1 ? '男' : row.sex === 0 ? '女' : '未知'
 })
 
-const modifyImageUrl = Vue.filter('modifyImageUrl', function (data) {
+const maskImageUrl = Vue.filter('maskImageUrl', function (data) {
   // console.error(typeof data)
   if (typeof data === 'string') {
     // console.log('string')
@@ -46,4 +46,4 @@ const modifyImageUrl = Vue.filter('modifyImageUrl', function (data) {
   }
 })
 
-export default { formatSex, modifyImageUrl }
+export default { formatSex, maskImageUrl }

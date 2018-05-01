@@ -1,23 +1,14 @@
-<template lang="html">
-  <div class="wrap">
-    <v-header class="header">
-      <h1 slot="title">商品分类</h1>
-    </v-header>
-    <section class="view">
-      <v-aside :datas="allData"></v-aside>
-      <router-view :datas="allData"></router-view>
-    </section>
+<template>
+  <div class="category">
+    <index-footer></index-footer> 
   </div>
 </template>
 
 <script>
-  import Header from '@/components/common/Header.vue'
-  import Aside from '@/components/category/Aside.vue'
-  // import category from '@/http/mock.js' //模拟数据
+  import IndexFooter from '@/components/common/IndexFooter.vue'
   export default {
     components: {
-      'v-header': Header,
-      'v-aside': Aside
+      'index-footer': IndexFooter
     },
     data () {
       return {
@@ -38,7 +29,7 @@
 </script>
 
 <style lang="stylus" scoped>
-  .wrap
+  .category
     width: 100%
     height: 100%
     display: -webkit-box

@@ -1,2 +1,0 @@
-webpackJsonp([12],{wEzC:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var l={render:function(){var e=this.$createElement;return(this._self._c||e)("p",{staticStyle:{"font-size":"20px","text-align":"center",color:"rgb(192, 204, 218)"}},[this._v("No permission")])},staticRenderFns:[]},r=n("X4nt")(null,l,!1,null,null,null);t.default=r.exports}});
-//# sourceMappingURL=12.027bbb55503f767c54f8.js.map

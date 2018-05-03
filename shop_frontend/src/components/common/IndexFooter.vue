@@ -61,6 +61,7 @@
   @import '../../common/vars'
 
   .footer
+    height: 10vh
     width: 100vw
     position: fixed
     bottom: 1vh

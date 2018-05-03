@@ -1,28 +1,10 @@
 <template>
   <header class="index-header">
+    <head><title>欢迎光临正岩苔茶微官网</title></head>
     <Row>
-      <Col span="6" class="index">
-        <router-link to="">
-          <i class=""></i>
-          首页
-        </router-link>
-      </Col>
-      <Col span="6" class="category">
-        <router-link to="">
-          <i class=""></i>
-          分类 
-        </router-link>
-      </Col>
       <Col span="6">
-        <router-link to="cart">
-          <i class=""></i>
-          购物车
-        </router-link>
-      </Col>
-      <Col span="6">
-        <router-link to="user">
-          <i class=""></i>
-          我的
+        <router-link :to="{ name: 'index' }">
+          <img src="../../assets/logo.png" alt="Logo" class="logo"></img>
         </router-link>
       </Col>
     </Row>
@@ -38,14 +20,17 @@
   @import '../../common/vars'
   
   .index-header
+    height: 9vh
     width: 100vw
-    position: fixed
-    bottom: 0
-    header
-      width: 100%
-      div>div>a
-        i-vendor-value(display, flex)
-        color: red
-
+    top: 1vh
+    div
+      height: 100%
+      vertical-align: middle
+      // background-color: red
+      .logo
+        height: 100%
+        margin-left: 6px
+        // absolute才会限制在父级div下面
+        position: absolute
 </style>
 

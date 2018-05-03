@@ -1,26 +1,39 @@
 <template>
   <div class="index">
-    <head><title>欢迎光临正岩苔茶微官网</title></head>
+    <index-header></index-header> 
+    <v-service></v-service>
+    <v-carousel v-bind:datas="datas"></v-carousel>
+    <v-products v-bind:datas="datas"></v-products>
     <index-footer></index-footer> 
   </div>
 </template>
 
 <script>
+  import IndexHeader from '@/components/common/IndexHeader.vue'
   import IndexFooter from '@/components/common/IndexFooter.vue'
+  import Service from '@/components/index/Service.vue'
+  import Products from '@/components/index/Products.vue'
+  import Carousel from '@/components/index/Carousel.vue'
   // import { mapState } from 'vuex'
 
   export default {
     components: {
-      'index-footer': IndexFooter
+      'index-header': IndexHeader,
+      'index-footer': IndexFooter,
+      'v-service': Service,
+      'v-products': Products,
+      'v-carousel': Carousel
     },
     data () {
       return {
-        datas: '',
+        datas: {},
         loading: true
       }
     },
+    methods: {
+    },
     beforeCreate () {
-      console.log('getting data')
+      console.log(this.datas)
       this.$api({
         method: 'get',
         url: '/rest-api/products/'
@@ -30,8 +43,6 @@
       }).catch(function (error) {
         window.alert(error)
       })
-    },
-    methods: {
     }
   }
 </script>

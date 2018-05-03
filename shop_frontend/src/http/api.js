@@ -49,7 +49,6 @@ api.interceptors.response.use(function (response) {
   setTimeout(() => {
     // store.commit('SET_LOADING', false)
   }, 300)
-
   return response
 }, function (error) {
   // 对响应错误做点什么

@@ -1,29 +1,17 @@
 <template lang="html">
   <div class="detail">
-    <v-swipe></v-swipe>
-    <v-choose></v-choose>
-    <v-content></v-content>
-    <v-baseline></v-baseline>
-    <v-footer></v-footer>
+    <index-header></index-header> 
+    Detail
   </div>
 </template>
 
 <script>
-  import Swipe from '@/components/detail/Swipe.vue'
-  import Choose from '@/components/detail/Choose.vue'
-  import Content from '@/components/detail/Content.vue'
-  import Footer from '@/components/detail/Footer.vue'
-  import Baseline from '@/components/common/Baseline.vue'
+  import IndexHeader from '@/components/common/IndexHeader.vue'
 
   export default {
     components: {
-      'v-swipe': Swipe,
-      'v-choose': Choose,
-      'v-content': Content,
-      'v-footer': Footer,
-      'v-baseline': Baseline
+      'index-header': IndexHeader
     },
-
     beforeCreate () {
       this.$store.dispatch('setDatas')
     }

@@ -1,13 +1,16 @@
 <template>
   <div class="category">
+    <index-header></index-header> 
     <index-footer></index-footer> 
   </div>
 </template>
 
 <script>
+  import IndexHeader from '@/components/common/IndexHeader.vue'
   import IndexFooter from '@/components/common/IndexFooter.vue'
   export default {
     components: {
+      'index-header': IndexHeader,
       'index-footer': IndexFooter
     },
     data () {

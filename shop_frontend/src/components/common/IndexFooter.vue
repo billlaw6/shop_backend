@@ -64,7 +64,7 @@
     height: 10vh
     width: 100vw
     position: fixed
-    bottom: 1vh
+    bottom: 0.1vh
     div
       text-align: center
       color: green

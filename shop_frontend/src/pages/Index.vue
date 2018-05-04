@@ -2,8 +2,8 @@
   <div class="index">
     <index-header></index-header> 
     <v-service></v-service>
-    <v-carousel v-bind:datas="datas"></v-carousel>
-    <v-products v-bind:datas="datas"></v-products>
+    <v-carousel></v-carousel>
+    <v-products></v-products>
     <index-footer></index-footer> 
   </div>
 </template>
@@ -31,18 +31,6 @@
       }
     },
     methods: {
-    },
-    beforeCreate () {
-      console.log(this.datas)
-      this.$api({
-        method: 'get',
-        url: '/rest-api/products/'
-      }).then((response) => {
-        console.log(response.data)
-        this.datas = response.data
-      }).catch(function (error) {
-        window.alert(error)
-      })
     }
   }
 </script>

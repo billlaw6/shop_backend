@@ -8,6 +8,9 @@
 
 <script>
   export default {
+    beforeCreate () {
+      console.log('Service.vue creating')
+    }
   }
 </script>
 

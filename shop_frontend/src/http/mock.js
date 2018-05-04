@@ -3,7 +3,7 @@ let Random = Mock.Random
 let base = `http://123.56.115.20`
 let products = Mock.mock(`${base}/rest-api/products/`, {
   'count|1-100': 1,
-  'results|8-10': [{
+  'results|80-100': [{
     'id|+1': 1, // 属性值1用来确定类型
     'name': '@name',
     'pinyin|4': 'pinyin',

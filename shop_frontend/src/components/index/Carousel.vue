@@ -1,35 +1,52 @@
 <template lang="html">
-  <div class="hot-product">
-    <!-- 不加v-if="datas.results"的话会出现未赋值前就访问，TypeError: undefined is not an object (evaluating 'this.datas.results.forEach') -->
-    <Carousel class="product-list" v-if="datas.results">
-      <CarouselItem v-for="k in m_list" :key="k.id">
-        <router-link :to="{ name:'detail' }">
-          <!-- 懒加载值不能用filter，否则加载不了图片 -->
-          <img v-lazy="k.image" alt="">
-        </router-link>
-      </CarouselItem>
-    </Carousel>
-  </div>
+  <!-- 不加v-if="datas.results"的话会出现未赋值前就访问-->
+  <Carousel class="hot-product" v-if="datas.results">
+    <CarouselItem v-for="k in mList" :key="k.id">
+      <router-link :to="{ name:'detail' }">
+        <!-- 懒加载值不能用filter，否则加载不了图片 -->
+        <img v-lazy="k.image" alt="">
+      </router-link>
+    </CarouselItem>
+  </Carousel>
 </template>
 
 <script>
   // import { Lazyload } from 'mint-ui'
 
   export default {
-    props: {
-      datas: {
-        type: Object,
-        default: {}
+    // props: {
+    //   datas: {
+    //     type: Object,
+    //     default: {}
+    //   }
+    // },
+    data () {
+      return {
+        datas: {}
       }
     },
     computed: {
       // 此值不要一开始就用，否则会出现this.datas仍为undefined时导致的报错
-      m_list: function () {
+      mList: function () {
         this.datas.results.forEach((item, index, array) => {
           item['image'] = item['image'].replace('rest-api/products/shop_frontend/dist/', '')
         })
         return this.datas.results
       }
+    },
+    beforeCreate () {
+      console.log('Carousel.vue creating')
+      console.debug('datas before api:' + this.datas)
+      this.$api({
+        method: 'get',
+        url: '/rest-api/products/'
+      }).then((response) => {
+        console.debug('data gotten in Carousel:')
+        console.debug(response.data)
+        this.datas = response.data
+      }).catch(function (error) {
+        console.error(error)
+      })
     }
   }
 </script>

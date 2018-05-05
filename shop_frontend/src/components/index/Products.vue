@@ -1,9 +1,12 @@
 <template lang="html">
   <div class="product">
-    <!-- 不加v-if="datas.results"的话会出现未赋值前就访问-->
     <Row class="product-search">
       <Col span="10">
-        <AutoComplete v-model="keyword" :data="testData" :filter-method="filterList">
+        <AutoComplete v-model="keyword" placeholder="搜" icon="ios-search" :clearable="true">
+          <Option v-for="option in aList" :value="option.name" :key="option.id">
+            <span class="product-name">{{ option.name }}</span>
+            <span class="product-price">{{ option.price | currency }}</span>
+          </Option>
         </AutoComplete>
       </Col>
       <Col span="4">
@@ -14,9 +17,11 @@
     <!-- {{ mList }}<br/> -->
     <Row class="product-list">
       <Col span="6" v-for="item in mList.results" :key="item.id">
-        <div><img v-lazy="item.image" alt="product"></img></div>
-        <span>{{ item.name }}</span>
-        <span>{{ item.price | currency }}</span>
+        <router-link :to="{ name:'detail' }">
+          <img v-lazy="item.image" alt="product"></img>
+          <span>{{ item.name }}</span>
+          <span>{{ item.price | currency }}</span>
+        </router-link>
       </Col>
     </Row>
   </div>
@@ -26,24 +31,53 @@
   export default {
     data () {
       return {
-        testData: ['laskdjfl', 'lskdjlllsd', 'kjljjkdkaa'],
         keyword: '',
         datas: '',
         mList: ''
       }
     },
     computed: {
+      aList: function () {
+        // 用于autocomplete
+        if (Array.isArray(this.datas.results)) {
+          // 深度拷贝方法
+          let tmpArray = JSON.parse(JSON.stringify(this.datas.results))
+          return tmpArray.filter((item, index, array) => {
+            if (item.name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+              return array.indexOf(item) === index
+            } else if (item.price.toString().indexOf(this.keyword.toUpperCase()) !== -1) {
+              return true
+            } else if (item.description.toString().indexOf(this.keyword.toUpperCase()) !== -1) {
+              return true
+            // // Array去除重复的简单办法
+            // } else if (array.indexOf(item) === index) {
+            //   return true
+            } else {
+              return false
+            }
+          })
+        } else {
+          return []
+        }
+      }
     },
     methods: {
-      filterList (value, option) {
-        // value确实为输入值，option为选项值
-        // console.log('value:' + value)
-        // console.log('option')
-        // console.log(option)
-        // return option.name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1
-        return option.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1
-      },
+      // 使用computed属性替换autocomplete的filter-method
+      // filterList (value, option) {
+      //   // value确实为输入值，option为选项值
+      //   console.log('value:' + value)
+      //   // console.log('option')
+      //   console.log(option)
+      //   // if (option.name.toUpperCase().indexOf(value.toUpperCase()) !== -1) {
+      //   //   return true
+      //   // } else if (option.price.toString().indexOf(value) !== -1) {
+      //   //   return true
+      //   // } else {
+      //   //   return false
+      //   // }
+      // },
       searchProduct () {
+        // 点击“搜”按钮时执行
         if (Array.isArray(this.datas.results)) {
           // 好像filter修改原值，filter以后相应数据没了，所以必须需要深拷贝
           console.debug(this.datas.results)
@@ -86,43 +120,26 @@
 <style lang="stylus" scoped>
   @import '../../common/vars'
 
-  .search
+  .product
+    margin: 1vh 1vw 1vh 1vw
+  .product-search
     height: 12vh
-    background-color: red
+    // background-color: red
     display: flex
     div
       vertical-align: middle
-  .product
+  .product-list, .ivu-row
     // background-color: red
-    div>div
+    div,.ivu-col
+      // background-color: red
       // background-color: red
       // 上右下左
       padding: 1vh 1vw 1vh 1vw
       a>img
         width: 100%
-    // .demo-auto-complete-item
-    //   padding: 4px 0
-    //   border-bottom: 1px solid #F6F6F6
-    
-    // .demo-auto-complete-group
-    //   font-size: 12px
-    //   padding: 4px 6px
-    
-    // .demo-auto-complete-group span
-    //   color: #666
-    //   font-weight: bold
-    
-    // .demo-auto-complete-group a
-    //   float: right
-    
-    // .demo-auto-complete-count
-    //   float: right
-    //   color: #999
-    
-    // .demo-auto-complete-more
-    //   display: block
-    //   margin: 0 auto
-    //   padding: 4px
-    //   text-align: center
-    //   font-size: 12px
+  .product-name
+    font-weight: bold
+  .product-price
+    color: $primary-color 
+    float: right
 </style>

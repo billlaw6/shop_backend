@@ -1,13 +1,20 @@
 <template lang="html">
   <!-- 不加v-if="datas.results"的话会出现未赋值前就访问-->
-  <Carousel class="hot-product" v-if="datas.results">
-    <CarouselItem v-for="k in mList" :key="k.id">
-      <router-link :to="{ name:'detail' }">
-        <!-- 懒加载值不能用filter，否则加载不了图片 -->
-        <img v-lazy="k.image" alt="">
-      </router-link>
-    </CarouselItem>
-  </Carousel>
+  <Row>
+    <Col span="20" class="hot-product">
+      <Carousel class="carousel" v-if="datas.results">
+        <CarouselItem v-for="k in mList" :key="k.id" class="carousel-item">
+          <router-link :to="{ name:'detail' }">
+            <!-- 懒加载值不能用filter，否则加载不了图片 -->
+            <img v-lazy="k.image" alt="">
+          </router-link>
+        </CarouselItem>
+      </Carousel>
+    </Col>
+    <Col span="4" class="hot-product-desc">
+      热销产品说明
+    </Col>
+  </Row>
 </template>
 
 <script>
@@ -39,7 +46,7 @@
       console.debug('datas before api:' + this.datas)
       this.$api({
         method: 'get',
-        url: '/rest-api/products/'
+        url: '/rest-api/hot-products/'
       }).then((response) => {
         console.debug('data gotten in Carousel:')
         console.debug(response.data)
@@ -55,18 +62,20 @@
   @import '../../common/vars'
 
   .hot-product
-    height: 50vh
-  .ivu-carousel
-    height: 100%
+    // padding-bottom: 9vh
+  .carousel
+    height: inherit
     // background-color: green
-  .ivu-carousel-list
-    height: 100%
-  .ivu-carousel-item
-    width: 100%
-    position: relative
-    // background-color: red
-    div>a>img
-      position: absolute
-      height: 100%
+    // .ivu-carousel-arrow
+    //   height: 5vh
+      // background-color: green
+    // .ivu-carousel-list
+    //   background-color: red
+  // .carousel-item
+  //   // background-color: red
+    a > img
+      height: inherit
       width: 100%
+   .hot-product-desc
+      background-color: green
 </style>

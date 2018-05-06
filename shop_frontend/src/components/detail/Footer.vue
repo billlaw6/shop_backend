@@ -1,5 +1,5 @@
 <template lang="html">
-  <footer class="footer">
+  <div class="footer">
     <router-link :to="{name:'index'}" class="footer-index">
       <i class="icon-index"></i>
     </router-link>
@@ -10,7 +10,7 @@
     <span class="footer-addcar" @click="addIntoCar">
       加入购物车
     </span>
-  </footer>
+  </div>
 </template>
 
 <script>

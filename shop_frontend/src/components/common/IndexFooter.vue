@@ -8,7 +8,7 @@
         </router-link>
       </Col>
       <Col span="6" class="category" :class="{ active: selected==='category'}">
-        <router-link :to="{ name: 'category' }">
+        <router-link :to="{ name: 'category', params: { categoryId: 1}}">
           <Icon type="ios-list" :size="24"></Icon><br/>
           分类 
         </router-link>
@@ -67,7 +67,7 @@
     bottom: 0.1vh
     div
       text-align: center
-      color: green
+      // color: green
   // 动态class属性绑定，当前路径字体用阴影表示
   .active
     text-shadow: 3px 3px 3px $primary-color

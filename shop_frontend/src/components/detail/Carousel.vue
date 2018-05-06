@@ -2,9 +2,9 @@
   <!-- 不加v-if="datas.results"的话会出现未赋值前就访问-->
   <Row>
     <Col span="20" class="hot-product">
-      <Carousel autoplay v-if="datas">
+      <Carousel class="carousel" v-if="datas.results">
         <CarouselItem v-for="k in mList" :key="k.id" class="carousel-item">
-          <router-link :to="{ name:'detail', params: { productId: k.id } }">
+          <router-link :to="{ name:'detail' }">
             <!-- 懒加载值不能用filter，否则加载不了图片 -->
             <img v-lazy="k.image" alt="">
           </router-link>
@@ -19,9 +19,15 @@
 
 <script>
   export default {
+    // props: {
+    //   datas: {
+    //     type: Object,
+    //     default: {}
+    //   }
+    // },
     data () {
       return {
-        datas: ''
+        datas: {}
       }
     },
     computed: {
@@ -55,7 +61,7 @@
 
   .hot-product
     // padding-bottom: 9vh
-  .ivu-carousel
+  .carousel
     height: inherit
     // background-color: green
     // .ivu-carousel-arrow

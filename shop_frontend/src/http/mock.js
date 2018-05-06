@@ -10,7 +10,7 @@ let hotProducts = Mock.mock(`${base}/rest-api/hot-products/`, {
     'price|99-9999': 100,
     'sale_price|99-9999': 100,
     'py|4': 'py',
-    'image': Random.image('200x200', '#dec4e0', '#333', 'png', ''),
+    'image': Random.image('400x100', '#dec4e0', '#333', 'png', ''),
     'description': Random.paragraph()
   }]
 })
@@ -24,6 +24,24 @@ let products = Mock.mock(`${base}/rest-api/products/`, {
     'sale_price|99-9999': 100,
     'py|4': 'py',
     'image': Random.image('200x200', '#dec4e0', '#333', 'png', ''),
+    'description': Random.paragraph()
+  }]
+})
+// 好像不带域名也匹配拦截得挺好
+let productDetail = Mock.mock(/\/rest-api\/products\/\d/, {
+  'id|1-1000': 1,
+  'name': '@name',
+  'pinyin|4': 'pinyin',
+  'price|99-9999': 100,
+  'sale_price|99-9999': 100,
+  'carouselImages|3-5': [{
+    'order|+1': 1, // 属性值1用来确定类型
+    'image': Random.image('800x100', '#dec4e0', '#333', 'png', ''),
+    'description': Random.paragraph()
+  }],
+  'detailImages|3-5': [{
+    'order|+1': 1, // 属性值1用来确定类型
+    'image': Random.image('800x100', '#dec4e0', '#333', 'png', ''),
     'description': Random.paragraph()
   }]
 })
@@ -117,4 +135,4 @@ let category = Mock.mock('http://api.com/category', {
   }]
 })
 
-export {hotProducts, products, index, detail, category}
+export {hotProducts, products, productDetail, index, detail, category}

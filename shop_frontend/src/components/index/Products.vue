@@ -17,7 +17,7 @@
     <!-- {{ mList }}<br/> -->
     <Row class="product-list">
       <Col span="6" v-for="item in mList.results" :key="item.id">
-        <router-link :to="{ name:'detail' }">
+        <router-link :to="{ name:'detail', params: { productId: item.id }}">
           <img v-lazy="item.image" alt="product"></img>
           <span>{{ item.name }}</span>
           <span>{{ item.price | currency }}</span>
@@ -49,9 +49,6 @@
               return true
             } else if (item.description.toString().indexOf(this.keyword.toUpperCase()) !== -1) {
               return true
-            // // Array去除重复的简单办法
-            // } else if (array.indexOf(item) === index) {
-            //   return true
             } else {
               return false
             }

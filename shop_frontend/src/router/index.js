@@ -19,7 +19,7 @@ export default new Router({
       }
     },
     {
-      path: '/category',
+      path: '/category/:categoryId',
       name: 'category',
       component: Category,
       // redirect: '/category/all',
@@ -32,7 +32,7 @@ export default new Router({
       }
     },
     {
-      path: '/detail',
+      path: '/detail/:productId',
       name: 'detail',
       component: Detail,
       meta: {

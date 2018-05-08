@@ -18,6 +18,8 @@
 </template>
 
 <script>
+  import { getHotProducts } from '../../http/api'
+
   export default {
     data () {
       return {
@@ -36,7 +38,7 @@
     beforeCreate () {
       console.log('Carousel.vue creating')
       console.debug('datas before api:' + this.datas)
-      this.$api({
+      getHotProducts({
         method: 'get',
         url: '/rest-api/hot-products/'
       }).then((response) => {

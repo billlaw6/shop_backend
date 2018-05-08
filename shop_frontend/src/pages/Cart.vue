@@ -1,47 +1,104 @@
 <template lang="html">
     <div class="cart">
-      <!-- slot分发内容 让子组件混合父组件的内容 -->
-      <v-header>
-        <h1 slot="title">购物车</h1>
-      </v-header>
-      <!-- 根据购物车是否有商品加载不同的组件 -->
-      <v-loaded v-if="count"></v-loaded>
-      <v-empty v-else></v-empty>
-      <v-footer></v-footer>
+      <index-header></index-header>
+      <Table :columns="cartListColumns" :data="cartList"></Table>
+      <Row type="flex" justify="space-around" class="footer">
+        <Col span="6" class="cart-list-sum">
+          <span>共计{{ cartListCount }}种商品，合计{{ cartListSum | currency }}</span>
+        </Col>
+        <Col span="6" class="go-to-index">
+          <router-link :to="{ name: 'index' }">
+            <Icon type="ios-home" :size="24"></Icon>继续购物
+          </router-link>
+        </Col>
+        <Col span="6" class="empty-cart">
+          <div v-on:click="emptyCart">
+            <Icon type="ios-cart" :size="24"></Icon>
+            <span>清空购物车</span>
+          </div>
+        </Col>
+        <Col span="6" class="empty-cart">
+          <div v-on:click="checkoutCart">
+            <Icon type="ios-cart" :size="24"></Icon>
+            <span>结算</span>
+          </div>
+        </Col>
+      </Row>
     </div>
 </template>
 
 <script>
-import Header from '@/components/common/Header.vue'
-import Empty from '@/components/cart/Empty.vue'
-import Loaded from '@/components/cart/Loaded.vue'
-import Footer from '@/components/cart/Footer.vue'
+  import IndexHeader from '@/components/common/IndexHeader.vue'
+  import { mapState, mapGetters, mapActions } from 'vuex'
 
-export default {
-  components: {
-    'v-header': Header,
-    'v-empty': Empty,
-    'v-loaded': Loaded,
-    'v-footer': Footer
-  },
-
-  computed: {
-    count () {
-      return this.$store.state.detail.count
-    }
-  },
-  mounted () {
-    // 防止刷新页面数据为空
-    if (this.$store.state.detail.count === '') {
-      this.$store.commit('RESET_COUNT')
+  export default {
+    components: {
+      'index-header': IndexHeader
+    },
+    data () {
+      return {
+        cartListColumns: [
+          {
+            title: '名称',
+            key: 'name'
+          },
+          {
+            title: '单价',
+            key: 'price'
+          },
+          {
+            title: '数量',
+            key: 'amount'
+          }
+        ]
+      }
+    },
+    computed: {
+      ...mapState({
+        // 大括号方式需要转成对象
+        'loginStatus': state => state.loginStatus,
+        // 为了能够使用 `this` 获取局部状态，必须使用常规函数
+        'cartList' (state) {
+          // console.debug(JSON.parse(window.localStorage.getItem('cartList')))
+          if (state.cartList.length === 0 &&
+              JSON.parse(window.localStorage.getItem('cartList')).length > 0) {
+            console.debug('using localStorage cartList')
+            this.$store.dispatch('copyCart', JSON.parse(window.localStorage.getItem('cartList')))
+          }
+          return state.cartList
+        }
+      }),
+      ...mapGetters([
+        'cartListCount',
+        'cartListSum'
+      ])
+    },
+    methods: {
+      ...mapActions([
+        'emptyCart'
+      ]),
+      checkoutCart: function (checkoutList) {
+        console.debug('checkout cart')
+        if (this.loginStatus) {
+          console.debug('checking')
+          this.$store.dispatch('emptyCart')
+        } else {
+          console.debug('redirecting')
+          this.$router.push({ name: 'login' })
+        }
+      }
+    },
+    mounted () {
     }
   }
-}
 </script>
 
 <style lang="stylus" scoped>
-.cart {
-  width: 100%
-  padding-bottom: 14vw
-}
+  .footer
+    width: 100vw
+    height: 10vh
+    position: fixed
+    bottom: 0.1vh
+    div
+      text-align: center
 </style>

@@ -1,12 +1,11 @@
-// import Util from '@/common/common'
 import * as types from '../types'
 const state = {
   token: 0
 }
 
 const mutations = {
-  [types.CHANGE_TOKEN] (state, res) {
-    state.token = res
+  [types.SET_ACCESS_TOKEN] (state, token) {
+    state.token = token
   }
 }
 

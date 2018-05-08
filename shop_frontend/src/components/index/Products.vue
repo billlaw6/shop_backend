@@ -28,6 +28,8 @@
 </template>
 
 <script>
+  import { getProducts } from '../../http/api'
+
   export default {
     data () {
       return {
@@ -98,10 +100,7 @@
     },
     beforeCreate () {
       console.log('Products.vue creating')
-      this.$api({
-        method: 'get',
-        url: '/rest-api/products/'
-      }).then((response) => {
+      getProducts().then((response) => {
         console.debug('data gotton in Products:')
         console.debug(response.data)
         this.datas = response.data

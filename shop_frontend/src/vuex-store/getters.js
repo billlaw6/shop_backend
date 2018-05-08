@@ -18,3 +18,17 @@ export const username = state => {
     return null
   }
 }
+
+export const cartListCount = state => {
+  return state.cartList.length
+}
+
+export const cartListSum = state => {
+  let tmpSum = 0.0
+  state.cartList.forEach(function (item, index) {
+    console.debug(item.price)
+    console.debug(item.amount)
+    tmpSum += item.price * item.amount
+  })
+  return tmpSum
+}

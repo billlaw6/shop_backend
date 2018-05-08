@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import router from './router'
 import store from '@/vuex-store/index'
-import api from '@/http/api.js'       // 基于axios的http请求
+// import api from '@/http/api.js'       // 基于axios的http请求
 // import Mint from 'mint-ui' // 饿了么移动端开源UI框架
 // import 'mint-ui/lib/style.css'
 import iView from 'iview'
@@ -22,7 +22,7 @@ Vue.use(VueLazyLoad, {
   loading: '../../assets/logo.png'
 })
 Vue.config.productionTip = false
-Vue.prototype.$api = api // this.$api即是http里的api
+// Vue.prototype.$api = api // this.$api即是http里的api
 
 router.beforeEach((to, from, next) => {
   let accessToken = window.sessionStorage.getItem('accessToken')

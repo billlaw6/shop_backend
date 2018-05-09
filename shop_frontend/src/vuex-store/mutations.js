@@ -17,7 +17,18 @@ export default {
     // console.debug(amount)
     // 如果该品种已经存在，不增加count，只增加list中对应品种的amount
     // 如果该品种不存在，增加count，增加list中对应品种及amount
-    let productIndex = this.state.cartList.indexOf(item)
+    // indexOf函数只适合查元素自己，不能直接查值相等的复制元素
+    // let productIndex = this.state.cartList.indexOf(item)
+    let productIndex = -1
+    this.state.cartList.forEach((el, index, array) => {
+      console.debug('item.id:')
+      console.debug(item.id)
+      console.debug('el.id:')
+      console.debug(el.id)
+      if (el.id === item.id) {
+        productIndex = index
+      }
+    })
     console.debug('productIndex: ' + productIndex)
     if (productIndex === -1) {
       console.debug('not existed')
@@ -50,7 +61,13 @@ export default {
     // console.debug(amount)
     // 如果该品种已经存在，不增加count，只增加list中对应品种的amount
     // 如果该品种不存在，增加count，增加list中对应品种及amount
-    let productIndex = this.state.cartList.indexOf(item)
+    let productIndex = -1
+    this.state.cartList.forEach((el, index, array) => {
+      console.debug(el)
+      if (el.id === item.id) {
+        productIndex = index
+      }
+    })
     console.debug('productIndex: ' + productIndex)
     if (productIndex === -1) {
       console.debug('not existed')

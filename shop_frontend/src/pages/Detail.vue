@@ -23,7 +23,7 @@
 
     <Row type="flex" justify="space-around" class="footer">
       <Col span="3" class="amount">
-        <Input v-model="amount" size="large" step="0.1">
+        <Input v-model="amount" size="large" step="0.1" :number="true">
           <span slot="prepend" v-on:click="amountDecrease"><Icon type="android-remove"></Icon></span>
           <span slot="append" v-on:click="amountIncrease"><Icon type="android-add"></Icon></span>
         </Input>
@@ -66,7 +66,7 @@
         cartList (state) {
           // console.debug(JSON.parse(window.localStorage.getItem('cartList')))
           if (state.cartList.length === 0 &&
-              JSON.parse(window.localStorage.getItem('cartList')).length > 0) {
+              window.localStorage.getItem('cartList')) {
             console.debug('using localStorage cartList')
             this.$store.dispatch('copyCart', JSON.parse(window.localStorage.getItem('cartList')))
           }
@@ -91,7 +91,7 @@
         }
       },
       amountIncrease: function () {
-        console.debug('amount decrease')
+        console.debug('amount increase')
         if (parseFloat(this.amount) < 10) {
           this.amount = (parseFloat(this.amount) + 0.1).toFixed(2)
         }

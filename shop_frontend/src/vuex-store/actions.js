@@ -37,18 +37,21 @@ export const addCartItem = ({ commit, state }, { item, amount }) => {
 
 export const setCartItemAmount = ({ commit, state }, { item, amount }) => {
   commit(types.SET_CART_ITEM_AMOUNT, { item, amount })
+  window.localStorage.setItem('cartList', JSON.stringify(state.cartList))
   console.debug('state.cartList after commit remove:')
   console.debug(state.cartList)
 }
 
 export const removeCartItem = ({ commit, state }, { item }) => {
   commit(types.REMOVE_CART_ITEM, { item })
+  window.localStorage.setItem('cartList', JSON.stringify(state.cartList))
   console.debug('state.cartList after commit remove:')
   console.debug(state.cartList)
 }
 
 export const emptyCart = ({ commit, state }) => {
   commit(types.EMPTY_CART)
+  window.localStorage.setItem('cartList', JSON.stringify(state.cartList))
   console.debug('state.cartList after commit emptyCart:')
   console.debug(state.cartList)
 }

@@ -1,5 +1,4 @@
 // import Util from '../../common/common'
-import * as types from '../types'
 
 const state = {
   tabIndex: 0

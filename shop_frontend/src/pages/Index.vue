@@ -31,6 +31,15 @@
       }
     },
     methods: {
+    },
+    created () {
+      console.debug('Index.vue created')
+    },
+    mounted () {
+      console.debug('Index.vue mounted')
+    },
+    nextTick () {
+      console.debug('nextTick')
     }
   }
 </script>

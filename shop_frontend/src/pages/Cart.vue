@@ -152,7 +152,6 @@
     },
     mounted () {
       // window.localStorage.removeItem('cartList')
-      // this.mCartItem = JSON.parse(JSON.stringify(this.cartList))
     },
     beforeCreate () {
       console.log('Cart.vue creating')

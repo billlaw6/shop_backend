@@ -10,15 +10,17 @@ export default {
   },
 
   // 对于模块内部的 mutation 和 getters，接收的第一个参数是模块的局部状态对象。
+  // 由于 getters 不区分模块，所以不同模块中的 getters 如果重名，Vuex 会报出 'duplicate getter key: [重复的getter名]' 错误。
   getters: {
-    'loginStatus': (state, getters, rootState, rootGetters) => {
+    // 如果你希望使用全局 state 和 getter，rootState 和 rootGetter 会作为第三和第四参数传入 getter，也会通过 context 对象的属性传入 action。
+    'loginStatus': (state, getters, rootState, rootGetter) => {
       if (state.currentUser) {
         return true
       } else {
         return false
       }
     },
-    'username': state => {
+    'username': (state, getters, rootState, rootGetter) => {
       if (state.currentUser !== null) {
         console.log('has username')
         return state.currentUser.username
@@ -30,6 +32,7 @@ export default {
   },
 
   // 对于模块内部的 mutation 和 getter，接收的第一个参数是模块的局部状态对象。
+  // mutations 与 getters 类似，不同模块的 mutation 均可以通过 store.commit 直接触发。
   mutations: {
     [types.SET_ACCESS_TOKEN] (state, accessToken, rootState, rootGetters) {
       console.debug('login SET_ACCESS_TOKEN mutations')
@@ -50,7 +53,7 @@ export default {
   actions: {
     'login': ({ state, commit, rootState, rootGetters }, { username, password }) => {
       // console.debug('login with: ' + username + ' ' + password)
-      commit(types.SET_LOADING, true)
+      commit(types.SET_LOADING, true, { root: true })
       authLogin({ username, password }).then((res) => {
         console.debug(res)
         let {data, status} = res
@@ -101,7 +104,11 @@ export default {
           })
         }
       })
-      commit(types.SET_LOADING, false)
+      commit(types.SET_LOADING, false, { root: true })
     }
+  },
+
+  modules: {
+    // 模块里嵌套的模块会继承父模块的全名空间，除非在嵌套模块中也指定namespaced: true属性
   }
 }

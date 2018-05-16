@@ -21,7 +21,6 @@ export const setLoading = ({ commit, state }, loading) => {
   commit(types.SET_SITE_NAME, loading)
 }
 
-
 // 往购物车中添加商品
 export const addCartItem = ({ commit, state }, { item, amount }) => {
   // console.debug('action received item:')

@@ -5,13 +5,13 @@ export default {
 
   state: {
     // 直接修改cartList能触发state相关的getters重新计算，但修改cartList中某元素的某属性好像不会触发
-    cartList: window.localStorage['cartList'] ? JSON.parse(window.localStorage['cartList']) : null
+    cartList: window.localStorage['cartList'] ? JSON.parse(window.localStorage['cartList']) : []
   },
 
   // 对于模块内部的 mutation 和 getter，接收的第一个参数是模块的局部状态对象。
   getters: {
-    'cartListCount': state => { return state.cartList.length },
-    'cartListSum': state => {
+    'cartListCount': (state, getters, rootState, rootGetters) => { return state.cartList.length },
+    'cartListSum': (state, getters, rootState, rootGetters) => {
       let tmpSum = 0.0
       // 直接修改cartList能触发state相关的getters重新计算，但修改cartList中某元素的某属性好像不会触发
       state.cartList.forEach((item, index) => {
@@ -101,12 +101,16 @@ export default {
   },
 
   // 同样，对于模块内部的 action，局部状态通过 context.state 暴露出来，根节点状态则为 context.rootState
+  // 如果你希望使用全局 state 和 getter，rootState 和 rootGetter 会作为第三和第四参数传入 getter，也会通过 context 对象的属性传入 action。
+  // 若需要在全局命名空间内分发 action 或提交 mutation，将 { root: true } 作为第三参数传给 dispatch 或 commit 即可。
   actions: {
-    'test': ({ state, commit, rootState }) => {
-      console.debug('state')
-      console.debug(state)
-      console.debug('rootState')
-      console.debug(rootState)
+    // 在这个模块中， dispatch 和 commit 也被局部化了
+    // 他们可以接受 `root` 属性以访问根 dispatch 或 commit
+    'testAction': ({ dispatch, commit, getters, rootGetters }) => {
+      dispatch('someAction')  // 'cart/someAction'
+      dispatch('someAction', null, { root: true })  // 'someAction'
+      commit('someMutation')  // 'cart/someMutation'
+      commit('someMutation', null, { root: true })  // 'someMutation'
     }
   }
 }

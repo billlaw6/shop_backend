@@ -95,19 +95,16 @@
           </section>
 
       </div>
-      <v-baseline></v-baseline>
-      <v-footer></v-footer>
+      <index-footer></index-footer>
     </div>
 </template>
 
 <script>
   // import * as mockData from '@/http/mock.js' //模拟数据
-  import Baseline from '@/components/common/Baseline.vue'
-  import Footer from '@/components/common/Footer.vue'
+  import IndexFooter from '@/components/common/IndexFooter.vue'
   export default {
     components: {
-      'v-baseline': Baseline,
-      'v-footer': Footer
+      'index-footer': IndexFooter
     }
   }
 </script>

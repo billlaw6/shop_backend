@@ -17,23 +17,28 @@
     </Row>
 
     <Row class="operate">
-      <span class="product-name">{{ productDetail.name }}</span> 
-      <span class="product-price">{{ productDetail.price | currency }}</span>
-    </Row>
-
-    <Row type="flex" justify="space-around" class="footer">
-      <Col span="3" class="amount">
-        <Input v-model="amount" size="large" step="0.1" :number="true">
+      <Col span="12">
+        <Input class="amount" v-model="amount" size="large" :number="true">
           <span slot="prepend" v-on:click="amountDecrease"><Icon type="android-remove"></Icon></span>
           <span slot="append" v-on:click="amountIncrease"><Icon type="android-add"></Icon></span>
         </Input>
-      </Col>
-      <Col span="1" class="amount-unit">
         <span>千克</span>
       </Col>
       <Col span="4" class="sum-price">
-        <span>{{ this.productDetail.price * this.amount | currency }}</span>
+        <span>小计：{{ this.productDetail.price * this.amount | currency }}</span>
       </Col>
+    </Row>
+
+    <Tabs value="detail">
+      <TabPane label="图片详情" name="detail-pictures">
+        Pictures
+      </TabPane>
+      <TabPane label="文字详情" name="detail-description">
+        Description
+      </TabPane>
+    </Tabs>
+
+    <Row type="flex" justify="space-around" class="footer">
       <Col span="6" class="add-to-cart">
         <div v-on:click="addToCart">
           <Icon type="ios-cart" :size="24"></Icon>
@@ -63,13 +68,8 @@
       ...mapState({
         // 大括号方式需要转成对象
         // 为了能够使用 `this` 获取局部状态，必须使用常规函数
+        decimals: state => state.decimals,
         cartList (state) {
-          // console.debug(JSON.parse(window.localStorage.getItem('cartList')))
-          if (state.cartList.length === 0 &&
-              window.localStorage.getItem('cartList')) {
-            console.debug('using localStorage cartList')
-            this.$store.dispatch('copyCart', JSON.parse(window.localStorage.getItem('cartList')))
-          }
           return state.cartList
         }
       })
@@ -85,20 +85,24 @@
       }),
       amountDecrease: function () {
         console.debug('amount decrease')
-        // 为了Input的prepend和append效果（只支持文本），在此麻烦点转换一下
-        if (parseFloat(this.amount) > 0.1) {
-          this.amount = (parseFloat(this.amount) - 0.1).toFixed(2)
+        if (this.amount > 0.2) {
+          this.amount = parseFloat((this.amount - 0.1).toFixed(this.decimals))
         }
       },
       amountIncrease: function () {
         console.debug('amount increase')
-        if (parseFloat(this.amount) < 10) {
-          this.amount = (parseFloat(this.amount) + 0.1).toFixed(2)
+        if (parseFloat(this.amount) < 99) {
+          // this.amount = parseFloat((this.amount + 0.1).toFixed(this.decimals))
+          this.amount = parseFloat((this.amount + 0.1).toFixed(this.decimals))
         }
       },
       addToCart: function () {
         console.debug('add to cart')
         this.$store.dispatch('addCartItem', {'item': this.productDetail, 'amount': this.amount})
+        this.$Modal.success({
+          title: '加入购物车成功',
+          content: '加入购物车成功'
+        })
       }
     },
     beforeCreate () {
@@ -119,6 +123,8 @@
     img
       display: inline
       width: 100%
+  .amount
+    width: 30vw
   .footer
     // background-color: red
     height: 10vh

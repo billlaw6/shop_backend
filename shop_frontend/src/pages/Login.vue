@@ -33,8 +33,7 @@
 </template>
 
 <script>
-  import { authLogin, getUserInfo, getUserPermissions } from '../http/api'
-  import { mapState, mapActions } from 'vuex'
+  import { mapState, mapGetters, mapActions } from 'vuex'
   export default {
     data () {
       return {
@@ -56,75 +55,29 @@
     },
     computed: {
       ...mapState({
-        loginStatus: state => state.login.loginStatus
-      })
+        'currentUser': state => state.currentUser
+      }),
+      ...mapGetters([
+        'loginStatus'
+      ])
     },
     methods: {
       ...mapActions({
-        setToken: 'setToken',
-        setLoginStatus: 'setLoginStatus',
-        setUser: 'setUser',
-        setPermissions: 'setPermissions'
+        setAccessToken: 'login/setAccessToken',
+        login: 'login/login'
       }),
       handleSubmit (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
             // 清除过期的accessToken，错误的accessToken会报401未授权错误，更新数据库时测出来的
-            window.sessionStorage.removeItem('accessToken')
-            authLogin(this.formLogin).then((res) => {
-              console.log(res)
-              let {data, status, statusText} = res
-              if (status !== 200) {
-                this.loginMessage = statusText
-                this.$Message.error('用户名或密码错误!')
-              } else {
-                window.sessionStorage.setItem('accessToken', data.token)
-                // 设置当前登录用户
-                getUserInfo().then((res) => {
-                  // console.log('getUserInfo: ' + res)
-                  let {data, status, statusText} = res
-                  if (status !== 200) {
-                    this.loginMessage = statusText
-                    this.$Message.error('获取用户信息失败!')
-                  } else {
-                    // console.log(data)
-                    this.$store.dispatch('setLoginStatus', true)
-                    window.sessionStorage.setItem('user', JSON.stringify(data))
-                    // 设置当前登录用户权限
-                    getUserPermissions().then((res) => {
-                      let { data, status, statusText } = res
-                      if (status !== 200) {
-                        console.log('Error in getUserPermissions:' + statusText)
-                        this.$Message.error('获取用户权限失败!')
-                      } else {
-                        // console.log('Got permissions:')
-                        console.log(data)
-                        window.sessionStorage.setItem('permissions', JSON.stringify(data.results))
-                        this.$router.push({ name: 'dashboard' })
-                      }
-                    }, (error) => {
-                      console.log('Error in restAuthUser: ' + error)
-                      this.$Message.error('获取用户信息失败!')
-                    }).catch((error) => {
-                      console.log('catched in restAuthUser:' + error)
-                      this.$Message.error('获取用户信息失败!')
-                    })
-                  }
-                }, (error) => {
-                  console.log('Error in getUserInfo: ' + error)
-                  this.$Message.error('获取用户信息失败')
-                }).catch((error) => {
-                  console.log('catched in getUserInfo:' + error)
-                  this.$Message.error('获取用户信息失败')
-                })
-              }
-            }, (error) => {
-              console.log('Error in authLogin: ' + error)
-              this.$Message.error('用户名或密码错误')
-            }).catch((error) => {
-              console.log('catched in authLogin:' + error)
-              this.$Message.error('用户名或密码错误')
-            })
+            window.localStorage.removeItem('accessToken')
+            let { status, data } = this.login(this.formLogin)
+            console.debug(data)
+            if (status === 0) {
+              this.$router.push({'name': 'user'})
+            } else {
+              this.$Message('data')
+            }
           } else {
             this.$Message.error('表单验证失败!')
           }

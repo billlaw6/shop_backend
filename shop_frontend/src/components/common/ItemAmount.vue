@@ -22,16 +22,11 @@
     },
     // 计算属性还是会修改原值，会报
     // Error: [vuex] Do not mutate vuex store state outside mutation handlers.
+    // 此方式会能发出正确的dispatch，但input中的值不更新。
     // computed: {
-    //   locItem: {
-    //     get: function () {
-    //       // return this.item
-    //       return JSON.parse(JSON.stringify(this.item))
-    //     },
-    //     // 后期可尝试自定义set避免上述报错
-    //     set: function (newValue) {
-    //       console.log(newValue)
-    //     }
+    //   locItem: function () {
+    //     return JSON.parse(JSON.stringify(this.item))
+    //     // return this.item
     //   }
     // },
     methods: {
@@ -66,18 +61,19 @@
         }
       },
       amountIncrease: function (curItem) {
-        console.debug('amount decrease')
+        console.debug('amount increase')
         if (parseFloat(curItem.amount) < 9.9) {
           this.$store.dispatch('addCartItem', {'item': curItem, 'amount': 0.1})
         }
       },
       setAmount: function (curItem) {
-        // console.debug('setAmount')
-        // console.debug(curItem)
+        console.debug('setAmount to: ')
+        console.debug(curItem.amount)
         this.$store.dispatch('setCartItemAmount', {'item': curItem, 'amount': curItem.amount})
       }
     },
     mounted () {
+      console.debug('ItemAmount.vue mounted')
       this.locItem = JSON.parse(JSON.stringify(this.item))
     }
   }

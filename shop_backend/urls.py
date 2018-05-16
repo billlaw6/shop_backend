@@ -23,7 +23,6 @@ from django.views.generic import TemplateView
 # from user_manage.views import UserViewSet
 from dict_manage.views import ProductViewSet
 
-
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 # router.register(r'users', UserViewSet)

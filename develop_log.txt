@@ -27,4 +27,7 @@ Shop开发记录
 2018-05-04
   父组件从后台获取数据，再用props传值给子组件的方式容易出现子组件中不能及时取到值报undefined值操作问题，safri没事，但firefox很明显。转向各模块各自取值试试。
 
+2018-05-15
+  Javascript的undefined和null很类似，定义了变量不赋值则为undefined，null可以使用===null判断，所以定义变量时统一使用null为初始值。
+
 

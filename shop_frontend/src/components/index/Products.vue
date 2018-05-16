@@ -14,7 +14,6 @@
       </Col>
     </Row>
 
-    <!-- {{ mList }}<br/> -->
     <Row class="product-list">
       <Col span="6" v-for="item in mList.results" :key="item.id">
         <router-link :to="{ name:'detail', params: { productId: item.id }}">
@@ -77,6 +76,7 @@
       // },
       searchProduct () {
         // 点击“搜”按钮时执行
+        console.debug('搜')
         if (Array.isArray(this.datas.results)) {
           // 好像filter修改原值，filter以后相应数据没了，所以必须需要深拷贝
           console.debug(this.datas.results)

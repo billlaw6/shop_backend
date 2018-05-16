@@ -5,6 +5,7 @@ const Category = resolve => require(['@/pages/Category.vue'], resolve)
 const Detail = resolve => require(['@/pages/Detail.vue'], resolve)
 const Cart = resolve => require(['@/pages/Cart.vue'], resolve)
 const Login = resolve => require(['@/pages/Login.vue'], resolve)
+const User = resolve => require(['@/pages/User.vue'], resolve)
 
 Vue.use(Router)
 
@@ -55,15 +56,15 @@ export default new Router({
       meta: {
         hidden: false
       }
+    },
+    {
+      path: '/user',
+      name: 'user',
+      component: User,
+      meta: {
+        requireAuth: true,
+        hidden: false
+      }
     }
-    // {
-    //   path: '/user',
-    //   name: 'user',
-    //   component: User,
-    //   meta: {
-    //     requireAuth: true,
-    //     hidden: false
-    //   }
-    // },
   ]
 })

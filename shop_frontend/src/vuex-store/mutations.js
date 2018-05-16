@@ -2,103 +2,29 @@
 // 一条重要的原则就是要记住 mutation 必须是同步函数。
 // 更改 Vuex 的 store 中的状态的唯一方法是提交 mutation。Vuex 中的 mutation 非常类似于事件：每个 mutation 都有一个字符串的 事件类型 (type) 和 一个 回调函数 (handler)。这个回调函数就是我们实际进行状态更改的地方，并且它会接受 state 作为第一个参数
 // Only one default export allowed per module.
+//
+// vuex，getters只执行了一次，数据更新getters的数据没有更新
+// 建议自己好好看一下 vuex 官方文档吧， mutation 改变的是 state 的一个属性， 不是直接改变 state 本身的
+// 感觉题主最后给出的解决方案很含糊啊，而且经测试好像不行的，我是这样解决的：
+// 在文件顶部先引用vue，mutaions里面这样写，Vue.set(state,'messageList',res.data.messageList);通过这种方式就可以触发getters的更新
+// 我刚刚也遇见这个问题
+// 在motation里面的触发方法里面不能直接使用state赋值的方式
+// 需要使用Vue.set(state.data, type, value)即可触发状态更新
 import * as types from './types'
 
 export default {
-  [types.SET_SITE_NAME] (state, { sitename }) {
+  [types.SET_SITE_NAME] (state, sitename) {
     state.sitename = sitename
+    // 此写法才会触发getters的更新？
+    // 否，根本原因在于是否修改的是state根元素
+    // Vue.set(state, 'sitename', state.sitename + state.sitename)
+    // 同步更新localStorage内容，与state中从localStorage取值配合解决刷新页面state值丢失的问题
+    window.localStorage.setItem('sitename', JSON.stringify(state.sitename))
   },
 
-  // 这是对象内方法的简化写法 es6
-  [types.ADD_CART_ITEM] (state, {item, amount}) {
-    // console.debug('mutation received item:')
-    // console.debug(item)
-    // console.debug('mutation received amount:')
-    // console.debug(amount)
-    // 如果该品种已经存在，不增加count，只增加list中对应品种的amount
-    // 如果该品种不存在，增加count，增加list中对应品种及amount
-    // indexOf函数只适合查元素自己，不能直接查值相等的复制元素
-    // let productIndex = this.state.cartList.indexOf(item)
-    let productIndex = -1
-    this.state.cartList.forEach((el, index, array) => {
-      console.debug('item.id:')
-      console.debug(item.id)
-      console.debug('el.id:')
-      console.debug(el.id)
-      if (el.id === item.id) {
-        productIndex = index
-      }
-    })
-    console.debug('productIndex: ' + productIndex)
-    if (productIndex === -1) {
-      console.debug('not existed')
-      console.debug(typeof amount)
-      if (typeof amount === 'string') {
-        // toFixed()返回NumberObject的字符串表示
-        // item['amount'] = parseFloat(amount).toFixed(2)
-        item['amount'] = parseFloat(amount)
-      } else {
-        item['amount'] = amount
-      }
-      this.state.cartList.push(item)
-    } else {
-      console.debug('existed')
-      console.debug(typeof amount)
-      // 用Input属性时会传进来string
-      if (typeof amount === 'string') {
-        item['amount'] = parseFloat(item['amount']) + parseFloat(amount)
-      } else {
-        item['amount'] = parseFloat(item['amount']) + amount
-      }
-      this.state.cartList[productIndex] = item
-    }
-  },
-
-  [types.SET_CART_ITEM_AMOUNT] (state, {item, amount}) {
-    // console.debug('mutation received item:')
-    // console.debug(item)
-    // console.debug('mutation received amount:')
-    // console.debug(amount)
-    // 如果该品种已经存在，不增加count，只增加list中对应品种的amount
-    // 如果该品种不存在，增加count，增加list中对应品种及amount
-    let productIndex = -1
-    this.state.cartList.forEach((el, index, array) => {
-      console.debug(el)
-      if (el.id === item.id) {
-        productIndex = index
-      }
-    })
-    console.debug('productIndex: ' + productIndex)
-    if (productIndex === -1) {
-      console.debug('not existed')
-      console.debug(typeof amount)
-      if (typeof amount === 'string') {
-        item['amount'] = parseFloat(amount)
-      } else {
-        item['amount'] = amount
-      }
-      this.state.cartList.push(item)
-    } else {
-      console.debug('existed')
-      console.debug(typeof amount)
-      // 用Input属性时会传进来string
-      if (typeof amount === 'string') {
-        item['amount'] = parseFloat(amount)
-      } else {
-        item['amount'] = amount
-      }
-      this.state.cartList[productIndex] = item
-    }
-  },
-
-  [types.COPY_CART] (state, cartList) {
-    console.debug('mutation copy_cart received cartList:')
-    console.debug(cartList)
-    this.state.cartList = cartList
-  },
-
-  [types.EMPTY_CART] (state) {
-    console.debug('empty cart in mutation')
-    this.state.cartList = []
+  [types.SET_LOADING] (state, loading) {
+    state.loading = loading
+    // 此写法才会触发getters的更新？
+    window.localStorage.setItem('loading', JSON.stringify(state.loading))
   }
 }

@@ -18,14 +18,14 @@ from django.contrib import admin
 from rest_framework import routers
 # from rest_framework.authtoken import views as rest_views
 from rest_framework.schemas import get_schema_view
+from django.views.generic import TemplateView
 
-from user_manage.views import UserViewSet
+# from user_manage.views import UserViewSet
 from dict_manage.views import ProductViewSet
-
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
+# router.register(r'users', UserViewSet)
 router.register(r'products', ProductViewSet)
 schema_view = get_schema_view(title='Shop API')
 
@@ -48,6 +48,11 @@ urlpatterns = [
     # Django_rest_framework_social_oauth2
     url(r'^auth/', include('rest_framework_social_oauth2.urls')),
 
+    # Entry URL Vue combine
+    # url(r'^$', TemplateView.as_view(template_name="index.html")),
+
     # My urls
-    url(r'^', include('user_manage.urls')),
+    url(r'^user_manage/', include('user_manage.urls')),
+    url(r'^utils/', include('verify_utils.urls')),
+    url(r'^weixin/', include('weixin.urls')),
 ]

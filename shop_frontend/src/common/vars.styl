@@ -1,0 +1,76 @@
+@import '../../node_modules/nib'
+
+// 变量名用$开头，提高可读性
+$primary-color = #2d8cf0
+$light-primary-color = #5cadff
+$dark-primary-color = #2b85e4
+
+$info-color = #2d8cf0
+$success-color = #19be6b
+$warning-color = #ff9900
+$error-color = #ed3f14
+
+$title-color = #1c2438
+$content-color = #495060
+$checked-color = #ff4500
+$subcolor-color = #80848f
+$disabled-color = #bbbec4
+$border-color = #dddee1
+$divider-color = #e9eaec
+$background-color = #f8f8f9
+
+// 形状相关
+$border-radius = 5px
+$font-family = 'avenir', helvetica, arial, sans-serif
+$font-size = 18px
+
+// 插值Interpolation，使用i-开头标识，以区分Function, Mixins
+i-vendor(prop, args)
+  -webkit-{prop}: args
+  -moz-{prop}: args
+  {prop}: args
+
+i-vendor-value(prop, value)
+  {prop}: -webkit- + 'value'
+  {prop}: -moz- + 'value'
+  {prop}: value
+
+border-radius()
+  i-vendor('border-radius', arguments)
+
+box-shadow()
+  i-vendor('box-shadow', arguments)
+
+i-font-size(name, size)
+  {name}: round(size / 2)px
+  [data-dpr="2"] &
+    {name}: size px
+  [data-dpr="2.5"] &
+    {name}: round(size * 2.5 / 2) px
+  [data-dpr="2.75"] &
+    {name}: round(size * 2.75 / 2) px
+  [data-dpr="3"] &
+    {name}: round(size * 3 / 2) px
+  [data-dpr="4"] &
+    {name}: size * 2 px
+
+padding-top()
+  padding-top: 6vw
+
+margin-top()
+  margin-top: 3vw
+
+margin-bottom()
+  margin-bottom: 3vw
+
+// 上边框
+border-top()
+  border-top-color: rgba(185, 185, 185, .14)
+  border-top-style: solid
+  i-font-size(border-top-width, 1)
+
+// 下边框
+border-bottom()
+  border-bottom-color: rgba(185, 185, 185, .14)
+  border-bottom-style: solid
+  i-font-size(border-bottom-width, 1)

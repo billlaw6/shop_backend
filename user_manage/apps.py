@@ -1,3 +1,16 @@
+#!/usr/bin/env python
+#-*-coding=utf-8-*-
+#
+#File Name: ".expand("%"))
+#Copyright(c) 2015-2024 Beijing Carryon.top Corp.
+#
+#Author LiuBin on: Tue Mar 13 22:52:53 CST 2018
+#
+#@desc:
+#
+#@history
+#
+
 from django.apps import AppConfig
 from django.utils.translation import ugettext_lazy as _
 

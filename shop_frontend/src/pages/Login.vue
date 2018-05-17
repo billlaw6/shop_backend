@@ -1,5 +1,5 @@
 <template>
-  <i-form ref="formLogin" :model="formLogin" :rules="loginDataRules"  class="card-box">
+  <i-form ref="formLogin" :model="formLogin" :rules="formLoginRules"  class="card-box">
     <Form-item class="formLogin-title">
       <h3>系统登录</h3>
     </Form-item>
@@ -15,117 +15,69 @@
       </i-input>
     </Form-item>
     <Form-item class="login-no-bottom">
-      <Row type="flex" justify="space-between" class="code-row-bg">
-        <i-col col="12" >
-          <Checkbox-group v-model="formLogin.remember">
-            <Checkbox label="记住密码" name="remember"></Checkbox>
-          </Checkbox-group>
-        </i-col>
-        <i-col col="12" pull="2" >
-          <router-link to="/pass_reset">忘记密码?</router-link>
-        </i-col>
-      </Row>
+      <Checkbox-group v-model="formLogin.remember">
+        <Checkbox label="记住密码" name="remember"></Checkbox>
+      </Checkbox-group>
     </Form-item>
     <Form-item class="login-no-bottom">
-      <Row type="flex" justify="space-between" class="code-row-bg">
-        <i-col span="12">
+      <Row >
+        <i-col :xs="{ span: 4, offset: 6 }" >
           <i-button type="primary" @click="handleSubmit('formLogin')">登录</i-button>
         </i-col>
-        <i-col span="12">
-          <router-link to="/register"><i-button type="primary">去注册</i-button></router-link>
+        <i-col :xs="{ span: 4, offset: 6 }">
+          <i-button  type="primary" @click="formLoginReset('formLogin')">重置</i-button>
         </i-col>
       </Row>
     </Form-item>
-    <Row type="flex" justify="space-between" class="code-row-bg">
-      <i-col span="12">
-        <a href="http://123.56.115.20/auth/login/weixin">微信登录</a>
-        <a href="http://123.56.115.20/auth/login/weibo">微博登录</a>
-        <a href="http://123.56.115.20/auth/login/github">GITHUB登录</a>
-      </i-col>
-    </Row>
   </i-form>
 </template>
 
 <script>
-  import { authLogin, authUser } from '../api/api'
-  import { mapState, mapActions } from 'vuex'
+  import { mapState, mapGetters, mapActions } from 'vuex'
   export default {
     data () {
       return {
         formLogin: {
           username: 'liubin',
-          password: 'woaini2006',
+          password: 'liubin123456',
           remember: []
         },
-        loginDataRules: {
+        formLoginRules: {
           username: [
             { required: true, message: '请填写用户名', trigger: 'blur' }
           ],
           password: [
             { required: true, message: '请填写密码', trigger: 'blur' },
-            { type: 'string', min: 8, message: '密码长度不能小于8位', trigger: 'blur' }
+            { type: 'string', min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
           ]
         }
       }
     },
     computed: {
       ...mapState({
-        loginStatus: state => state.login.loginStatus
-      })
+        'currentUser': state => state.currentUser
+      }),
+      ...mapGetters([
+        'loginStatus'
+      ])
     },
     methods: {
       ...mapActions({
-        setToken: 'setToken',
-        setLoginStatus: 'setLoginStatus',
-        setUser: 'setUser'
+        setAccessToken: 'login/setAccessToken',
+        login: 'login/login'
       }),
       handleSubmit (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
-            // 清除旧的无效Token
-            window.sessionStorage.removeItem('accessToken')
-            authLogin(this.formLogin).then((res) => {
-              // console.log(res)
-              let {data, status, statusText} = res
-              if (status !== 200) {
-                console.log(statusText)
-                this.$Message.error('用户名或密码错误!')
-              } else {
-                // window.sessionStorage.setItem('accessToken', data.token)
-                window.sessionStorage.setItem('accessToken', data.key)
-                // console.log('Login')
-                // console.log(this.$route.query.redirect)
-                // 登录成功，设置全局用户
-                authUser().then((res) => {
-                  console.log(res)
-                  // window.sessionStorage.removeItem('user')
-                  let {data, status} = res
-                  if (status !== 200) {
-                    this.$Message.error('获取用户信息失败!')
-                  } else {
-                    console.log(data)
-                    this.$store.dispatch('setLoginStatus', true)
-                    this.$store.dispatch('setUser', data)
-                    window.sessionStorage.setItem('user', JSON.stringify(data))
-                    console.log(data.username)
-                  }
-                }, (error) => {
-                  console.log(error)
-                })
-                // 跳转至用户目标页或默认页
-                if (this.$route.query.redirect) {
-                  this.$router.push(this.$route.query.redirect)
-                } else {
-                  this.$router.push({name: 'p404'})
-                }
-              }
-            }, (error) => {
-              console.log('Error in authLogin: ' + error)
-              this.$Message.error('用户名或密码错误')
-            }).catch((error) => {
-              console.log('catched in authLogin:' + error)
-              this.$Message.error('用户名或密码错误')
-            })
+            // 清除过期的accessToken，错误的accessToken会报401未授权错误，更新数据库时测出来的
+            window.localStorage.removeItem('accessToken')
+            let { status, data } = this.login(this.formLogin)
+            console.debug(data)
+            if (status === 0) {
+              this.$router.push({'name': 'user'})
+            } else {
+              this.$Message('data')
+            }
           } else {
             this.$Message.error('表单验证失败!')
           }
@@ -139,27 +91,22 @@
         })
       },
       formLoginReset (name) {
-        // console.log('Reset '+ name)
         this.$refs[name].resetFields()
       }
     },
     mounted () {
       if (sessionStorage.getItem('username')) {
         this.formLogin.username = JSON.parse(sessionStorage.getItem('username'))
-      } else {
-        this.formLogin.username = ''
       }
       if (sessionStorage.getItem('password')) {
         this.formLogin.password = JSON.parse(sessionStorage.getItem('password'))
-      } else {
-        this.formLogin.password = ''
       }
     }
   }
 </script>
 
 <style lang="stylus" scoped>
-  .card-box
+  .card-box {
     padding: 20px
     /*box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02);*/
     -webkit-border-radius: 5px
@@ -171,16 +118,21 @@
     margin: 180px auto
     width: 400px
     /* border: 2px solid #8492A6;*/
+  }
 
-  .title
+  .title {
     margin: 0px auto 40px auto
     text-align: center
     color: #505458
-  .formLogin-title
+  }
+  .formLogin-title {
     text-align: center
     font-seze: 28px
-  .formLogin-title h3
+  }
+  .formLogin-title h3{
     font-size: 18px
-  .login-no-bottom
+  }
+  .login-no-bottom {
     margin-bottom: 10px
+  }
 </style>

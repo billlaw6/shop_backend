@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from user_manage.models import MyUser
+from user_manage.models import ShopUser
 
 
 # Create your tests here.
@@ -9,7 +9,7 @@ class MyUserModelTests(TestCase):
         """
         测试MyUser模型的增删改查基础操作
         """
-        test_user = MyUser(username='test', password='test')
+        test_user = ShopUser(username='test', password='test')
         test_user.save()
 
     def django_rest_auth_test(self):

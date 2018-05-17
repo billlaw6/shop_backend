@@ -6,12 +6,13 @@ export const SET_SITE_NAME = 'SET_SITE_NAME'
 export const SET_LOADING = 'SET_LOADING'
 
 // module mutations
-export const SET_ACCESS_TOKEN = 'login/SET_ACCESS_TOKEN'
-export const SET_CURRENT_USER = 'login/SET_CURRENT_USER'
+// modules/login.js
+export const SET_ACCESS_TOKEN = 'SET_ACCESS_TOKEN'
+export const SET_CURRENT_USER = 'SET_CURRENT_USER'
 
-//
-export const ADD_CART_ITEM = 'cart/ADD_CART_ITEM'
-export const SET_CART_ITEM_AMOUNT = 'cart/SET_CART_ITEM_AMOUNT'
-export const REMOVE_CART_ITEM = 'cart/REMOVE_CART_ITEM'
-export const SET_CART_LIST = 'cart/SET_CART_LIST'
-export const EMPTY_CART = 'cart/EMPTY_CART'
+// modules/cart.js
+export const ADD_CART_ITEM = 'ADD_CART_ITEM'
+export const SET_CART_ITEM_AMOUNT = 'SET_CART_ITEM_AMOUNT'
+export const REMOVE_CART_ITEM = 'REMOVE_CART_ITEM'
+export const SET_CART_LIST = 'SET_CART_LIST'
+export const EMPTY_CART = 'EMPTY_CART'

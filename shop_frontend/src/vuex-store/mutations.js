@@ -13,6 +13,7 @@
 import * as types from './types'
 
 export default {
+  // 在ES6中，把属性名用[]括起来，则括号中就可以引用提前定义的变量。
   [types.SET_SITE_NAME] (state, sitename) {
     state.sitename = sitename
     // 此写法才会触发getters的更新？

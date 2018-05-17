@@ -2,6 +2,7 @@ import * as types from '../types'
 import { authLogin, getUserInfo, getUserPermissions } from '@/http/api'
 
 export default {
+  // 如果希望你的模块具有更高的封装度和复用性，你可以通过添加 namespaced: true 的方式使其成为带命名空间的模块。当模块被注册后，它的所有 getter、action 及 mutation 都会自动根据模块注册的路径调整命名。
   namespaced: true,
 
   state: {
@@ -51,7 +52,7 @@ export default {
 
   // 同样，对于模块内部的 action，局部状态通过 context.state 暴露出来，根节点状态则为 context.rootState
   actions: {
-    'login': ({ state, commit, rootState, rootGetters }, { username, password }) => {
+    'login': ({ dispatch, commit, rootState, rootGetters }, { username, password }) => {
       // console.debug('login with: ' + username + ' ' + password)
       commit(types.SET_LOADING, true, { root: true })
       authLogin({ username, password }).then((res) => {
@@ -80,9 +81,7 @@ export default {
                 } else {
                   console.log(data)
                   tmpUser['permissions'] = data
-                  // commit('login/SET_CURRENT_USER', tmpUser)
                   commit(types.SET_CURRENT_USER, tmpUser)
-                  console.log(types.SET_CURRENT_USER)
                   return { 'status': 0, 'data': tmpUser }
                 }
               }, (error) => {

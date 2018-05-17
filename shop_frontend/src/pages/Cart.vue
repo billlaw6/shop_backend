@@ -1,7 +1,7 @@
 <template lang="html">
     <div class="cart">
       <index-header></index-header>
-      <div class="filled-cart" v-if="cartListlength > 0">
+      <div class="filled-cart" v-if="cartList.length() > 0">
         <Row v-for="item in cartList" :key="item.id" type="flex" justify="space-around" class="cart-list-product">
           <Col span="6" class="cart-list-image">
             <router-link :to="{ name:'detail', params: { productId: item.id }}">

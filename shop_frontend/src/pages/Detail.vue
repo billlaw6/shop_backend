@@ -67,22 +67,17 @@
     computed: {
       ...mapState({
         // 大括号方式需要转成对象
-        // 为了能够使用 `this` 获取局部状态，必须使用常规函数
         decimals: state => state.decimals,
-        cartList (state) {
-          return state.cartList
-        }
+        cartList: state => state.cart.cartList
       })
     },
     methods: {
-      ...mapActions([
+      // 带模块命名空间的写简约写法
+      ...mapActions('cart', [
         // 中括号方式可直接映射，但只能同名映射
-        'removeCartItem'
+        'removeCartItem',
+        'addCartItem'
       ]),
-      ...mapActions({
-        // 大括号方式可转换映射
-        addCartItem: 'addCartItem'
-      }),
       amountDecrease: function () {
         console.debug('amount decrease')
         if (this.amount > 0.2) {
@@ -98,7 +93,7 @@
       },
       addToCart: function () {
         console.debug('add to cart')
-        this.$store.dispatch('addCartItem', {'item': this.productDetail, 'amount': this.amount})
+        this.$store.dispatch('cart/addCartItem', {'item': this.productDetail, 'amount': this.amount})
         this.$Modal.success({
           title: '加入购物车成功',
           content: '加入购物车成功'

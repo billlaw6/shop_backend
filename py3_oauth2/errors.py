@@ -20,6 +20,10 @@ class MissingCodeError(Exception):
 
 
 class TokenExpiredError(Exception):
+    """
+    用token获取access_token时，第三方返回token超时无效
+    token一般只能用一次，微信5分钟未用自动过期
+    """
     error = 'token_expired'
 
 

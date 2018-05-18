@@ -54,14 +54,18 @@
       }
     },
     computed: {
-      ...mapState({
+      // 模块命名空间写法一
+      ...mapState('login', {
         'currentUser': state => state.currentUser
       }),
-      ...mapGetters([
-        'loginStatus'
+      // 模块命名空间写法一
+      ...mapGetters('login', [
+        'loginStatus',
+        'username'
       ])
     },
     methods: {
+      // 模块命名空间写法二
       ...mapActions({
         setAccessToken: 'login/setAccessToken',
         login: 'login/login'

@@ -130,16 +130,16 @@ export default {
       console.debug('state.cartList after commit add:')
     },
 
-    'decreaseCartItemAmount': ({ commit, state, getters, rootGetters }, item) => {
-      commit(types.SET_CART_ITEM_AMOUNT, { 'item': item, 'amount': item.amount - state.saleUnit })
+    'decreaseCartItemAmount': ({ commit, state, getters, rootState, rootGetters }, item) => {
+      commit(types.SET_CART_ITEM_AMOUNT, { 'item': item, 'amount': item.amount - rootState.saleUnit })
       if (state.loginStatus) {
         console.debug('post cartList to server')
       }
       console.debug('state.cartList after commit add:')
     },
 
-    'increaseCartItemAmount': ({ commit, state }, item) => {
-      commit(types.SET_CART_ITEM_AMOUNT, { 'item': item, 'amount': item.amount + state.saleUnit })
+    'increaseCartItemAmount': ({ commit, state, getters, rootState, rootGetters }, item) => {
+      commit(types.SET_CART_ITEM_AMOUNT, { 'item': item, 'amount': item.amount + rootState.saleUnit })
       if (state.loginStatus) {
         console.debug('post cartList to server')
       }

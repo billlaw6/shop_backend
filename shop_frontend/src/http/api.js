@@ -57,7 +57,7 @@ export const getUserInfo = params => {
 
 export const getUserPermissions = params => {
   console.debug('getUserPermissions')
-  return axios.get(`/rest-auth/user/`, params).then(res => res)
+  return axios.get(`/user_manage/user_perms/`, params).then(res => res)
 }
 
 export const getProducts = params => {

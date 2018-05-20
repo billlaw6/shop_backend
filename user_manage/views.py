@@ -1,5 +1,5 @@
 import hashlib
-import json
+# import json
 from django.http import HttpResponse
 from django.contrib.auth import get_user_model, logout as core_logout
 from rest_framework import viewsets, authentication, permissions
@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.renderers import JSONRenderer
-from social_django.models import UserSocialAuth
+# from social_django.models import UserSocialAuth
 
 from user_manage.serializers import UserSerializer
 
@@ -23,10 +23,12 @@ def home(request):
     # return HttpResponse(social_accounts[0].extra_data)
     return HttpResponse('user :%s' % user.username)
 
+
 def logout(request):
     # 千万别重名，否则死循环
     core_logout(request)
     return HttpResponse('logged out')
+
 
 def logged_out(request):
     return HttpResponse('logged out')
@@ -67,8 +69,23 @@ class UserInfo(APIView):
     * Require token authentication.
     * Only authenticated users are able to access thie view
     """
-    authentication_classes = (authentication.SessionAuthentication, authentication.TokenAuthentication,)
+    authentication_classes = (authentication.SessionAuthentication,
+                              authentication.TokenAuthentication,)
     permission_classes = [IsAuthenticated]
+
     def get(self, request, format=None):
         serializer = UserSerializer(request.user, context={'request': request})
         return Response(JSONRenderer().render(serializer.data))
+
+
+class UserPermissions(APIView):
+    """
+    返回相应用户的权限
+    """
+    authentication_classes = (authentication.SessionAuthentication,
+                              authentication.TokenAuthentication,)
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        perms = JSONRenderer().render(request.user.get_all_permissions())
+        return Response(perms)

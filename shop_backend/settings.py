@@ -26,7 +26,7 @@ SECRET_KEY = 'd1ln%!y6c9439k8nt2i899!evk#l3f+ao)km-5iknqi&8zuq)g'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['123.56.115.20', 'carryon.top', 'localhost']
+ALLOWED_HOSTS = ['123.56.115.20', 'carryon.top', 'localhost', '127.0.0.1']
 
 
 

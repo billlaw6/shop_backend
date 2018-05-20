@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^logout$', views.logout, name='logout'),
     url(r'^logged_out$', views.logged_out, name='logged_out'),
     url(r'^weixin_check', views.weixin_token_check, name='weixin_check'),
+    url(r'^user_perms', views.UserPermissions.as_view(), name='user_perms'),
 ]

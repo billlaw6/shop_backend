@@ -76,11 +76,12 @@
             // 清除过期的accessToken，错误的accessToken会报401未授权错误，更新数据库时测出来的
             window.localStorage.removeItem('accessToken')
             let { status, data } = this.login(this.formLogin)
+            console.debug('after login')
             console.debug(data)
             if (status === 0) {
               this.$router.push({'name': 'user'})
             } else {
-              this.$Message('data')
+              this.$router.push({'name': 'user'})
             }
           } else {
             this.$Message.error('表单验证失败!')

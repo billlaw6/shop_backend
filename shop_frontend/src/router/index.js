@@ -6,6 +6,7 @@ const Detail = resolve => require(['@/pages/Detail.vue'], resolve)
 const Cart = resolve => require(['@/pages/Cart.vue'], resolve)
 const Login = resolve => require(['@/pages/Login.vue'], resolve)
 const User = resolve => require(['@/pages/User.vue'], resolve)
+const Saler = resolve => require(['@/pages/Saler.vue'], resolve)
 
 Vue.use(Router)
 
@@ -61,6 +62,15 @@ export default new Router({
       path: '/user',
       name: 'user',
       component: User,
+      meta: {
+        requireAuth: true,
+        hidden: false
+      }
+    },
+    {
+      path: '/saler',
+      name: 'saler',
+      component: Saler,
       meta: {
         requireAuth: true,
         hidden: false

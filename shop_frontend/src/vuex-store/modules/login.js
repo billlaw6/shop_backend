@@ -34,6 +34,7 @@ export default {
 
   // 对于模块内部的 mutation 和 getter，接收的第一个参数是模块的局部状态对象。
   // mutations 与 getters 类似，不同模块的 mutation 均可以通过 store.commit 直接触发。
+  // mutations中如何访问rootState或rootGetters暂未找到资料
   mutations: {
     [types.SET_ACCESS_TOKEN] (state, accessToken, rootState, rootGetters) {
       console.debug('login SET_ACCESS_TOKEN mutations')

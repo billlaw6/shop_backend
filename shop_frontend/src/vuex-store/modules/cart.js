@@ -5,7 +5,8 @@ export default {
 
   state: {
     // 直接修改cartList能触发state相关的getters重新计算，但修改cartList中某元素的某属性好像不会触发
-    cartList: window.localStorage['cartList'] ? JSON.parse(window.localStorage['cartList']) : []
+    cartList: window.localStorage['cartList'] ? JSON.parse(window.localStorage['cartList']) : [],
+    decimals: window.localStorage['decimals'] ? JSON.parse(window.localStorage['decimals']) : 2
   },
 
   // 对于模块内部的 mutation 和 getter，接收的第一个参数是模块的局部状态对象。
@@ -24,15 +25,16 @@ export default {
   },
 
   // 对于模块内部的 mutation 和 getter，接收的第一个参数是模块的局部状态对象。
+  // mutations中如何访问rootState或rootGetters暂未找到资料
   mutations: {
-    [types.SET_CART_LIST] (state, cartList) {
+    [types.SET_CART_LIST] (state, cartList, rootState, rootGetters) {
       console.debug('mutation copy_cart received cartList:')
       console.debug(cartList)
       state.cartList = cartList
       window.localStorage.setItem('cartList', JSON.stringify(state.cartList))
     },
 
-    [types.SET_CART_ITEM_AMOUNT] (state, {item, amount}) {
+    [types.SET_CART_ITEM_AMOUNT] (state, {item, amount}, rootState, rootGetters) {
       // 如果该品种已经存在，增加list中对应品种的amount
       // 如果该品种不存在，增加list中对应品种及amount
       let productIndex = -1
@@ -61,14 +63,14 @@ export default {
       }
     },
 
-    [types.EMPTY_CART] (state) {
+    [types.EMPTY_CART] (state, rootState, rootGetters) {
       console.debug('empty cart in mutation')
       state.cartList = []
       window.localStorage.setItem('cartList', JSON.stringify(state.cartList))
     },
 
     // 这是对象内方法的简化写法 es6
-    [types.ADD_CART_ITEM] (state, {item, amount}) {
+    [types.ADD_CART_ITEM] (state, {item, amount}, rootState, rootGetters) {
       // console.debug('mutation received item:')
       // console.debug(item)
       // console.debug('mutation received amount:')

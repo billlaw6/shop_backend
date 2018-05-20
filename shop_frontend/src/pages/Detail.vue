@@ -67,7 +67,7 @@
     computed: {
       ...mapState({
         // 大括号方式需要转成对象
-        decimals: state => state.decimals,
+        decimals: state => state.cart.decimals,
         cartList: state => state.cart.cartList
       })
     },

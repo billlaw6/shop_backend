@@ -18,8 +18,7 @@ const state = {
   // 统一在此取值，整个APP任何页面都不用处理刷新后store内容丢失的问题了
   loading: window.localStorage['loading'] ? JSON.parse(window.localStorage['loading']) : true,
   sitename: window.localStorage['sitename'] ? JSON.parse(window.localStorage['sitename']) : null,
-  saleUnit: window.localStorage['saleUnit'] ? JSON.parse(window.localStorage['saleUnit']) : 0.1,
-  decimals: window.localStorage['decimals'] ? JSON.parse(window.localStorage['decimals']) : 2
+  saleUnit: window.localStorage['saleUnit'] ? JSON.parse(window.localStorage['saleUnit']) : 0.1
 }
 
 const debug = process.env.NODE_ENV !== 'production'

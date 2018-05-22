@@ -1,5 +1,6 @@
 import * as types from '../types'
 import { authLogin, getUserInfo, getUserPermissions } from '@/http/api'
+// import router from '@/router/index'
 
 export default {
   // 如果希望你的模块具有更高的封装度和复用性，你可以通过添加 namespaced: true 的方式使其成为带命名空间的模块。当模块被注册后，它的所有 getter、action 及 mutation 都会自动根据模块注册的路径调整命名。
@@ -69,7 +70,7 @@ export default {
             console.log(res)
             let {data, status} = res
             if (status !== 200) {
-              return res
+              // return res
             } else {
               console.log(data)
               let tmpUser = data
@@ -78,29 +79,32 @@ export default {
                 let { data, status, statusText } = res
                 if (status !== 200) {
                   console.log('Error in getUserPermissions: ' + statusText)
-                  return res
+                  // return res
                 } else {
                   console.log(data)
                   tmpUser['permissions'] = data
                   commit(types.SET_CURRENT_USER, tmpUser)
+                  // if (false) {
+                  //   router.push({'name': 'saler'})
+                  // }
                   return { 'status': 0, 'data': tmpUser }
                 }
               }, (error) => {
                 console.log('Error in getUserPermissions: ' + error)
-                return { 'status': 1, 'data': error }
+                // return { 'status': 1, 'data': error }
               }).catch((error) => {
                 console.log('catched in getUserPermissions:' + error)
-                return { 'status': 1, 'data': error }
+                // return { 'status': 1, 'data': error }
               })
             }
           }, (error) => {
             console.log('Error in getUserInfo: ')
             console.debug(error)
-            return { 'status': 1, 'data': error }
+            // return { 'status': 1, 'data': error }
           }).catch((except) => {
             console.log('catched in getUserInfo:' + except)
             console.debug(except)
-            return { 'status': 1, 'data': except }
+            // return { 'status': 1, 'data': except }
           })
         }
       })

@@ -80,7 +80,7 @@ class UserInfo(APIView):
 
 class UserPermissions(APIView):
     """
-    返回相应用户的权限
+    返回当前登录用户的权限
     """
     authentication_classes = (authentication.SessionAuthentication,
                               authentication.TokenAuthentication,)

@@ -51,8 +51,9 @@ export const authLogout = params => {
 }
 
 export const getUserInfo = params => {
-  console.debug('getUserInfo')
-  return axios.get(`/rest-auth/user/`, params).then(res => res)
+  // console.debug('getUserInfo')
+  // return axios.get(`/rest-auth/user/`, params).then(res => res)
+  return axios.get(`/user_manage/user_info/`).then(res => res)
 }
 
 export const getUserPermissions = params => {

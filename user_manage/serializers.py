@@ -8,4 +8,6 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('url', 'username', 'first_name', 'last_name', 'email', 'is_staff')
+        # 如果添加url，必须有shopuser-detail名的url配置
+        fields = ('id', 'username', 'first_name', 'last_name', 'email',
+                  'is_staff', 'is_superuser')

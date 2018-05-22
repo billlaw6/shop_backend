@@ -25,34 +25,28 @@ Vue.config.productionTip = false
 // Vue.prototype.$api = api // this.$api即是http里的api
 
 router.beforeEach((to, from, next) => {
-  let accessToken = window.sessionStorage.getItem('accessToken')
-  // window.sessionStorage.removeItem('user')
-  let user = JSON.parse(window.sessionStorage.getItem('user'))
-  let permissions = JSON.parse(window.sessionStorage.getItem('permissions'))
+  let currentUser = JSON.parse(window.localStorage.getItem('currentUser'))
   // 判断该路由是否需要登录权限
   if (to.meta.requireAuth) {
     console.log('page require Authorization here')
     // 判断用户是否有指定权限
-    if (to.matched.some(record => record.meta.requireAuth)) {
-      if (accessToken && user) {
-        if (to.meta.permission === 'undefined') {
-          console.log(permissions.some(to.meta.permission))
-          next()
-        } else if (permissions.some(record => record.codename === to.meta.permission)) {
-          console.log('Has permission')
-          next()
-        } else {
-          console.log('Lack of permission')
-          next({ path: from.path })
-        }
+    if (currentUser) {
+      console.error(currentUser.permissions)
+      if (currentUser.permissions !== 'undefined') {
+        // console.log(currentUser.permissions.some(to.meta.permission))
+        next()
+      } else if (currentUser.permissions.some(record => record.codename === to.meta.permission)) {
+        console.log('Has permission')
+        next()
       } else {
-        next({
-          name: 'login',
-          query: { redirect: to.fullPath }
-        })
+        console.log('Lack of permission')
+        next({ path: from.path })
       }
     } else {
-      next()
+      next({
+        name: 'login',
+        query: { redirect: to.fullPath }
+      })
     }
   } else {
     next()

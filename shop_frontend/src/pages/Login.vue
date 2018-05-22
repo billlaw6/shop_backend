@@ -71,23 +71,31 @@
         login: 'login/login'
       }),
       handleSubmit (name) {
+        let _this = this
         this.$refs[name].validate((valid) => {
           if (valid) {
             // 清除过期的accessToken，错误的accessToken会报401未授权错误，更新数据库时测出来的
             window.localStorage.removeItem('accessToken')
             // this.$store.dispatch('login/login', this.formLogin)
-            this.login(this.formLogin).then(function () {
-              console.error('cUser')
-              // if (this.cUser.is_staff) {
-              //   this.$router.push({'name': 'user'})
-              // } else {
-              //   this.$router.push({'name': 'saler'})
-              // }
+            // console.error(this.$store.state.login.currentUser)
+            _this.login(_this.formLogin).then(() => {
+              // 箭头函数里的this会自动带入上下文的
+              // 常规函数则需要使用bind传入this
+              // console.error(this.cUser)
+              if (this.cUser.is_staff) {
+                // console.error('yes')
+                this.$router.push({'name': 'user'})
+              } else {
+                // console.error('no')
+                this.$router.push({'name': 'saler'})
+              }
+            // 常规函数使用bind传入this
+            // }.bind(_this))
             })
           } else {
-            this.$Message.error('表单验证失败!')
+            _this.$Message.error('表单验证失败!')
           }
-          if (this.formLogin.remember[0] === '记住密码') {
+          if (_this.formLogin.remember[0] === '记住密码') {
             window.sessionStorage.setItem('username', JSON.stringify(this.formLogin.username))
             window.sessionStorage.setItem('password', JSON.stringify(this.formLogin.password))
           } else {

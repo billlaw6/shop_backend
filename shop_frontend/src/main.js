@@ -31,9 +31,12 @@ router.beforeEach((to, from, next) => {
     console.log('page require Authorization here')
     // 判断用户是否有指定权限
     if (currentUser) {
-      console.error(currentUser.permissions)
+      console.error(currentUser.permissions.data)
       if (currentUser.permissions !== 'undefined') {
-        // console.log(currentUser.permissions.some(to.meta.permission))
+        console.error(typeof currentUser.permissions.data)
+        console.log(currentUser.permissions.data.some((item, index, array) => {
+          return item === to.meta.permission
+        }))
         next()
       } else if (currentUser.permissions.some(record => record.codename === to.meta.permission)) {
         console.log('Has permission')

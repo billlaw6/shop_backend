@@ -96,11 +96,11 @@
             _this.$Message.error('表单验证失败!')
           }
           if (_this.formLogin.remember[0] === '记住密码') {
-            window.sessionStorage.setItem('username', JSON.stringify(this.formLogin.username))
-            window.sessionStorage.setItem('password', JSON.stringify(this.formLogin.password))
+            window.localStorage.setItem('username', JSON.stringify(this.formLogin.username))
+            window.localStorage.setItem('password', JSON.stringify(this.formLogin.password))
           } else {
-            window.sessionStorage.removeItem('username')
-            window.sessionStorage.removeItem('password')
+            window.localStorage.removeItem('username')
+            window.localStorage.removeItem('password')
           }
         })
       },
@@ -109,11 +109,11 @@
       }
     },
     mounted () {
-      if (sessionStorage.getItem('username')) {
-        this.formLogin.username = JSON.parse(sessionStorage.getItem('username'))
+      if (localStorage.getItem('username')) {
+        this.formLogin.username = JSON.parse(localStorage.getItem('username'))
       }
-      if (sessionStorage.getItem('password')) {
-        this.formLogin.password = JSON.parse(sessionStorage.getItem('password'))
+      if (localStorage.getItem('password')) {
+        this.formLogin.password = JSON.parse(localStorage.getItem('password'))
       }
     }
   }

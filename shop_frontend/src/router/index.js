@@ -64,7 +64,8 @@ export default new Router({
       component: User,
       meta: {
         requireAuth: true,
-        hidden: false
+        hidden: false,
+        permission: 'dict_manage.change_payment'
       }
     },
     {
@@ -73,7 +74,8 @@ export default new Router({
       component: Saler,
       meta: {
         requireAuth: true,
-        hidden: false
+        hidden: false,
+        permission: 'dict_manage.change_payment'
       }
     }
   ]

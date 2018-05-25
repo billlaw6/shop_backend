@@ -7,6 +7,7 @@ import * as getters from './getters'
 import mutations from './mutations'
 
 import login from './modules/login'
+import category from './modules/category'
 import cart from './modules/cart'
 // import detail from './modules/detail'
 // import category from './modules/category'
@@ -33,6 +34,7 @@ export default new Vuex.Store({
   // 如果希望你的模块具有更高的封装度和复用性，你可以通过添加 namespaced: true 的方式使其成为带命名空间的模块。当模块被注册后，它的所有 getter、action 及 mutation 都会自动根据模块注册的路径调整命名。
   modules: {
     login: login,
+    category: category,
     cart: cart
   },
   strict: debug,

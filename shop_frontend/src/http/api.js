@@ -65,6 +65,14 @@ export const getProducts = params => {
   return axios.get(`/rest-api/products/`).then(res => res)
 }
 
+export const addProduct = params => {
+  return axios.post(`/rest-api/products/`, params).then(res => res)
+}
+
+export const updateProduct = params => {
+  return axios.put(`/rest-api/products/`, params).then(res => res)
+}
+
 export const getHotProducts = params => {
   return axios.get(`/rest-api/hot-products/`).then(res => res)
 }

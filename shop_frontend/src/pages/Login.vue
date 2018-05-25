@@ -34,6 +34,7 @@
 
 <script>
   import { mapState, mapGetters, mapActions } from 'vuex'
+
   export default {
     data () {
       return {
@@ -72,7 +73,7 @@
       }),
       handleSubmit (name) {
         let _this = this
-        this.$refs[name].validate((valid) => {
+        _this.$refs[name].validate((valid) => {
           if (valid) {
             // 清除过期的accessToken，错误的accessToken会报401未授权错误，更新数据库时测出来的
             window.localStorage.removeItem('accessToken')
@@ -82,12 +83,12 @@
               // 箭头函数里的this会自动带入上下文的
               // 常规函数则需要使用bind传入this
               // console.error(this.cUser)
-              if (this.cUser.is_staff) {
+              if (_this.cUser.is_staff) {
                 // console.error('yes')
-                this.$router.push({'name': 'user'})
+                _this.$router.push({'name': 'user'})
               } else {
                 // console.error('no')
-                this.$router.push({'name': 'saler'})
+                _this.$router.push({'name': 'saler'})
               }
             // 常规函数使用bind传入this
             // }.bind(_this))
@@ -96,8 +97,8 @@
             _this.$Message.error('表单验证失败!')
           }
           if (_this.formLogin.remember[0] === '记住密码') {
-            window.localStorage.setItem('username', JSON.stringify(this.formLogin.username))
-            window.localStorage.setItem('password', JSON.stringify(this.formLogin.password))
+            window.localStorage.setItem('username', JSON.stringify(_this.formLogin.username))
+            window.localStorage.setItem('password', JSON.stringify(_this.formLogin.password))
           } else {
             window.localStorage.removeItem('username')
             window.localStorage.removeItem('password')
@@ -105,7 +106,8 @@
         })
       },
       formLoginReset (name) {
-        this.$refs[name].resetFields()
+        let _this = this
+        _this.$refs[name].resetFields()
       }
     },
     mounted () {

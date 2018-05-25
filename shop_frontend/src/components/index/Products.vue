@@ -27,7 +27,8 @@
 </template>
 
 <script>
-  import { getProducts } from '../../http/api'
+  import { getProducts } from '@/http/api'
+  import { mapGetters, mapActions } from 'vuex'
 
   export default {
     data () {
@@ -38,6 +39,10 @@
       }
     },
     computed: {
+      ...mapGetters('category', [
+        'productListCount'
+      ]),
+
       aList: function () {
         // 用于autocomplete
         if (Array.isArray(this.datas.results)) {
@@ -60,20 +65,10 @@
       }
     },
     methods: {
-      // 使用computed属性替换autocomplete的filter-method
-      // filterList (value, option) {
-      //   // value确实为输入值，option为选项值
-      //   console.log('value:' + value)
-      //   // console.log('option')
-      //   console.log(option)
-      //   // if (option.name.toUpperCase().indexOf(value.toUpperCase()) !== -1) {
-      //   //   return true
-      //   // } else if (option.price.toString().indexOf(value) !== -1) {
-      //   //   return true
-      //   // } else {
-      //   //   return false
-      //   // }
-      // },
+      ...mapActions({
+        setProductList: 'category/setProductList'
+      }),
+
       searchProduct () {
         // 点击“搜”按钮时执行
         console.debug('搜')
@@ -101,11 +96,15 @@
     beforeCreate () {
       console.log('Products.vue creating')
       getProducts().then((response) => {
+        let _this = this
         console.debug('data gotton in Products:')
         console.debug(response.data)
         this.datas = response.data
         // 深拷贝，否则datas和mList相互影响
         this.mList = JSON.parse(JSON.stringify(response.data))
+        _this.setProductList(this.mList).then(() => {
+          console.debug('state product list set')
+        })
       }).catch(function (error) {
         console.error(error)
       })

@@ -7,6 +7,7 @@ const Cart = resolve => require(['@/pages/Cart.vue'], resolve)
 const Login = resolve => require(['@/pages/Login.vue'], resolve)
 const User = resolve => require(['@/pages/User.vue'], resolve)
 const Saler = resolve => require(['@/pages/Saler.vue'], resolve)
+const ProductManage = resolve => require(['@/pages/ProductManage.vue'], resolve)
 
 Vue.use(Router)
 
@@ -76,6 +77,15 @@ export default new Router({
         requireAuth: true,
         hidden: false,
         permission: 'dict_manage.change_payment'
+      }
+    },
+    {
+      path: '/product_manage',
+      name: 'product_manage',
+      component: ProductManage,
+      meta: {
+        requireAuth: true
+        // permission: 'dict_manage.change_product'
       }
     }
   ]

@@ -10,6 +10,9 @@ export const SET_LOADING = 'SET_LOADING'
 export const SET_ACCESS_TOKEN = 'SET_ACCESS_TOKEN'
 export const SET_CURRENT_USER = 'SET_CURRENT_USER'
 
+// modules/category.js
+export const SET_PRODUCT_LIST = 'SET_PRODUCT_LIST'
+
 // modules/cart.js
 export const ADD_CART_ITEM = 'ADD_CART_ITEM'
 export const SET_CART_ITEM_AMOUNT = 'SET_CART_ITEM_AMOUNT'

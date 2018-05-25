@@ -84,9 +84,6 @@ export default {
                   console.log(data)
                   tmpUser['permissions'] = data
                   commit(types.SET_CURRENT_USER, tmpUser)
-                  // if (false) {
-                  //   router.push({'name': 'saler'})
-                  // }
                   return { 'status': 0, 'data': tmpUser }
                 }
               }, (error) => {
@@ -100,7 +97,6 @@ export default {
           }, (error) => {
             console.log('Error in getUserInfo: ')
             console.debug(error)
-            // return { 'status': 1, 'data': error }
           }).catch((except) => {
             console.log('catched in getUserInfo:' + except)
             console.debug(except)
@@ -108,6 +104,7 @@ export default {
           })
         }
       })
+      // 调用root级的mutation
       commit(types.SET_LOADING, false, { root: true })
     }
   },

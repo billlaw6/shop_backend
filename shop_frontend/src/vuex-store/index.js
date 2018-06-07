@@ -7,6 +7,7 @@ import * as getters from './getters'
 import mutations from './mutations'
 
 import login from './modules/login'
+import app from './modules/app'
 import category from './modules/category'
 import cart from './modules/cart'
 // import detail from './modules/detail'
@@ -19,6 +20,7 @@ const state = {
   // 统一在此取值，整个APP任何页面都不用处理刷新后store内容丢失的问题了
   loading: window.localStorage['loading'] ? JSON.parse(window.localStorage['loading']) : true,
   sitename: window.localStorage['sitename'] ? JSON.parse(window.localStorage['sitename']) : null,
+  departments: window.localStorage['departments'] ? JSON.parse(window.localStorage['departments']) : null,
   saleUnit: window.localStorage['saleUnit'] ? JSON.parse(window.localStorage['saleUnit']) : 0.1
 }
 
@@ -34,6 +36,7 @@ export default new Vuex.Store({
   // 如果希望你的模块具有更高的封装度和复用性，你可以通过添加 namespaced: true 的方式使其成为带命名空间的模块。当模块被注册后，它的所有 getter、action 及 mutation 都会自动根据模块注册的路径调整命名。
   modules: {
     login: login,
+    app: app,
     category: category,
     cart: cart
   },

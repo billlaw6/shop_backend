@@ -3,7 +3,7 @@
 import axios from 'axios'
 import store from '@/vuex-store/index'
 import * as types from '@/vuex-store/types'
-import router from '@/router/index'
+import { router } from '@/router/index'
 
 axios.defaults.baseURL = 'http://123.56.115.20'
 axios.defaults.timeout = 5000
@@ -39,6 +39,10 @@ axios.interceptors.request.use(
   }
 )
 
+export const getDepartments = params => {
+  return axios.get(`/user-manage/departments/`).then(res => res)
+}
+
 export const authLogin = params => {
   // http://django-rest-auth.readthedocs.io/en/latest/api_endpoints.html
   // 提交username, email, password，返回Token Object's key.
@@ -53,31 +57,54 @@ export const authLogout = params => {
 export const getUserInfo = params => {
   // console.debug('getUserInfo')
   // return axios.get(`/rest-auth/user/`, params).then(res => res)
-  return axios.get(`/user_manage/user_info/`).then(res => res)
+  return axios.get(`/user-manage/user-info/`).then(res => res)
 }
 
 export const getUserPermissions = params => {
   console.debug('getUserPermissions')
-  return axios.get(`/user_manage/user_perms/`, params).then(res => res)
+  return axios.get(`/user-manage/user-perms/`, params).then(res => res)
 }
 
 export const getProducts = params => {
-  return axios.get(`/rest-api/products/`).then(res => res)
+  return axios.get(`/sale-manage/products/`).then(res => res)
 }
 
+export const productDetail = params => { return axios.get(`/sale-manage/products/${params.id}`, params).then(res => res) }
+
 export const addProduct = params => {
-  return axios.post(`/rest-api/products/`, params).then(res => res)
+  return axios.post(`/sale-manage/products/`, params).then(res => res)
 }
 
 export const updateProduct = params => {
-  return axios.put(`/rest-api/products/`, params).then(res => res)
+  return axios.put(`/sale-manage/products/`, params).then(res => res)
 }
 
 export const getHotProducts = params => {
-  return axios.get(`/rest-api/hot-products/`).then(res => res)
+  return axios.get(`/sale-manage/hot-products/`).then(res => res)
 }
 
 export const getProductDetail = params => {
   let productId = params
-  return axios.get(`/rest-api/products/${productId}`).then(res => res)
+  return axios.get(`/sale-manage/products/${productId}`).then(res => res)
 }
+
+export const authUser = params => { return axios.get(`/rest-auth/user/`, params).then(res => res) }
+
+export const authRegister = params => { return axios.post(`/rest-auth/registration/`, params).then(res => res) }
+
+export const authPassReset = params => { return axios.post(`/rest-auth/password/reset/`, params).then(res => res) }
+
+export const authPassResetConfirm = params => { return axios.post(`/rest-auth/password/reset/confirm/`, params).then(res => res) }
+
+export const authPassChange = params => { return axios.post(`/rest-auth/password/change/`, params).then(res => res) }
+
+export const authWeixinLogin = params => { return axios.post(`/rest-auth/weixin/`, params).then(res => res) }
+
+export const getCaptcha = params => { return axios.get(`/utils/get-captcha`, params).then(res => res) }
+
+// 微信公众号相关API
+export const weixinUserList = params => { return axios.post(`/weixin/user-list/`, params).then(res => res) }
+
+export const weixinUserInfo = params => { return axios.post(`/weixin/user-info/`, params).then(res => res) }
+
+export const weixinBatchUserInfo = params => { return axios.post(`/weixin/batch-user-info/`, params).then(res => res) }

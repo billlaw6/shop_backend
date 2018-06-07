@@ -1,3 +1,5 @@
+// display属性定义盒的类型。CSS中盒分为block类型和inline类型。
+// 一行只容纳一个block类型元素，但可以并列容纳多个inline类型元素。
 @import '../../node_modules/nib'
 
 // 变量名用$开头，提高可读性
@@ -26,13 +28,27 @@ $font-size = 18px
 
 // 插值Interpolation，使用i-开头标识，以区分Function, Mixins
 i-vendor(prop, args)
+  // Safari或Chrome
   -webkit-{prop}: args
+  // Firefox
   -moz-{prop}: args
+  // IE
+  -ms-{prop}: args
+  // opera
+  -o-{prop}: args
+  // 通用
   {prop}: args
 
 i-vendor-value(prop, value)
+  // Safari或Chrome
   {prop}: -webkit- + 'value'
+  // Firefox浏览器
   {prop}: -moz- + 'value'
+  // IE
+  {prop}: -ms- + 'value'
+  // opera
+  {prop}: -o- + 'value'
+  // 通用
   {prop}: value
 
 border-radius()

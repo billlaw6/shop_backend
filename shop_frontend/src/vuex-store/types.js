@@ -3,6 +3,7 @@
 
 // Root mutations
 export const SET_SITE_NAME = 'SET_SITE_NAME'
+export const SET_DEPARTMENTS = 'SET_DEPARTMENTS'
 export const SET_LOADING = 'SET_LOADING'
 
 // module mutations

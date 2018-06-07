@@ -23,6 +23,11 @@ export default {
     window.localStorage.setItem('sitename', JSON.stringify(state.sitename))
   },
 
+  [types.SET_DEPARTMENTS] (state, departments) {
+    state.departments = departments
+    window.localStorage.setItem('departments', JSON.stringify(state.departments))
+  },
+
   [types.SET_LOADING] (state, loading) {
     state.loading = loading
     // 此写法才会触发getters的更新？

@@ -5,11 +5,13 @@ from django.contrib.auth import get_user_model, logout as core_logout
 from rest_framework import viewsets, authentication, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework import permissions
 from rest_framework.renderers import JSONRenderer
 # from social_django.models import UserSocialAuth
 
-from user_manage.serializers import UserSerializer
+from user_manage.models import Department
+from user_manage.serializers import (UserSerializer,
+    DepartmentSerializer)
 
 # Create your views here.
 
@@ -58,9 +60,19 @@ class UserViewSet(viewsets.ModelViewSet):
     The actions provided by the ModelViewSet class are .list(), .retrieve(),
     .create(), .update(), .partial_update(), and .destroy().
     """
-    queryset = get_user_model().objects.all()
+    queryset = get_user_model().objects.filter(is_active=1)
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class DepartmentViewSet(viewsets.ModelViewSet):
+    """
+    The actions provided by the ModelViewSet class are .list(), .retrieve(),
+    .create(), .update(), .partial_update(), and .destroy().
+    """
+    queryset = Department.objects.filter(is_active=1)
+    serializer_class = DepartmentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 class UserInfo(APIView):
@@ -71,7 +83,7 @@ class UserInfo(APIView):
     """
     authentication_classes = (authentication.SessionAuthentication,
                               authentication.TokenAuthentication,)
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
         serializer = UserSerializer(request.user, context={'request': request})
@@ -84,7 +96,7 @@ class UserPermissions(APIView):
     """
     authentication_classes = (authentication.SessionAuthentication,
                               authentication.TokenAuthentication,)
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
         perms = JSONRenderer().render(request.user.get_all_permissions())

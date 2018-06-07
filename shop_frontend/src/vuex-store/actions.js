@@ -12,8 +12,11 @@ import * as types from './types'
 // 本案例使用ES2015的参数解构将context对象解构成了{ commit, state }，只取用context两个属性
 // export const setSitename = (context, { sitename }) => {
 export const setSitename = ({ commit, state }, sitename) => {
-  console.log('set sitename action')
   commit(types.SET_SITE_NAME, sitename)
+}
+
+export const setDepartments = ({ commit, state }, departments) => {
+  commit(types.SET_DEPARTMENTS, departments)
 }
 
 export const setLoading = ({ commit, state }, loading) => {

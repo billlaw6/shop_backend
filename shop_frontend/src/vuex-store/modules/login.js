@@ -1,6 +1,6 @@
 import * as types from '../types'
 import { authLogin, getUserInfo, getUserPermissions } from '@/http/api'
-// import router from '@/router/index'
+import { router } from '@/router/index'
 
 export default {
   // 如果希望你的模块具有更高的封装度和复用性，你可以通过添加 namespaced: true 的方式使其成为带命名空间的模块。当模块被注册后，它的所有 getter、action 及 mutation 都会自动根据模块注册的路径调整命名。
@@ -24,10 +24,10 @@ export default {
     },
     'username': (state, getters, rootState, rootGetter) => {
       if (state.currentUser !== null) {
-        console.log('has username')
+        // console.debug('has username')
         return state.currentUser.username
       } else {
-        console.log('no username')
+        // console.debug('no username')
         return null
       }
     }
@@ -38,14 +38,14 @@ export default {
   // mutations中如何访问rootState或rootGetters暂未找到资料
   mutations: {
     [types.SET_ACCESS_TOKEN] (state, accessToken, rootState, rootGetters) {
-      console.debug('login SET_ACCESS_TOKEN mutations')
+      // console.debug('login SET_ACCESS_TOKEN mutations')
       state.accessToken = accessToken
       // 同步更新localStorage内容，与state中从localStorage取值配合解决刷新页面state值丢失的问题
       window.localStorage.setItem('accessToken', JSON.stringify(state.accessToken))
     },
 
     [types.SET_CURRENT_USER] (state, currentUser, rootState, rootGetters) {
-      console.debug('login SET_CURRENT_USERmutations')
+      // console.debug('login SET_CURRENT_USERmutations')
       state.currentUser = currentUser
       // 同步更新localStorage内容，与state中从localStorage取值配合解决刷新页面state值丢失的问题
       window.localStorage.setItem('currentUser', JSON.stringify(state.currentUser))
@@ -56,9 +56,10 @@ export default {
   actions: {
     'login': ({ dispatch, commit, rootState, rootGetters }, { username, password }) => {
       // console.debug('login with: ' + username + ' ' + password)
+      window.localStorage.setItem('currentUser', null)
       commit(types.SET_LOADING, true, { root: true })
       authLogin({ username, password }).then((res) => {
-        console.debug(res)
+        // console.debug(res)
         let {data, status} = res
         if (status !== 200) {
           return res
@@ -66,39 +67,46 @@ export default {
           commit(types.SET_ACCESS_TOKEN, data.key)
           // 设置当前登录用户
           getUserInfo().then((res) => {
-            console.log('getUserInfo: ')
-            console.log(res)
+            // console.debug('getUserInfo: ')
+            // console.debug(res)
             let {data, status} = res
             if (status !== 200) {
               // return res
             } else {
-              console.log(data)
-              let tmpUser = data
+              // console.debug(data)
+              // 此处需要转换成object
+              let tmpUser = JSON.parse(data)
               // 设置当前登录用户权限
               getUserPermissions().then((res) => {
                 let { data, status, statusText } = res
                 if (status !== 200) {
-                  console.log('Error in getUserPermissions: ' + statusText)
+                  console.debug('Error in getUserPermissions: ' + statusText)
                   // return res
                 } else {
-                  console.log(data)
-                  tmpUser['permissions'] = data
+                  // console.error(data)
+                  tmpUser.permissions = JSON.parse(data)
+                  // tmpUser.permissions = data
                   commit(types.SET_CURRENT_USER, tmpUser)
+                  if (tmpUser.is_staff) {
+                    router.push({'name': 'home'})
+                  } else {
+                    router.push({'name': 'user'})
+                  }
                   return { 'status': 0, 'data': tmpUser }
                 }
               }, (error) => {
-                console.log('Error in getUserPermissions: ' + error)
+                console.debug('Error in getUserPermissions: ' + error)
                 // return { 'status': 1, 'data': error }
               }).catch((error) => {
-                console.log('catched in getUserPermissions:' + error)
+                console.debug('catched in getUserPermissions:' + error)
                 // return { 'status': 1, 'data': error }
               })
             }
           }, (error) => {
-            console.log('Error in getUserInfo: ')
+            console.debug('Error in getUserInfo: ')
             console.debug(error)
           }).catch((except) => {
-            console.log('catched in getUserInfo:' + except)
+            console.debug('catched in getUserInfo:' + except)
             console.debug(except)
             // return { 'status': 1, 'data': except }
           })

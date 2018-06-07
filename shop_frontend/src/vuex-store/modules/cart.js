@@ -99,6 +99,23 @@ export default {
         state.cartList[productIndex] = item
         window.localStorage.setItem('cartList', JSON.stringify(state.cartList))
       }
+    },
+
+    [types.REMOVE_CART_ITEM] (state, item, rootState, rootGetters) {
+      let productIndex = -1
+      // console.error(item.id)
+      state.cartList.forEach((el, index, array) => {
+        // console.error(el.id)
+        if (el.id === item.id) {
+          productIndex = index
+        }
+      })
+      if (productIndex !== -1) {
+        state.cartList.splice(productIndex, 1)
+        window.localStorage.setItem('cartList', JSON.stringify(state.cartList))
+      } else {
+        console.error('购物车中不存在此商品')
+      }
     }
   },
 

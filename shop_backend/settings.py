@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'allauth.account',
     # My apps
     'weixin.apps.WeixinConfig',
-    'dict_manage.apps.DictManageConfig',
+    'sale_manage.apps.SaleManageConfig',
     'user_manage.apps.UserManageConfig',
     'verify_utils.apps.VerifyUtilsConfig',
 ]
@@ -97,11 +97,27 @@ WSGI_APPLICATION = 'shop_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+  'default': {
+    'ENGINE': 'django.db.backends.mysql',
+    'NAME': 'shop',
+    'USER': 'shop_user',
+    'PASSWORD': 'shop123456',
+    'HOST': 'localhost',
+    'PORT': '3306',
+    'CHARSET': 'utf8',
+    'OPTIONS': {
+      # 'sql_mode': 'STRICT_TRANS_TABLES'
+      'sql_mode': 'STRICT_ALL_TABLES'
     }
+  }
 }
 
 

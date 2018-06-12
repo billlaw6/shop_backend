@@ -21,7 +21,7 @@
 <script>
 import sidebarMenu from './components/sidebarMenu.vue'
 import sidebarMenuShrink from './components/sidebarMenuShrink.vue'
-import util from '@/libs/util'
+// import util from '@/libs/util'
 export default {
   name: 'shrinkableMenu',
   components: {
@@ -39,10 +39,10 @@ export default {
     },
     theme: {
       type: String,
-      default: 'dark',
-      validator (val) {
-        return util.oneOf(val, ['dark', 'light'])
-      }
+      default: 'dark'
+      // validator (val) {
+        // return util.oneOf(val, ['dark', 'light'])
+      // }
     },
     beforePush: {
       type: Function
@@ -77,3 +77,10 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.ivu-shrinkable-menu
+  height: 100%
+  width: 100%
+  background-color: red
+</style>

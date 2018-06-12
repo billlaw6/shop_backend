@@ -7,6 +7,7 @@ import iView from 'iview'
 import 'iview/dist/styles/iview.css'
 import './assets/font-awesome-4.7.0/css/font-awesome.min.css' // 免费图标
 import VueI18n from 'vue-i18n'
+import '@/locale'
 import VueLazyLoad from 'vue-lazyload'
 import App from './App'
 

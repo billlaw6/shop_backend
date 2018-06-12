@@ -1,5 +1,4 @@
 import axios from 'axios'
-import config from '../../config/index.js'
 import semver from 'semver'
 import packjson from '../../package.json'
 
@@ -11,11 +10,7 @@ util.title = function (title) {
   window.document.title = title
 }
 
-const ajaxUrl = config.env === 'development'
-  ? 'http://127.0.0.1:8888'
-  : config.env === 'production'
-    ? 'https://www.url.com'
-    : 'https://debug.url.com'
+const ajaxUrl = 'http://123.56.115.20:8000'
 
 util.ajax = axios.create({
   baseURL: ajaxUrl,

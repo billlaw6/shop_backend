@@ -1,4 +1,4 @@
-import * as types from '../types'
+import * as types from '@/vuex-store/types'
 
 export default {
   namespaced: true,

@@ -1,4 +1,4 @@
-import * as types from '../types'
+import * as types from '@/vuex-store/types'
 import { authLogin, getUserInfo, getUserPermissions } from '@/http/api'
 import { router } from '@/router/index'
 

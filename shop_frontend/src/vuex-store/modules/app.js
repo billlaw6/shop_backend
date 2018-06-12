@@ -1,9 +1,11 @@
 import {otherRouter, appRouter} from '@/router/router'
-import Util from '@/libs/util'
-import Cookies from 'js-cookie'
+import * as types from '@/vuex-store/types'
+// import Cookies from 'js-cookie'
 import Vue from 'vue'
 
 const app = {
+  namespaced: true,
+
   state: {
     cachePage: [],
     lang: '',
@@ -29,37 +31,20 @@ const app = {
       otherRouter,
       ...appRouter
     ],
-    tagsList: [...otherRouter.children],
+    tagList: [...otherRouter.children],
     messageCount: 0,
     dontCache: ['text-editor', 'artical-publish'] // 在这里定义你不想要缓存的页面的name属性值(参见路由配置router.js)
   },
+
   mutations: {
-    setTagsList (state, list) {
-      state.tagsList.push(...list)
+    [types.SET_TAG_LIST] (state, list) {
+      state.tagList.push(...list)
     },
-    updateMenulist (state) {
-      let accessCode = parseInt(Cookies.get('access'))
+    [types.UPDATE_MENU_LIST] (state) {
+      // let accessCode = parseInt(Cookies.get('access'))
       let menuList = []
       appRouter.forEach((item, index) => {
         if (item.access !== undefined) {
-          if (Util.showThisRoute(item.access, accessCode)) {
-            if (item.children.length === 1) {
-              menuList.push(item)
-            } else {
-              let len = menuList.push(item)
-              let childrenArr = []
-              childrenArr = item.children.filter(child => {
-                if (child.access !== undefined) {
-                  if (child.access === accessCode) {
-                    return child
-                  }
-                } else {
-                  return child
-                }
-              })
-              menuList[len - 1].children = childrenArr
-            }
-          }
         } else {
           if (item.children.length === 1) {
             menuList.push(item)
@@ -68,9 +53,6 @@ const app = {
             let childrenArr = []
             childrenArr = item.children.filter(child => {
               if (child.access !== undefined) {
-                if (Util.showThisRoute(child.access, accessCode)) {
-                  return child
-                }
               } else {
                 return child
               }
@@ -87,13 +69,13 @@ const app = {
       })
       state.menuList = menuList
     },
-    changeMenuTheme (state, theme) {
+    [types.CHANGE_MENU_THEME] (state, theme) {
       state.menuTheme = theme
     },
-    changeMainTheme (state, mainTheme) {
+    [types.CHANGE_MAIN_THEME] (state, mainTheme) {
       state.themeColor = mainTheme
     },
-    addOpenSubmenu (state, name) {
+    [types.ADD_OPEN_SUBMENU] (state, name) {
       let hasThisName = false
       let isEmpty = false
       if (name.length === 0) {
@@ -106,26 +88,26 @@ const app = {
         state.openedSubmenuArr.push(name)
       }
     },
-    closePage (state, name) {
+    [types.CLOSE_PAGE] (state, name) {
       state.cachePage.forEach((item, index) => {
         if (item === name) {
           state.cachePage.splice(index, 1)
         }
       })
     },
-    initCachepage (state) {
+    [types.INIT_CACHE_PAGE] (state) {
       if (localStorage.cachePage) {
         state.cachePage = JSON.parse(localStorage.cachePage)
       }
     },
-    removeTag (state, name) {
+    [types.REMOVE_TAG] (state, name) {
       state.pageOpenedList.map((item, index) => {
         if (item.name === name) {
           state.pageOpenedList.splice(index, 1)
         }
       })
     },
-    pageOpenedList (state, get) {
+    [types.PAGE_OPENED_LIST] (state, get) {
       let openedPage = state.pageOpenedList[get.index]
       if (get.argu) {
         openedPage.argu = get.argu
@@ -136,12 +118,12 @@ const app = {
       state.pageOpenedList.splice(get.index, 1, openedPage)
       localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
     },
-    clearAllTags (state) {
+    [types.CLEAR_ALL_TAGS] (state) {
       state.pageOpenedList.splice(1)
       state.cachePage.length = 0
       localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
     },
-    clearOtherTags (state, vm) {
+    [types.CLEAR_OTHER_TAGS] (state, vm) {
       let currentName = vm.$route.name
       let currentIndex = 0
       state.pageOpenedList.forEach((item, index) => {
@@ -161,35 +143,37 @@ const app = {
       state.cachePage = newCachepage
       localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
     },
-    setOpenedList (state) {
+    [types.SET_OPENED_LIST] (state) {
       state.pageOpenedList = localStorage.pageOpenedList ? JSON.parse(localStorage.pageOpenedList) : [otherRouter.children[0]]
     },
-    setCurrentPath (state, pathArr) {
+    [types.SET_CURRENT_PATH] (state, pathArr) {
       state.currentPath = pathArr
     },
-    setCurrentPageName (state, name) {
+    [types.SET_CURRENT_PAGENAME] (state, name) {
       state.currentPageName = name
     },
-    setAvator (state, path) {
+    [types.SET_AVATOR] (state, path) {
       localStorage.avatorImgPath = path
     },
-    switchLang (state, lang) {
+    [types.SWITCH_LANG] (state, lang) {
       state.lang = lang
       Vue.config.lang = lang
     },
-    clearOpenedSubmenu (state) {
+    [types.CLEAR_OPENED_SUBMENU] (state) {
       state.openedSubmenuArr.length = 0
     },
-    setMessageCount (state, count) {
+    [types.SET_MESSAGE_COUNT] (state, count) {
       state.messageCount = count
     },
-    increateTag (state, tagObj) {
-      if (!Util.oneOf(tagObj.name, state.dontCache)) {
-        state.cachePage.push(tagObj.name)
-        localStorage.cachePage = JSON.stringify(state.cachePage)
-      }
+    [types.INCREATE_TAG] (state, tagObj) {
       state.pageOpenedList.push(tagObj)
       localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
+    }
+  },
+
+  actions: {
+    'setMessageCount': ({ dispatch, commit, getters, rootGetters }, count) => {
+      commit(types.SET_MESSAGE_COUNT, count)
     }
   }
 }

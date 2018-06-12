@@ -1,5 +1,5 @@
 import Util from '../../common/common'
-import * as types from '../types'
+import * as types from '@/vuex-store/types'
 import Vue from 'vue'
 
 // 容器

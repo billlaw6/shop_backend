@@ -1,48 +1,52 @@
 <template>
-  <div class="main" :class="{'main-hide-text': shrink}">
-    <div class="sidebar-menu-con" :style="{width: shrink?'5vw':'20vw', overflow: shrink ? 'visible' : 'auto'}">
-      <shrinkable-menu :shrink="shrink" @on-change="handleSubmenuChange" :theme="menuTheme" :before-push="beforePush"           
-        :open-names="openedSubmenuArr"      
-        :menu-list="menuList">              
-        <div slot="top" class="logo-con">   
-          <img v-show="!shrink"  src="../assets/images/logo.jpg" key="max-logo" />
-          <img v-show="shrink" src="../assets/images/logo-min.jpg" key="min-logo" />
-        </div>    
-      </shrinkable-menu>
-    </div>
-    <div class="main-header-con" :style="{paddingLeft: shrink?'5vw':'20vw'}">
-      <div class="main-header">
-        <div class="navicon-con">
-          <Button :style="{transform: 'rotateZ(' + (this.shrink ? '-90' : '0') + 'deg)'}" type="text" @click="toggleClick">
-            <Icon type="navicon" size="32"></Icon>
-          </Button>
-        </div>
-        <div class="header-middle-con">
-          <div class="main-breadcrumb">
+  <div class="layout">  
+    <Layout>
+      <Sider ref="side-menu" hide-trigger collapsible :collapsed-width="78" v-model="shrink">
+        <shrinkable-menu :shrink="shrink" @on-change="handleSubmenuChange" :theme="menuTheme" :before-push="beforePush"           
+          :open-names="openedSubmenuArr"      
+          :menu-list="menuList">              
+          <div slot="top" class="logo-con">   
+            <img v-show="!shrink"  src="../assets/images/logo.jpg" key="max-logo" />
+            <img v-show="shrink" src="../assets/images/logo-min.jpg" key="min-logo" />
+          </div>    
+        </shrinkable-menu>
+      </Sider>
+
+      <Layout>
+        <Header :style="{padding: 0}" class="layout-header-bar">
+          <Icon @click.native="toggleClick" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
+          <div class="header-middle-con">
+            <div class="main-breadcrumb">
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="tags-con">
-      </div>
-    </div>
-    <div class="single-page-con" :style="{left: shrink?'5vw':'20vw'}">
-      <div class="single-page">
-        <keep-alive :include="cachePage">
-          <router-view></router-view>
-        </keep-alive>
-      </div>
-    </div>
+        </Header>
+
+        <Content>
+          <div class="single-page-con" :style="{left: shrink?'10vw':'25vw'}">
+            <div class="single-page">
+              <keep-alive :include="cachePage">
+                <router-view></router-view>
+              </keep-alive>
+            </div>
+          </div>
+        </Content>
+
+        <Footer>
+        </Footer>
+      </Layout>
+    </Layout>
   </div>
 </template>
+
 <script>
   // import Cookies from 'js-cookie'
   import { mapState, mapMutations } from 'vuex'
   import * as types from '@/vuex-store/types'
-  import shrinkableMenu from '@/views/components/main/shrinkable-menu/shrinkable-menu.vue'
+  import ShrinkableMenu from '@/views/components/main/shrinkable-menu/ShrinkableMenu.vue'
   
   export default {
     components: {
-      shrinkableMenu
+      ShrinkableMenu
     },
     data () {
       return {
@@ -120,3 +124,14 @@
     }
   }
 </script>
+
+<style lang="stylus" scoped>
+  @import '../common/vars'
+  
+  .layout-header-bar
+    background-color: $background-color
+  .logo-con
+    img
+      width: 100%
+      height: 100%
+</style>

@@ -19,14 +19,14 @@
 </template>
 
 <script>
-import sidebarMenu from './components/sidebarMenu.vue'
-import sidebarMenuShrink from './components/sidebarMenuShrink.vue'
+import SidebarMenu from './components/SidebarMenu.vue'
+import SidebarMenuShrink from './components/SidebarMenuShrink.vue'
 // import util from '@/libs/util'
 export default {
   name: 'shrinkableMenu',
   components: {
-    sidebarMenu,
-    sidebarMenuShrink
+    SidebarMenu,
+    SidebarMenuShrink
   },
   props: {
     shrink: {
@@ -79,8 +79,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.ivu-shrinkable-menu
-  height: 100%
-  width: 100%
-  background-color: red
+// .ivu-shrinkable-menu
+//   height: 100%
+//   width: 100%
+//   background-color: red
 </style>

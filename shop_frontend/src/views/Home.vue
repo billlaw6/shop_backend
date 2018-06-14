@@ -6,18 +6,19 @@
           :open-names="openedSubmenuArr"      
           :menu-list="menuList">              
           <div slot="top" class="logo-con">   
-            <img v-show="!shrink"  src="../assets/images/logo.jpg" key="max-logo" />
-            <img v-show="shrink" src="../assets/images/logo-min.jpg" key="min-logo" />
+            <router-link :to="{ name: 'dashboard' }">
+              <img v-show="!shrink"  src="../assets/images/logo.jpg" key="max-logo" />
+              <img v-show="shrink" src="../assets/images/logo-min.jpg" key="min-logo" />
+            </router-link>
           </div>    
         </shrinkable-menu>
       </Sider>
 
       <Layout>
         <Header :style="{padding: 0}" class="layout-header-bar">
-          <Icon @click.native="toggleClick" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
-          <div class="header-middle-con">
-            <div class="main-breadcrumb">
-            </div>
+          <Icon @click.native="toggleClick" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="30"></Icon>
+          <div class="header-middle">
+            <breadcrumb-nav :currentPath="currentPath"></breadcrumb-nav>
           </div>
         </Header>
 
@@ -43,10 +44,12 @@
   import { mapState, mapMutations } from 'vuex'
   import * as types from '@/vuex-store/types'
   import ShrinkableMenu from '@/views/components/main/shrinkable-menu/ShrinkableMenu.vue'
+  import BreadcrumbNav from '@/views/components/main/BreadcrumbNav.vue'
   
   export default {
     components: {
-      ShrinkableMenu
+      ShrinkableMenu,
+      BreadcrumbNav
     },
     data () {
       return {
@@ -66,6 +69,12 @@
         'cachePage': state => state.cachePage,
         'msgCount': state => state.messageCount
       }),
+      rotateIcon () {
+        return [
+          'menu-icon',
+          this.shrink ? 'rotate-icon' : ''
+        ]
+      },
       avatorPath () {
         return localStorage.avatorImgPath
       }
@@ -127,11 +136,29 @@
 
 <style lang="stylus" scoped>
   @import '../common/vars'
-  
-  .layout-header-bar
-    background-color: $background-color
+
+  .layout
+    border: 1px solid $border-color
+    background: $background-color
+    position: relative
+    border-radius: 4px
+    overflow: hidden
   .logo-con
     img
       width: 100%
       height: 100%
+  .menu-icon
+    transition: all .3s
+  .rotate-icon
+    transform: rotate(-90deg)
+  .layout-header-bar
+    background-color: $background-color
+    box-shadow: 0 1px 1px rgba(0,0,0,.1)
+  .header-middle
+    margin-left: 10vw
+    position: absolute
+    left: 30vw
+    top: 0
+    bottom: 0
+    margin: auto
 </style>

@@ -75,12 +75,12 @@ export const user = {
 }
 
 // 作为Home组件的子页面展示但是不在左侧菜单显示的路由写在otherRouter里
+// 如导航栏、消息栏等链接页面
 export const otherRouter = {
   path: '/home',
-  name: 'otherRouter',
-  // redirect: '/home',
   component: Home,
   children: [
+    { path: '', title: '管理中心', name: 'dashboard', component: resolve => require(['@/views/components/main/Dashboard.vue'], resolve) },
     { path: 'ownspace', title: '个人中心', name: 'ownspace_index', component: resolve => require(['@/views/User.vue'], resolve) },
     { path: 'order/:order_id', title: '订单详情', name: 'order-info', component: resolve => require(['@/views/Protocal.vue'], resolve) }, // 用于展示动态路由
     { path: 'message', title: '消息中心', name: 'message_index', component: resolve => require(['@/views/Protocal.vue'], resolve) }

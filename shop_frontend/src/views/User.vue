@@ -5,7 +5,7 @@
           <span class="icon2-user"></span>
       </div>
       <span>登录/注册</span>
-      <router-link :to="{ name: 'home' }">
+      <router-link :to="{ name: 'dashboard' }">
         <Icon type="ios-home" :size="24"></Icon><br/>
         管理后台
       </router-link>

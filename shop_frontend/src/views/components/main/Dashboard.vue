@@ -172,21 +172,21 @@
 </template>
 
 <script>
-import cityData from '@/views/components/home/dashboard/map-data/get-city-value.js'
-import homeMap from '@/views/components/home/dashboard/map.vue'
-import dataSourcePie from '@/views/components/home/dashboard/dataSourcePie.vue'
-import visiteVolume from '@/views/components/home/dashboard/visiteVolume.vue'
-import serviceRequests from '@/views/components/home/dashboard/serviceRequests.vue'
-import userFlow from '@/views/components/home/dashboard/userFlow.vue'
-import countUp from '@/views/components/home/dashboard/countUp.vue'
-import inforCard from '@/views/components/home/dashboard/inforCard.vue'
-import mapDataTable from '@/views/components/home/dashboard/mapDataTable.vue'
-import toDoListItem from '@/views/components/home/dashboard/toDoListItem.vue'
+import cityData from '@/views/components/main/dashboard/map-data/get-city-value.js'
+import HomeMap from '@/views/components/main/dashboard/HomeMap.vue'
+import dataSourcePie from '@/views/components/main/dashboard/dataSourcePie.vue'
+import visiteVolume from '@/views/components/main/dashboard/visiteVolume.vue'
+import serviceRequests from '@/views/components/main/dashboard/serviceRequests.vue'
+import userFlow from '@/views/components/main/dashboard/userFlow.vue'
+import countUp from '@/views/components/main/dashboard/countUp.vue'
+import inforCard from '@/views/components/main/dashboard/inforCard.vue'
+import mapDataTable from '@/views/components/main/dashboard/mapDataTable.vue'
+import toDoListItem from '@/views/components/main/dashboard/toDoListItem.vue'
 
 export default {
   name: 'home',
   components: {
-    homeMap,
+    HomeMap,
     dataSourcePie,
     visiteVolume,
     serviceRequests,

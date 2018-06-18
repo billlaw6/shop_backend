@@ -88,7 +88,7 @@ export default {
                   // tmpUser.permissions = data
                   commit(types.SET_CURRENT_USER, tmpUser)
                   if (tmpUser.is_staff) {
-                    router.push({'name': 'home'})
+                    router.push({'name': 'dashboard'})
                   } else {
                     router.push({'name': 'user'})
                   }

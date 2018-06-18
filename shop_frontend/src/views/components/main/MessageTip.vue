@@ -11,7 +11,7 @@
 <script>
 import util from '@/libs/util.js'
 export default {
-  name: 'messageTip',
+  name: 'MessageTip',
   props: {
     value: {
       type: Number,

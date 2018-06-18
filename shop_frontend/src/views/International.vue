@@ -9,15 +9,11 @@
           </p>
           <Row type="flex" justify="center" align="middle" class="switch-language-row1">
             <RadioGroup :value="lang" @on-change="handleSwitch" vertical>
-              <Radio label="zh-CN">
-                <span>中文简体</span>
-              </Radio>
-              <Radio label="zh-TW">
-                <span>中文繁體</span>
-              </Radio>
-              <Radio label="en-US">
-                <span>English</span>
-              </Radio>
+              <template v-for="lang in langList">
+                <Radio :label="lang.keyVal">
+                  <span>{{ lang.lang }}</span>
+                </Radio>
+              </template>
             </RadioGroup>
             <p class="switch-language-tip">{{ $t('tip') }}</p>
           </Row>
@@ -64,11 +60,11 @@
 </template>
 
 <script>
-  import { mapMutations } from 'vuex'
+  import { mapGetters, mapMutations } from 'vuex'
   import * as types from '@/vuex-store/types'
 
   export default {
-    name: 'international_index',
+    name: 'InternationalIndex',
     data () {
       return {
         lang: 'zh-CN',
@@ -100,6 +96,17 @@
         ]
       }
     },
+    computed: {
+      ...mapGetters('app', [
+        'langList'
+      ]),
+      placeholderText () {
+        return this.$t('placeholderText')
+      },
+      placeholderDate () {
+        return this.$t('placeholderDate')
+      }
+    },
     methods: {
       ...mapMutations('app', {
         switchLang: types.SWITCH_LANG
@@ -119,14 +126,6 @@
             title: this.$t('company')
           }
         ] // 像iview的table组件这样一次渲染如果数据不更新视图就不更新的组件，如果切换语言需要更新一下数据才能切换组件内的多语言
-      }
-    },
-    computed: {
-      placeholderText () {
-        return this.$t('placeholderText')
-      },
-      placeholderDate () {
-        return this.$t('placeholderDate')
       }
     },
     created () {

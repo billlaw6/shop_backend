@@ -19,11 +19,12 @@
 
 <script>
 import Cookies from 'js-cookie'
+import { mapMutations } from 'vuex'
 import * as types from '@/vuex-store/types.js'
-import config from '../../../../../config/index.js'
+import config from '../../../../config/index.js'
 
 export default {
-  name: 'themeSwitch',
+  name: 'ThemeSwitch',
   data () {
     return {
       themeList: [
@@ -31,36 +32,6 @@ export default {
           name: 'black_b',
           menu: '#495060',
           element: '#2d8cf0'
-        },
-        {
-          name: 'black_g',
-          menu: '#495060',
-          element: '#00a854'
-        },
-        {
-          name: 'black_y',
-          menu: '#495060',
-          element: '#e96500'
-        },
-        {
-          name: 'black_r',
-          menu: '#495060',
-          element: '#e43e31'
-        },
-        {
-          name: 'light_b',
-          menu: '#495060',
-          element: '#2d8cf0'
-        },
-        {
-          name: 'light_g',
-          menu: '#495060',
-          element: '#00a854'
-        },
-        {
-          name: 'light_y',
-          menu: '#495060',
-          element: '#e96500'
         },
         {
           name: 'light_r',
@@ -71,15 +42,18 @@ export default {
     }
   },
   methods: {
+    ...mapMutations('app', {
+      changeMenuTheme: types.CHANGE_MENU_THEME
+    }),
     setTheme (themeFile) {
       let menuTheme = themeFile.substr(0, 1)
       let mainTheme = themeFile.substr(-1, 1)
       if (menuTheme === 'b') {
         // 黑色菜单
-        this.$store.commit(types.CHANGE_MENU_THEME, 'dark')
+        this.changeMenuTheme('dark')
         menuTheme = 'dark'
       } else {
-        this.$store.commit(types.CHANGE_MENU_THEME, 'light')
+        menuTheme = 'light'
         menuTheme = 'light'
       }
       // let path = ''
@@ -120,6 +94,7 @@ export default {
       } else {
         stylePath = 'dist/'
       }
+      console.log(stylePath)
     }
   },
   created () {
@@ -129,24 +104,24 @@ export default {
     } else {
       path = 'dist/'
     }
+    console.log(path)
     let name = Cookies.get('user')
     if (localStorage.theme) {
       let hasThisUser = JSON.parse(localStorage.theme).some(item => {
         if (item.userName === name) {
-          this.$store.commit(types.CHANGE_MENU_THEME, item.menuTheme)
-          this.$store.commit(types.CHANGE_MAIN_THEME, item.mainTheme)
+          this.changeMenuTheme(item.mainTheme)
           return true
         } else {
           return false
         }
       })
       if (!hasThisUser) {
-        this.$store.commit(types.CHANGE_MENU_THEME, 'dark')
-        this.$store.commit(types.CHANGE_MAIN_THEME, 'b')
+        this.changeMenuTheme('dark')
+        this.changeMenuTheme('b')
       }
     } else {
-      this.$store.commit(types.CHANGE_MENU_THEME, 'dark')
-      this.$store.commit(types.CHANGE_MAIN_THEME, 'b')
+      this.changeMenuTheme('dark')
+      this.changeMenuTheme('b')
     }
     // 根据用户设置主题
     if (this.$store.state.app.themeColor !== 'b') {

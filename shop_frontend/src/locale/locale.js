@@ -1,8 +1,13 @@
 export default {
   'zh-CN': {
+    keyVal: 'zh-CN',
+    lang: '简体中文',
     home: '首页',
     switchLangTitle: '切换语言',
     international: '多语言切换',
+    order_manage: '订单管理',
+    order_detail: '订单详情',
+    user_manage: '用户管理',
     iviewComponentTitle: 'iview组件多语言切换',
     tip: '注：iview-admin只是为了示范如何实现多语言切换，所以只对当前页做了翻译。',
     intro: 'iview目前支持15种语言，只要你看得到的iview组件出现iview内置文字的地方都会根据你设置的语言类型自动切换对应的语言。',
@@ -15,26 +20,15 @@ export default {
     poptip: '国际化的气泡提示',
     showPoptipText: '点击显示气泡提示'
   },
-  'zh-TW': {
-    home: '首頁',
-    switchLangTitle: '切換語言',
-    international: '多語言切換',
-    iviewComponentTitle: 'iview組件多語言切換',
-    tip: '注：iview-admin只是為了示範如何實現多語言切換，所以只對當前頁做了翻譯。',
-    intro: 'iview目前支持15種語言，只要你看得到的iview組件出現iview內置文字的地方都會根據你設置的語言類型自動切換對應的語言。',
-    placeholderText: '請輸入文字...',
-    placeholderDate: '選擇日期',
-    name: '姓名',
-    company: '公司',
-    btnText: '點擊查看模態框',
-    modalText: '在這裡你可以看到iview模態框默認的確定和取消按鈕會切換語言',
-    poptip: '國際化的氣泡提示',
-    showPoptipText: '點擊顯示氣泡提示'
-  },
   'en-US': {
+    keyVal: 'en-US',
+    lang: 'English',
     home: 'home',
     switchLangTitle: 'Switch Lang',
     international: 'Switch Lang',
+    order_manage: 'Order Manage',
+    order_detail: 'Order Detail',
+    user_manage: 'User Manage',
     tip: 'Note: iview-admin just to demonstrate how to achieve multi-language switching, so only the current page to do the translation.',
     iviewComponentTitle: 'The effect on the iview',
     intro: 'iview currently supports 15 languages, as long as you see the iview component where the text will be based on your language type automatically set the corresponding language.',
@@ -47,4 +41,25 @@ export default {
     poptip: 'international poptip',
     showPoptipText: 'Click to show poptip'
   }
+  // 'zh-TW': {
+  //   keyVal: 'zh-TW',
+  //   lang: '繁体中文',
+  //   home: '首頁',
+  //   switchLangTitle: '切換語言',
+  //   international: '多語言切換',
+  //   order_manage: '订单管理',
+  //   order_detail: '订单详情',
+  //   user_manage: '用户管理',
+  //   iviewComponentTitle: 'iview組件多語言切換',
+  //   tip: '注：iview-admin只是為了示範如何實現多語言切換，所以只對當前頁做了翻譯。',
+  //   intro: 'iview目前支持15種語言，只要你看得到的iview組件出現iview內置文字的地方都會根據你設置的語言類型自動切換對應的語言。',
+  //   placeholderText: '請輸入文字...',
+  //   placeholderDate: '選擇日期',
+  //   name: '姓名',
+  //   company: '公司',
+  //   btnText: '點擊查看模態框',
+  //   modalText: '在這裡你可以看到iview模態框默認的確定和取消按鈕會切換語言',
+  //   poptip: '國際化的氣泡提示',
+  //   showPoptipText: '點擊顯示氣泡提示'
+  // }
 }

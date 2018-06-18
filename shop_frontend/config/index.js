@@ -14,7 +14,8 @@ module.exports = {
 
     // Various Dev Server settings
     // host: 'localhost', // can be overwritten by process.env.HOST
-    host: '123.56.115.20', // can be overwritten by process.env.HOST
+    host: '0.0.0.0', // can be overwritten by process.env.HOST
+    // host: '123.56.115.20', // 网络迁移后不能指定IP启动了,阿里回复：VPC网络类型的ECS在系统中只能查看到内网网卡，所以建议您在设置应用时监听所有IP，0.0.0.0
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,

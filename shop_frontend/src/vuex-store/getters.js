@@ -8,3 +8,7 @@
 export const debug = state => {
   return process.env.NODE_ENV !== 'production'
 }
+
+export const currentUser = state => {
+  return state.login.currentUser
+}

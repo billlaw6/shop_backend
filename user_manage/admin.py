@@ -14,7 +14,8 @@ DictEmployeeStatus, DictSex, DictUserStatus)
 class ShopUserAdmin(admin.ModelAdmin):
     fields = ['username', 'email', 'first_name', 'last_name',
               'cell_phone', 'expired_on', 'is_staff', 'department',
-              'is_superuser', 'is_active', 'date_joined', 'last_login']
+              'is_superuser', 'is_active', 'date_joined', 'last_login',
+              'user_permissions']
 
 # admin.site.unregister(User)
 admin.site.register(get_user_model(), ShopUserAdmin)

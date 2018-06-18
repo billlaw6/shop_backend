@@ -1,6 +1,7 @@
 import {otherRouter, appRouter} from '@/router/router'
 import * as types from '@/vuex-store/types'
 // import Cookies from 'js-cookie'
+import i18Locales from '@/locale/locale'
 import Vue from 'vue'
 
 const app = {
@@ -36,37 +37,16 @@ const app = {
     dontCache: ['text-editor', 'artical-publish'] // 在这里定义你不想要缓存的页面的name属性值(参见路由配置router.js)
   },
 
+  getters: {
+    'currentUser': (state, getters, rootState, rootGetters) => { return rootState.login.currentUser },
+    'langList': () => { return i18Locales }
+  },
+
   mutations: {
     [types.SET_TAG_LIST] (state, list) {
       state.tagList.push(...list)
     },
-    [types.UPDATE_MENU_LIST] (state) {
-      // let accessCode = parseInt(Cookies.get('access'))
-      let menuList = []
-      appRouter.forEach((item, index) => {
-        if (item.access !== undefined) {
-        } else {
-          if (item.children.length === 1) {
-            menuList.push(item)
-          } else {
-            let len = menuList.push(item)
-            let childrenArr = []
-            childrenArr = item.children.filter(child => {
-              if (child.access !== undefined) {
-              } else {
-                return child
-              }
-            })
-            if (childrenArr === undefined || childrenArr.length === 0) {
-              menuList.splice(len - 1, 1)
-            } else {
-              let handledItem = JSON.parse(JSON.stringify(menuList[len - 1]))
-              handledItem.children = childrenArr
-              menuList.splice(len - 1, 1, handledItem)
-            }
-          }
-        }
-      })
+    [types.UPDATE_MENU_LIST] (state, menuList) {
       state.menuList = menuList
     },
     [types.CHANGE_MENU_THEME] (state, theme) {
@@ -174,6 +154,68 @@ const app = {
   actions: {
     'setMessageCount': ({ dispatch, commit, getters, rootGetters }, count) => {
       commit(types.SET_MESSAGE_COUNT, count)
+    },
+    // 用actions中的rootGetters绕开mutations中取不到rootState的问题
+    'updateMenuList': ({ dispatch, commit, getters, rootGetters }, count) => {
+      let tmpMenuList = []
+      appRouter.forEach((item, index) => {
+        if (item.meta.permission !== undefined) {
+          if (rootGetters.currentUser) {
+            // 如果已登录，继续判断用户权限
+            if (rootGetters.currentUser.permissions.some((val, index, array) => val === item.meta.permission)) {
+              // 如果有权限，显示相应router至菜单中并搜索子项和判断子项权限
+              // console.error(item.children)
+              if (item.children === undefined) {
+                // console.error('no child')
+                tmpMenuList.push(item)
+              } else {
+                let tmpItem = JSON.parse(JSON.stringify(item))
+                let childrenArr = []
+                childrenArr = item.children.filter((child, index, array) => {
+                  if (child.meta.permission !== undefined) {
+                    if (rootGetters.currentUser.permissions.some((val, index, array) => val === child.meta.permission)) {
+                      return child
+                    }
+                  } else {
+                    return child
+                  }
+                })
+                // console.error('childrenArr:')
+                // console.error(childrenArr)
+                tmpItem.children = childrenArr
+                tmpMenuList.push(tmpItem)
+                // console.error(tmpMenuList)
+              }
+            }
+          } else {
+            // 需要权限又没登录时不显示
+          }
+        } else {
+          // 父项不需要权限，要继续判断子项
+          // console.error('no permission required')
+          if (item.children === undefined) {
+            tmpMenuList.push(item)
+          } else {
+            let tmpItem = JSON.parse(JSON.stringify(item))
+            let childrenArr = []
+            childrenArr = item.children.filter((child, index, array) => {
+              if (child.meta.permission !== undefined) {
+                if (rootGetters.currentUser.permissions.some((val, index, array) => val === child.meta.permission)) {
+                  return child
+                }
+              } else {
+                return child
+              }
+            })
+            // console.error('childrenArr:')
+            // console.error(childrenArr)
+            tmpItem.children = childrenArr
+            tmpMenuList.push(tmpItem)
+            // console.error(tmpMenuList)
+          }
+        }
+      })
+      commit(types.UPDATE_MENU_LIST, tmpMenuList)
     }
   }
 }

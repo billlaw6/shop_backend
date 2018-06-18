@@ -15,7 +15,7 @@ const setLockBackSize = () => {
   return parseInt(r)
 }
 export default {
-  name: 'lockScreen',
+  name: 'LockScreen',
   props: {
     value: {
       type: Boolean,

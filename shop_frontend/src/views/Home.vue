@@ -1,25 +1,59 @@
 <template>
-  <div class="layout">  
+  <div class="layout"> 
     <Layout>
       <Sider ref="side-menu" hide-trigger collapsible :collapsed-width="78" v-model="shrink">
-        <shrinkable-menu :shrink="shrink" @on-change="handleSubmenuChange" :theme="menuTheme" :before-push="beforePush"           
-          :open-names="openedSubmenuArr"      
-          :menu-list="menuList">              
-          <div slot="top" class="logo-con">   
+        <shrinkable-menu :shrink="shrink" @on-change="handleSubmenuChange" :theme="menuTheme" :before-push="beforePush"          
+          :open-names="openedSubmenuArr"     
+          :menu-list="menuList">             
+          <div slot="top" class="logo-con">  
             <router-link :to="{ name: 'dashboard' }">
               <img v-show="!shrink"  src="../assets/images/logo.jpg" key="max-logo" />
               <img v-show="shrink" src="../assets/images/logo-min.jpg" key="min-logo" />
             </router-link>
-          </div>    
+          </div>   
         </shrinkable-menu>
       </Sider>
 
       <Layout>
         <Header :style="{padding: 0}" class="layout-header-bar">
-          <Icon @click.native="toggleClick" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="30"></Icon>
-          <div class="header-middle">
-            <breadcrumb-nav :currentPath="currentPath"></breadcrumb-nav>
-          </div>
+          <Menu mode="horizontal" active-name="breadcrumb" theme="light">
+            <div class="toggle-icon">
+              <Icon @click.native="toggleClick" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="30"></Icon>
+            </div>
+            <div class="header-middle">
+              <MenuItem name="breadcrumb">
+                <breadcrumb-nav :currentPath="currentPath"></breadcrumb-nav>
+              </MenuItem>
+            </div>
+            <div class="header-right">
+              <MenuItem name="fullscreen">
+                <full-screen v-model="isFullScreen" @on-change="fullscreenChange"></full-screen>
+              </MenuItem>
+              <MenuItem name="message-tip">
+                <message-tip v-model="msgCount"></message-tip>
+              </MenuItem>
+              <!--
+              <MenuItem name="theme-switch">
+                <theme-switch></theme-switch>
+              </MenuItem>
+              -->
+              <div class="user-dropdown-menu">
+                <Row type="flex" justify="end" align="middle" class="user-dropdown-innercon">
+                  <Dropdown transfer trigger="click" @on-click="handleClickUserDropdown">
+                    <a href="javascript:void(0)">
+                      <span class="main-user-name">{{ userName }}</span>
+                      <Icon type="arrow-down-b"></Icon>
+                    </a>
+                    <DropdownMenu slot="list">
+                        <DropdownItem name="ownSpace">个人中心</DropdownItem>
+                        <DropdownItem name="loginout" divided>退出登录</DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  <Avatar :src="avatorPath" style="background: #619fe7;margin-left: 10px;"></Avatar>
+                </Row>
+              </div>
+            </div>
+          </Menu>
         </Header>
 
         <Content>
@@ -41,15 +75,23 @@
 
 <script>
   // import Cookies from 'js-cookie'
-  import { mapState, mapMutations } from 'vuex'
+  import { mapState, mapMutations, mapActions } from 'vuex'
   import * as types from '@/vuex-store/types'
   import ShrinkableMenu from '@/views/components/main/shrinkable-menu/ShrinkableMenu.vue'
   import BreadcrumbNav from '@/views/components/main/BreadcrumbNav.vue'
-  
+  import FullScreen from '@/views/components/main/FullScreen.vue'
+  import MessageTip from '@/views/components/main/MessageTip.vue'
+  import ThemeSwitch from '@/views/components/main/ThemeSwitch.vue'
+  import LockScreen from '@/views/components/main/lockscreen/LockScreen.vue'
+
   export default {
     components: {
       ShrinkableMenu,
-      BreadcrumbNav
+      BreadcrumbNav,
+      FullScreen,
+      MessageTip,
+      ThemeSwitch,
+      LockScreen
     },
     data () {
       return {
@@ -83,11 +125,13 @@
       ...mapMutations('app', {
         setMessageCount: types.SET_MESSAGE_COUNT,
         setTagList: types.SET_TAG_LIST,
-        updateMenuList: types.UPDATE_MENU_LIST,
         changeMenuTheme: types.CHANGE_MENU_THEME,
         changeMainTheme: types.CHANGE_MAIN_THEME,
         setCurrentPageName: types.SET_CURRENT_PAGENAME,
         addOpenSubmenu: types.ADD_OPEN_SUBMENU
+      }),
+      ...mapActions('app', {
+        updateMenuList: 'updateMenuList'
       }),
       // ...mapActions({
       //   setMessageCount: 'app/setMessageCount'
@@ -104,6 +148,24 @@
       },
       handleSubmenuChange () {
         console.log('submenu changed')
+      },
+      fullscreenChange (isFullScreen) {
+        console.log(isFullScreen)
+      },
+      handleClickUserDropdown (name) {
+        if (name === 'ownSpace') {
+          // util.openNewPage(this, 'ownspace_index')
+          this.$router.push({
+            name: 'ownspace_index'
+          })
+        } else if (name === 'loginout') {
+          // 退出登录
+          this.$store.commit('logout', this)
+          this.$store.commit('clearOpenedSubmenu')
+          this.$router.push({
+            name: 'login'
+          })
+        }
       }
     },
     watch: {
@@ -154,11 +216,15 @@
   .layout-header-bar
     background-color: $background-color
     box-shadow: 0 1px 1px rgba(0,0,0,.1)
+  .toggle-icon
+    float: left
+    position: relative
+    bottom: 6px
   .header-middle
-    margin-left: 10vw
-    position: absolute
-    left: 30vw
-    top: 0
-    bottom: 0
-    margin: auto
+    display: inline-block
+  .header-right
+    display: inline-block
+    float: right
+  .user-dropdown-menu
+    display: inline-block
 </style>

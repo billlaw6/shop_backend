@@ -15,6 +15,7 @@
       :icon-color="shrinkIconColor"
       @on-change="handleChange"
     ></sidebar-menu-shrink>
+    {{ menuList }}
   </div>
 </template>
 
@@ -39,10 +40,10 @@ export default {
     },
     theme: {
       type: String,
-      default: 'dark'
-      // validator (val) {
-        // return util.oneOf(val, ['dark', 'light'])
-      // }
+      default: 'dark',
+      validator (val) {
+        return ['dark', 'light'].some((item, index, array) => { return item === val })
+      }
     },
     beforePush: {
       type: Function

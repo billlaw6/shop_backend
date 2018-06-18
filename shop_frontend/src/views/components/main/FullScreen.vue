@@ -8,7 +8,7 @@
 
 <script>
 export default {
-  name: 'fullScreen',
+  name: 'FullScreen',
   props: {
     value: {
       type: Boolean,

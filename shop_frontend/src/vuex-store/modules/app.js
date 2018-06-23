@@ -10,7 +10,9 @@ const app = {
   state: {
     cachePage: [],
     lang: '',
+    pageSize: 10, // 默认取数时每次获取行数，转成limit参数发送给服务器
     isFullScreen: false,
+    maxSize: 1024, // 单位kb
     openedSubmenuArr: [], // 要展开的菜单数组
     menuTheme: 'dark', // 主题
     themeColor: '',
@@ -55,7 +57,7 @@ const app = {
     [types.CHANGE_MAIN_THEME] (state, mainTheme) {
       state.themeColor = mainTheme
     },
-    [types.ADD_OPEN_SUBMENU] (state, name) {
+    [types.ADD_OPENED_SUBMENU] (state, name) {
       let hasThisName = false
       let isEmpty = false
       if (name.length === 0) {

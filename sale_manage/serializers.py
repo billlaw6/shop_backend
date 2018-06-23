@@ -3,6 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from pypinyin import lazy_pinyin, Style
 from rest_framework import serializers
 
+from user_manage.models import (ShopUser,)
 from sale_manage.models import (Order, Product,
     Category, ProductPicture, Express, Payment,
     OrderStatus, Location, Address, Order,
@@ -12,34 +13,11 @@ from sale_manage.models import (Order, Product,
 
 # class ProductSerializer(serializers.HyperlinkedModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
-    stock_record = serializers.PrimaryKeyRelatedField(many=True, queryset=Stock.objects.all())
-    def create(self, validated_data):
-        """
-        """
-        validated_data.pinyin = ''.join(lazy_pinyin(validated_data.name))
-        validated_data.py = ''.join(lazy_pinyin(validated_data.name), style=Style.FIRST_LETTER)
-        return Product.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        """
-        """
-        instance.name = validated_data.get('name', instance.name)
-        instance.pinyin = ''.join(lazy_pinyin(instance.name))
-        instance.py = ''.join(lazy_pinyin(instance.name), style=Style.FIRST_LETTER)
-        instance.brand = validated_data.get('brand', instance.brand)
-        instance.image = validated_data.get('image', instance.image)
-        instance.price = validated_data.get('price', instance.price)
-        instance.sale_price = validated_data.get('sale_price', instance.sale_price)
-        instance.is_active = validated_data.get('is_active', instance.is_active)
-        instance.is_bestseller = validated_data.get('is_bestseller', instance.is_bestseller)
-        instance.effective_month = validated_data.get('effective_month', instance.effective_month)
-        instance.description = validated_data.get('description', instance.description)
-        instance.meta_keywords = validated_data.get('meta_keywords', instance.meta_keywords)
-        instance.meta_description = validated_data.get('meta_description', instance.meta_description)
-        instance.manufacturer = validated_data.get('manufacturer', instance.manufacturer)
-        instance.highlighted = validated_data.get('highlighted', instance.highlighted)
-        return Product.objects.create(**validated_data)
-
+    # 一个产品对应多个库房的库存记录
+    stock_record = serializers.PrimaryKeyRelatedField(required=False, many=True, queryset=Stock.objects.all())
+    # 一个产品只对应一个创建人
+    created_by = serializers.PrimaryKeyRelatedField(many=False, queryset=ShopUser.objects.all())
+    updated_by = serializers.PrimaryKeyRelatedField(many=False, queryset=ShopUser.objects.all())
     class Meta:
         model = Product
         fields = "__all__"

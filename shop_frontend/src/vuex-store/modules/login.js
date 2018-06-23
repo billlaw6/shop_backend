@@ -1,5 +1,5 @@
 import * as types from '@/vuex-store/types'
-import { authLogin, getUserInfo, getUserPermissions } from '@/http/api'
+import { authLogin, authLogout, getUserInfo, getUserPermissions } from '@/http/api'
 import { router } from '@/router/index'
 
 export default {
@@ -114,6 +114,20 @@ export default {
       })
       // 调用root级的mutation
       commit(types.SET_LOADING, false, { root: true })
+    },
+    'logout': ({ dispatch, commit, rootState, rootGetters }) => {
+      window.localStorage.setItem('currentUser', null)
+      authLogout().then((res) => {
+        // console.debug(res)
+        let {data, status} = res
+        console.log(data)
+        if (status !== 200) {
+          return res
+        } else {
+          commit(types.SET_ACCESS_TOKEN, null)
+          commit(types.SET_CURRENT_USER, null)
+        }
+      })
     }
   },
 

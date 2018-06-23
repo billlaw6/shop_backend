@@ -184,7 +184,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10 # 设置默认的每次限额，用户可以通过修改limit和offset取所需要的数据
 }
 
 AUTH_USER_MODEL = 'user_manage.ShopUser'
@@ -212,6 +212,7 @@ CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:8080',
     '127.0.0.1:8000',
     '123.56.115.20:8080',
+    '123.56.115.20:8000',
 )
 
 # django-rest-auth

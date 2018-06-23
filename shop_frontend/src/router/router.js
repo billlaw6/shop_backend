@@ -44,7 +44,6 @@ export const category = {
 export const detail = {
   path: '/detail/:productId',
   name: 'detail',
-
   icon: 'detail',
   title: {i18n: 'detail'},
   component: resolve => require(['@/views/Detail.vue'], resolve)
@@ -88,6 +87,76 @@ export const otherRouter = {
 // 作为Home组件的子页面展示并且在左侧菜单显示的路由写在appRouter里
 // 全部router必须都有meta和children属性
 export const appRouter = [
+  {
+    path: '/product-manage',
+    icon: 'ios-grid-view',
+    name: 'product_manage',
+    title: { i18n: 'product_manage' },
+    meta: {
+      requireAuth: true,
+      permission: 'sale_manage.add_product'
+    },
+    component: Home,
+    children: [
+      {
+        path: 'list',
+        icon: 'ios-grid-view',
+        title: { i18n: 'product_manage' },
+        name: 'edit_product',
+        meta: {
+          requireAuth: true,
+          permission: 'sale_manage.add_product'
+        },
+        component: resolve => require(['@/views/ProductManage.vue'], resolve)
+      }
+    ]
+  },
+  {
+    path: '/order-manage',
+    icon: 'ios-list-outline',
+    name: 'order_manage',
+    title: { i18n: 'order_manage' },
+    meta: {
+      requireAuth: true,
+      permission: 'sale_manage.add_orderdetail'
+    },
+    component: Home,
+    children: [
+      {
+        path: 'edit',
+        icon: 'edit',
+        title: { i18n: 'edit_order' },
+        name: 'edit_order',
+        meta: {
+          requireAuth: true,
+          permission: 'sale_manage.add_orderdetail'
+        },
+        component: resolve => require(['@/views/Error403.vue'], resolve)
+      },
+      {
+        path: 'add',
+        icon: 'compose',
+        title: { i18n: 'add_order' },
+        name: 'add_order',
+        meta: {
+          requireAuth: true,
+          permission: 'sale_manage.add_orderdetail'
+        },
+        component: resolve => require(['@/views/Error403.vue'], resolve)
+      },
+      {
+        path: 'stats',
+        icon: 'stats-bars',
+        title: { i18n: 'stats_order' },
+        name: 'stats_order',
+        meta: {
+          requireAuth: true,
+          permission: 'sale_manage.add_orderdetail'
+        },
+        component: resolve => require(['@/views/Error403.vue'], resolve)
+      }
+    ]
+  },
   {
     path: '/user-manage',
     icon: 'key',

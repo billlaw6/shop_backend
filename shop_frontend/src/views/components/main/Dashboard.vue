@@ -14,8 +14,8 @@
                 <Col span="16" style="padding-left:6px;">
                   <Row class-name="made-child-con-middle" type="flex" align="middle">
                     <div>
-                      <b class="card-user-infor-name">Admin</b>
-                      <p>super admin</p>
+                      <b class="card-user-infor-name">{{ currentUser.username }}</b>
+                      <p>{{ currentUser.first_name}} {{ currentUser.last_name}}</p>
                     </div>
                   </Row>
                 </Col>
@@ -172,77 +172,81 @@
 </template>
 
 <script>
-import cityData from '@/views/components/main/dashboard/map-data/get-city-value.js'
-import HomeMap from '@/views/components/main/dashboard/HomeMap.vue'
-import dataSourcePie from '@/views/components/main/dashboard/dataSourcePie.vue'
-import visiteVolume from '@/views/components/main/dashboard/visiteVolume.vue'
-import serviceRequests from '@/views/components/main/dashboard/serviceRequests.vue'
-import userFlow from '@/views/components/main/dashboard/userFlow.vue'
-import countUp from '@/views/components/main/dashboard/countUp.vue'
-import inforCard from '@/views/components/main/dashboard/inforCard.vue'
-import mapDataTable from '@/views/components/main/dashboard/mapDataTable.vue'
-import toDoListItem from '@/views/components/main/dashboard/toDoListItem.vue'
+  import { mapState } from 'vuex'
+  import cityData from '@/views/components/main/dashboard/map-data/get-city-value.js'
+  import HomeMap from '@/views/components/main/dashboard/HomeMap.vue'
+  import dataSourcePie from '@/views/components/main/dashboard/dataSourcePie.vue'
+  import visiteVolume from '@/views/components/main/dashboard/visiteVolume.vue'
+  import serviceRequests from '@/views/components/main/dashboard/serviceRequests.vue'
+  import userFlow from '@/views/components/main/dashboard/userFlow.vue'
+  import countUp from '@/views/components/main/dashboard/countUp.vue'
+  import inforCard from '@/views/components/main/dashboard/inforCard.vue'
+  import mapDataTable from '@/views/components/main/dashboard/mapDataTable.vue'
+  import toDoListItem from '@/views/components/main/dashboard/toDoListItem.vue'
 
-export default {
-  name: 'home',
-  components: {
-    HomeMap,
-    dataSourcePie,
-    visiteVolume,
-    serviceRequests,
-    userFlow,
-    countUp,
-    inforCard,
-    mapDataTable,
-    toDoListItem
-  },
-  data () {
-    return {
-      toDoList: [
-        {
-          title: '去iView官网学习完整的iView组件'
-        },
-        {
-          title: '去iView官网学习完整的iView组件'
-        }
-      ],
-      count: {
-        createUser: 496,
-        visit: 3264,
-        collection: 24389305,
-        transfer: 39503498
-      },
-      cityData: cityData,
-      showAddNewTodo: false,
-      newToDoItemValue: ''
-    }
-  },
-  computed: {
-    avatorPath () {
-      return localStorage.avatorImgPath
-    }
-  },
-  methods: {
-    addNewToDoItem () {
-      this.showAddNewTodo = true
+  export default {
+    name: 'home',
+    components: {
+      HomeMap,
+      dataSourcePie,
+      visiteVolume,
+      serviceRequests,
+      userFlow,
+      countUp,
+      inforCard,
+      mapDataTable,
+      toDoListItem
     },
-    addNew () {
-      if (this.newToDoItemValue.length !== 0) {
-        this.toDoList.unshift({
-          title: this.newToDoItemValue
-        })
-        setTimeout(() => {
-          this.newToDoItemValue = ''
-        }, 200)
-        this.showAddNewTodo = false
-      } else {
-        this.$Message.error('请输入待办事项内容')
+    data () {
+      return {
+        toDoList: [
+          {
+            title: '去iView官网学习完整的iView组件'
+          },
+          {
+            title: '去iView官网学习完整的iView组件'
+          }
+        ],
+        count: {
+          createUser: 496,
+          visit: 3264,
+          collection: 24389305,
+          transfer: 39503498
+        },
+        cityData: cityData,
+        showAddNewTodo: false,
+        newToDoItemValue: ''
       }
     },
-    cancelAdd () {
-      this.showAddNewTodo = false
-      this.newToDoItemValue = ''
+    computed: {
+      ...mapState('login', {
+        'currentUser': state => state.currentUser
+      }),
+      avatorPath () {
+        return localStorage.avatorImgPath
+      }
+    },
+    methods: {
+      addNewToDoItem () {
+        this.showAddNewTodo = true
+      },
+      addNew () {
+        if (this.newToDoItemValue.length !== 0) {
+          this.toDoList.unshift({
+            title: this.newToDoItemValue
+          })
+          setTimeout(() => {
+            this.newToDoItemValue = ''
+          }, 200)
+          this.showAddNewTodo = false
+        } else {
+          this.$Message.error('请输入待办事项内容')
+        }
+      },
+      cancelAdd () {
+        this.showAddNewTodo = false
+        this.newToDoItemValue = ''
+      }
     }
   }
-}
 </script>

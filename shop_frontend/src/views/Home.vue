@@ -2,9 +2,14 @@
   <div class="layout"> 
     <Layout>
       <Sider ref="side-menu" hide-trigger collapsible :collapsed-width="78" v-model="shrink">
-        <shrinkable-menu :shrink="shrink" @on-change="handleSubmenuChange" :theme="menuTheme" :before-push="beforePush"          
+        <shrinkable-menu 
+          :shrink="shrink" 
+          @on-change="handleSubmenuChange" 
+          :theme="menuTheme" 
+          :before-push="beforePush"          
           :open-names="openedSubmenuArr"     
-          :menu-list="menuList">             
+          :menu-list="menuList"
+        >             
           <div slot="top" class="logo-con">  
             <router-link :to="{ name: 'dashboard' }">
               <img v-show="!shrink"  src="../assets/images/logo.jpg" key="max-logo" />
@@ -41,7 +46,7 @@
                 <Row type="flex" justify="end" align="middle" class="user-dropdown-innercon">
                   <Dropdown transfer trigger="click" @on-click="handleClickUserDropdown">
                     <a href="javascript:void(0)">
-                      <span class="main-user-name">{{ userName }}</span>
+                      <span class="main-user-name">{{ currentUser.username }}</span>
                       <Icon type="arrow-down-b"></Icon>
                     </a>
                     <DropdownMenu slot="list">
@@ -111,6 +116,9 @@
         'cachePage': state => state.cachePage,
         'msgCount': state => state.messageCount
       }),
+      ...mapState('login', {
+        'currentUser': state => state.currentUser
+      }),
       rotateIcon () {
         return [
           'menu-icon',
@@ -128,7 +136,11 @@
         changeMenuTheme: types.CHANGE_MENU_THEME,
         changeMainTheme: types.CHANGE_MAIN_THEME,
         setCurrentPageName: types.SET_CURRENT_PAGENAME,
-        addOpenSubmenu: types.ADD_OPEN_SUBMENU
+        addOpenedSubmenu: types.ADD_OPENED_SUBMENU,
+        clearOpenedSubmenu: types.CLEAR_OPENED_SUBMENU
+      }),
+      ...mapActions('login', {
+        logout: 'logout'
       }),
       ...mapActions('app', {
         updateMenuList: 'updateMenuList'
@@ -160,8 +172,8 @@
           })
         } else if (name === 'loginout') {
           // 退出登录
-          this.$store.commit('logout', this)
-          this.$store.commit('clearOpenedSubmenu')
+          this.logout()
+          this.clearOpenedSubmenu()
           this.$router.push({
             name: 'login'
           })

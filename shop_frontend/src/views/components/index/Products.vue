@@ -42,7 +42,6 @@
       ...mapGetters('category', [
         'productListCount'
       ]),
-
       aList: function () {
         // 用于autocomplete
         if (Array.isArray(this.datas.results)) {

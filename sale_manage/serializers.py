@@ -18,6 +18,8 @@ class ProductSerializer(serializers.ModelSerializer):
     # 一个产品只对应一个创建人
     created_by = serializers.PrimaryKeyRelatedField(many=False, queryset=ShopUser.objects.all())
     updated_by = serializers.PrimaryKeyRelatedField(many=False, queryset=ShopUser.objects.all())
+    # created_by = serializers.ReadOnlyField(source='created_by.__str__')
+    # updated_by = serializers.CharField(required=False, source='updated_by.__str__')
     class Meta:
         model = Product
         fields = "__all__"
@@ -70,7 +72,11 @@ class AddressSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    created_by = serializers.ReadOnlyField(source='created_by.__str__')
+    # created_by = serializers.PrimaryKeyRelatedField(many=False, queryset=ShopUser.objects.all(), allow_null=True)
+    # buyer = serializers.PrimaryKeyRelatedField(many=False, queryset=ShopUser.objects.all(), allow_null=True)
+    # payment = serializers.PrimaryKeyRelatedField(many=False, queryset=Payment.objects.all(), allow_null=True, required=False)
+    # address = serializers.PrimaryKeyRelatedField(many=False, queryset=Address.objects.all(), allow_null=True, required=False)
+    # status = serializers.PrimaryKeyRelatedField(many=False, queryset=OrderStatus.objects.all(), allow_null=True, required=False)
     class Meta:
         model = Order
         fields = "__all__"
@@ -143,11 +149,3 @@ class StockUpdateLogSerializer(serializers.ModelSerializer):
 #         attrs['user'] = user
 #         return attrs
 
-
-# Serializers define the API representation.
-# class ProductSerializer(serializers.HyperlinkedModelSerializer):
-
-#     class Meta:
-#         model = Product
-#         fields = ('id', 'name', 'pinyin', 'py', 'brand', 'price', 'sale_price',
-#                   'image', 'description', 'highlighted', 'updated_at', 'created_at')

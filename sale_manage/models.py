@@ -49,10 +49,10 @@ class Product(models.Model):
                                         default='')
     manufacturer = models.CharField(_('manufacturer'), max_length=256,
                                     blank=True, default='')
-    created_at = models.DateTimeField(_('created_at'), auto_now=True)
+    created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
     created_by = models.ForeignKey(get_user_model(),
                                    related_name='created_products')
-    updated_at = models.DateTimeField(_('updated_at'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('updated_at'), auto_now=True)
     updated_by = models.ForeignKey(get_user_model(),
                                    related_name='updated_products')
     highlighted = models.TextField(blank=True, null=True)
@@ -125,7 +125,7 @@ class ProductPicture(models.Model):
     description = models.TextField(
                                    _('description'),
                                    blank=True, null=False, default='')
-    created_at = models.DateTimeField(_('created_at'), default=timezone.now)
+    created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
 
     def save(self, *args, **kwargs):
         self.pinyin = ''.join(lazy_pinyin(self.name))
@@ -147,7 +147,7 @@ class Express(models.Model):
     is_active = models.BooleanField(_('is_active'), default=False)
     description = models.TextField(_('description'), blank=True, null=False,
                                   default='')
-    created_at = models.DateTimeField(_('created_at'), default=timezone.now)
+    created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
 
     def save(self, *args, **kwargs):
         self.pinyin = ''.join(lazy_pinyin(self.name))
@@ -169,7 +169,7 @@ class Payment(models.Model):
     is_active = models.BooleanField(_('is_active'), default=False)
     description = models.TextField(_('description'), blank=True,
                                    null=False, default='')
-    created_at = models.DateTimeField(_('created_at'), default=timezone.now)
+    created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
 
     def save(self, *args, **kwargs):
         self.pinyin = ''.join(lazy_pinyin(self.name))
@@ -191,7 +191,8 @@ class OrderStatus(models.Model):
     is_active = models.BooleanField(_('is_active'), default=False)
     description = models.TextField(_('description'),
                                    blank=True, null=False, default='')
-    created_at = models.DateTimeField(_('created_at'), default=timezone.now)
+    # created_at = models.DateTimeField(_('created_at'), default=timezone.now)
+    created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
 
     def save(self, *args, **kwargs):
         self.pinyin = ''.join(lazy_pinyin(self.name))
@@ -284,49 +285,48 @@ class Order(models.Model):
     order_no = models.CharField(max_length=64, unique=True, blank=True,
                                 default='')
     payment = models.ForeignKey(Payment, related_name=_('orders'),
-                                to_field='code', blank=False, null=False)
+                                blank=True, null=True)
     buyer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
                              related_name='orders', null=False)
     sum_price = models.DecimalField(_('sum_price'), max_digits=9, decimal_places=2,
                                 default=0.00)
-    address = models.ForeignKey(Address, on_delete=models.CASCADE,
-                               default='')
+    address = models.ForeignKey(Address, related_name=_('order_address'),
+                              blank=True, null=True)
     comment = models.CharField(_('comment'), max_length=128, default='')
     status = models.ForeignKey(OrderStatus, related_name=_('orders'),
                                default=1)
     express = models.ForeignKey(Express, related_name=_('orders'),
-                                to_field='code', null=False, default='')
+                                null=True, blank=True)
     express_no = models.CharField(_('express_no'), max_length=128,
                                   blank=True, null=False, default='')
     express_info = models.TextField(_('express_info'),
                                     blank=True, null=False, default='')
-    created_at = models.DateTimeField(_('created_at'),
-                                      blank=True, default=timezone.now)
+    created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
     created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
                                    related_name='created_orders', null=False)
 
     class Meta:
         ordering = ('created_at',)
         index_together = ['order_no', 'created_at', 'express_no']
-        unique_together = (('buyer', 'address', 'comment'))
+        # unique_together包含的字段不能为空，字段定义里写blank=True也不行
+        unique_together = (('buyer', 'comment'))
 
     def __str__(self):
-        return self.order_no + '-' + self.buyer + '-' + str(self.sum_price)
+        return self.order_no + '-' + self.buyer.username+ '-' + str(self.sum_price)
 
 
 class OrderDetail(models.Model):
     order = models.ForeignKey(Order, related_name=_('order'),
-                                to_field='order_no', blank=False, null=False)
+                                blank=False, null=False)
     product = models.ForeignKey(Product, related_name=_('order_detail'),
                                 blank=False, null=False)
-    amount = models.PositiveSmallIntegerField(_('amount'), null=False,
-                                              default=1)
+    amount = models.DecimalField(_('amount'), max_digits=9, decimal_places=2,
+                                default=0.00)
     price = models.DecimalField(_('price'), max_digits=9, decimal_places=2,
                                 default=0.00)
     comment = models.CharField(_('comment'), max_length=300, blank=True,
                                default='')
-    created_at = models.DateTimeField(_('created_at'),
-                                      blank=True, default=timezone.now)
+    created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
 
     class Meta:
         ordering = ('created_at',)

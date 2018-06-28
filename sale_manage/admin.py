@@ -1,6 +1,6 @@
 from django.contrib import admin
 from sale_manage.models import (Category, Product, CategoryProductRelation,
-ProductPicture, Express, Payment, OrderStatus, Location, Address, Order,
+ProductPicture, Express, Payment, OrderStatus, Order,
 OrderDetail, VisitLog, Stock, StockMoveRecord, StockCheck, StockDailyLog,
 StockUpdateLog)
 
@@ -51,16 +51,6 @@ class PaymentAdmin(admin.ModelAdmin):
 
 @admin.register(OrderStatus)
 class OrderStatusAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Location)
-class LocationAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(Address)
-class AddressAdmin(admin.ModelAdmin):
     pass
 
 

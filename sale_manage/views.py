@@ -15,16 +15,17 @@ from rest_framework.throttling import UserRateThrottle
 
 from sale_manage.models import (Order, Product,
     Category, ProductPicture, Express, Payment,
-    OrderStatus, Location, Address, Order,
+    OrderStatus, Order,
     OrderDetail, VisitLog, Stock, StockMoveRecord,
     StockCheck, StockDailyLog, StockUpdateLog)
 from sale_manage.serializers import (OrderSerializer, ProductSerializer,
     CategorySerializer, ProductPictureSerializer, ExpressSerializer,
-    PaymentSerializer, OrderStatusSerializer, LocationSerializer,
-    AddressSerializer, OrderSerializer, OrderDetailSerializer,
+    PaymentSerializer, OrderStatusSerializer,
+    OrderSerializer, OrderDetailSerializer,
     VisitLogSerializer, StockSerializer, StockMoveRecordSerializer,
     StockCheckSerializer, StockDailyLogSerializer, StockUpdateLogSerializer)
 from sale_manage import utils
+from sale_manage import permissions as my_perms
 import uuid
 
 
@@ -176,6 +177,52 @@ def add_order(request, *args, **kwargs):
     # return JsonResponse(order_serializer.data, status=201)
     return Response('order_serializer.data', status=201)
 
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+@api_view(['POST'])
+@authentication_classes([authentication.TokenAuthentication,])
+@permission_classes([my_perms.IsAdminOrOwner,])
+def process_order(request):
+    if (request.data.get('id') and request.data.get('orderStatus')):
+        if (request.data.get('orderStatus') <= 2):
+            Order.objects.filter(pk=request.data.get('id')).update(status = request.data.get('orderStatus') + 1)
+        elif (request.data.get('orderStatus') == 9):
+            Order.objects.filter(pk=request.data.get('id')).update(status = 9)
+        else:
+            return Response('OK', status=203)
+        return Response('OK', status=203)
+    else:
+        return Response('error', status=303)
+
+
+def toggle_order_detail(request, *args, **kwargs):
+    """
+    """
+    aim = get_object_or_404(OrderDetail, pk=request.data.get('id'))
+    request.data['updated_by']=request.user.id
+    if aim.status == 0:
+        Product.objects.filter(pk=aim.id).update(
+            status=1,
+            updated_by=request.user
+          )
+    elif aim.status == 1:
+        Product.objects.filter(pk=aim.id).update(
+            status=0,
+            updated_by=request.user
+          )
+    return JsonResponse(OrderDetailSerializer(aim).data, status=201, safe=False)
+
+
+
+class OrderStatusViewSet(viewsets.ModelViewSet):
+    queryset = OrderStatus.objects.all()
+    serializer_class = OrderStatusSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -186,6 +233,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    # permission_classes = (permissions.AllowAny,)
 
     def update(self, request, pk=None):
         print(request.data)
@@ -208,27 +256,6 @@ class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-
-class OrderStatusViewSet(viewsets.ModelViewSet):
-    queryset = OrderStatus.objects.all()
-    serializer_class = OrderStatusSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-
-class LocationViewSet(viewsets.ModelViewSet):
-    queryset = Location.objects.all()
-    serializer_class = LocationSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-
-class AddressViewSet(viewsets.ModelViewSet):
-    queryset = Address.objects.all()
-    serializer_class = AddressSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    # The create() method of our serializer will now be passed an additional 'owner' field, along with the validated data from the request.
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
 
 
 class StockViewSet(viewsets.ModelViewSet):

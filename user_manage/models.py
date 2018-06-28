@@ -23,6 +23,80 @@ from pypinyin import lazy_pinyin, Style
 
 
 # Create your models here.
+class Location(models.Model):
+    country_region_code = models.CharField(_('country_region_code'),
+        max_length=10)
+    country_region_name = models.CharField(_('country_region_name'),
+        max_length=30)
+    country_region_py = models.CharField(_('country_region_py'),
+        max_length=30, null=False, default='', blank=True)
+    country_region_pinyin = models.CharField(_('country_region_pinyin'),
+        max_length=256, null=False, default='', blank=True)
+    state_code = models.CharField(_('state_code'), max_length=10, null=False,
+        default='', blank=True)
+    state_name = models.CharField(_('state_name'), max_length=30,
+        null=False, default='', blank=True)
+    state_py = models.CharField(_('state_py'),
+        max_length=128, null=False, default='', blank=True)
+    state_pinyin = models.CharField(_('state_pinyin'),
+        max_length=256, null=False, default='', blank=True)
+    city_code = models.CharField(_('city_code'), max_length=10, null=False,
+        default='', blank=True)
+    city_name = models.CharField(_('city_name'), max_length=30,
+        null=False, default='', blank=True)
+    city_py = models.CharField(_('city_py'),
+        max_length=128, null=False, default='', blank=True)
+    city_pinyin = models.CharField(_('city_pinyin'),
+        max_length=256, null=False, default='', blank=True)
+    region_code = models.CharField(_('region_code'),
+        max_length=10, null=False, default='', blank=True)
+    region_name = models.CharField(_('region_name'),
+        max_length=30, null=False, default='', blank=True)
+    region_py= models.CharField(_('region_py'),
+        max_length=128, null=False, default='', blank=True)
+    region_pinyin= models.CharField(_('region_pinyin'),
+        max_length=256, null=False, default='', blank=True)
+    longitude = models.FloatField(_('longitude'),
+        null=False, default=0.0, blank=True)
+    latitude = models.FloatField(_('latitude'),
+        null=False, default=0.0, blank=True)
+    detail_location = models.CharField(_('detail_location'),
+        max_length=256, null=False, default='', blank=True)
+    is_active = models.BooleanField(_('is_active'), default=False)
+
+    def save(self, *args, **kwargs):
+        self.country_region_pinyin = ''.join(lazy_pinyin(self.country_region_name))
+        self.country_region_py = ''.join(lazy_pinyin(self.country_region_name, style=Style.FIRST_LETTER))
+        self.state_pinyin = ''.join(lazy_pinyin(self.state_name))
+        self.state_py = ''.join(lazy_pinyin(self.state_name, style=Style.FIRST_LETTER))
+        self.city_pinyin = ''.join(lazy_pinyin(self.city_name))
+        self.city_py = ''.join(lazy_pinyin(self.city_name, style=Style.FIRST_LETTER))
+        self.region_pinyin = ''.join(lazy_pinyin(self.region_name))
+        self.region_py = ''.join(lazy_pinyin(self.region_name, style=Style.FIRST_LETTER))
+        super(Location, self).save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('Location')
+        verbose_name_plural = _('Locations')
+        index_together = [
+            'country_region_code',
+            'state_code',
+            'city_code',
+            'region_code']
+
+    def __str__(self):
+        return '%s-%s-%s-%s' % (self.country_region_name, self.state_name,
+            self.city_name, self.region_name)
+
+
+class Address(models.Model):
+    location = models.ForeignKey(Location, related_name='addresses',
+        on_delete=models.CASCADE, null=True)
+    detail = models.TextField(_('detail'), blank=True,
+                                  null=False, default='')
+    is_active = models.BooleanField(_('is_active'), default=False)
+
+
 class ShopUser(AbstractUser):
     """
     验证方式不一样，所以必须自定义用户模型
@@ -33,11 +107,12 @@ class ShopUser(AbstractUser):
     py_code = models.CharField(max_length=8, blank=True, null=True)
     sex = models.IntegerField(blank=True, null=True)
     unit = models.CharField(max_length=60, blank=True, null=True)
-    department = models.ForeignKey("Department", on_delete=models.CASCADE,
-        blank=True, null=True)
+    department = models.ForeignKey('Department', related_name='users',
+        on_delete=models.CASCADE, blank=True, null=True)
     rank = models.IntegerField(default=0)
     birthday = models.DateTimeField(blank=True, null=True)
-    home_address = models.CharField(max_length=200, blank=True, null=True)
+    home_address = models.ForeignKey(Address, related_name='liver',
+        on_delete=models.CASCADE, blank=True, null=True)
     home_phone = models.CharField(max_length=20, blank=True, null=True)
     comment = models.CharField(max_length=200, blank=True, null=True)
     register_on = models.DateTimeField(blank=True, null=True)
@@ -56,6 +131,9 @@ class ShopUser(AbstractUser):
     class Meta:
         verbose_name = _('Shop user')
         verbose_name_plural = _('Shop users')
+
+    def __str__(self):
+        return self.username
 
 
 class Group(models.Model):
@@ -104,7 +182,8 @@ class Department(models.Model):
     #     through='DepartmentShopUserRelation',
     #     through_fields=('department', 'shop_user'),
     # )
-    address = models.CharField(max_length=256, blank=True, null=True)
+    address = models.ForeignKey(Address, related_name='departments',
+        on_delete=models.CASCADE, null=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
     fax = models.CharField(max_length=13, blank=True, null=True)
     is_active = models.BooleanField(_('is_active'), default=False)

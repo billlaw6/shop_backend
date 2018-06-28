@@ -43,6 +43,22 @@ export const getDepartments = params => {
   return axios.get(`/user-manage/departments/`, {params: params}).then(res => res)
 }
 
+export const getAllOrder = params => {
+  return axios.get(`/sale-manage/orders/`, {params: params}).then(res => res)
+}
+
+export const getOrderInfo = params => {
+  return axios.get(`/sale-manage/orders/${params}/`).then(res => res)
+}
+
+export const processOrder = params => {
+  return axios.post(`/sale-manage/order/process/`, params).then(res => res)
+}
+
+export const toggleOrderDetail = params => {
+  return axios.post(`/sale-manage/order-detail/toggle/`, params).then(res => res)
+}
+
 export const authLogin = params => {
   // http://django-rest-auth.readthedocs.io/en/latest/api_endpoints.html
   // 提交username, email, password，返回Token Object's key.
@@ -62,6 +78,18 @@ export const getUserPermissions = params => {
   return axios.get(`/user-manage/user-perms/`, {params: params}).then(res => res)
 }
 
+export const getCustomers = params => {
+  return axios.get(`/user-manage/users/`, {params: params}).then(res => res)
+}
+
+export const getExpresses = params => {
+  return axios.get(`/sale-manage/expresses/`, {params: params}).then(res => res)
+}
+
+export const getPayments = params => {
+  return axios.get(`/sale-manage/payments/`, {params: params}).then(res => res)
+}
+
 export const getProducts = params => {
   if (params['keyword'] === '') {
     delete params['keyword']
@@ -69,7 +97,7 @@ export const getProducts = params => {
   return axios.get(`/sale-manage/products/`, {params: params}).then(res => res)
 }
 
-export const getProductDetail = params => { return axios.get(`/sale-manage/products/${params.id}`, {params: params}).then(res => res) }
+export const getProductDetail = params => { return axios.get(`/sale-manage/products/${params}`).then(res => res) }
 
 export const addProduct = params => {
   return axios.post(`/sale-manage/product/`, params).then(res => res)
@@ -89,6 +117,10 @@ export const updateProduct = params => {
 
 export const getHotProducts = params => {
   return axios.get(`/sale-manage/hot-products/`, {params: params}).then(res => res)
+}
+
+export const addOrder = params => {
+  return axios.post(`/sale-manage/order/add/`, params).then(res => res)
 }
 
 export const authUser = params => { return axios.get(`/rest-auth/user/`, {params: params}).then(res => res) }

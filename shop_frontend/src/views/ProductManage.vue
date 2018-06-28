@@ -21,9 +21,9 @@
     </Row>
 
     <Table ref="table" class="data-table" :loading="loadingStatus" :context="self" :data="aList" :columns="tableColumns" stripe></Table>
-    <Button type="primary" size="large" @click="exportData(1)"><Icon type="ios-download-outline"></Icon> Export source data</Button>
-    <Button type="primary" size="large" @click="exportData(2)"><Icon type="ios-download-outline"></Icon> Export sorting and filtered data</Button>
-    <Button type="primary" size="large" @click="exportData(3)"><Icon type="ios-download-outline"></Icon> Export customed data</Button>
+    <Button type="primary" size="large" @click="exportData(1)"><Icon type="ios-download-outline"></Icon>{{ $t('exportSourceData') }}</Button>
+    <Button type="primary" size="large" @click="exportData(2)"><Icon type="ios-download-outline"></Icon>{{ $t('exportSortedOrFilteredData') }}</Button>
+    <Button type="primary" size="large" @click="exportData(3)"><Icon type="ios-download-outline"></Icon>{{ $t('exportCustomedData') }}</Button>
     <div style="margin: 10px;overflow: hidden">
       <div style="float: right;">
         <Page :total="total" :current="pageNumber"
@@ -73,8 +73,8 @@
             :on-format-error="handleFormatError"
             :max-size="maxSize"
             :on-exceeded-size="handleExceededSize"
-            :before-upload="handleFileUploaded"
-            :on-success="handleFileUploadSuccess"
+            :before-upload="handleAddFileUploaded"
+            :on-success="handleAddFileUploadSuccess"
           >
             <div v-if="uploadedFile">
               <span>选择了图片：{{ uploadedFile.name }}</span>
@@ -146,8 +146,8 @@
             :on-format-error="handleFormatError"
             :max-size="maxSize"
             :on-exceeded-size="handleExceededSize"
-            :before-upload="handleFileUploaded"
-            :on-success="handleFileUploadSuccess"
+            :before-upload="handleEditFileUploaded"
+            :on-success="handleEditFileUploadSuccess"
           >
             <div v-if="uploadedFile">
               <span>选择了图片：{{ uploadedFile.name }}</span>
@@ -671,19 +671,30 @@
       handleExceededSize: function () {
         this.$Message.error(this.$t('exceeded_size_error'))
       },
-      handleFileUploaded: function (file) {
+      handleAddFileUploaded: function (file) {
+        this.uploadedFile = file
+        this.addModel['file'] = this.uploadedFile
+        this.$refs.addModelUpload.clearFiles()
+        this.getProduct(this.pageSize, this.pageNumber)
+      },
+      handleAddFileUploadSuccess: function (response, file, fileList) {
+        console.log('file uploaded successfully')
+        this.$refs.addModelUpload.clearFiles()
+        this.getProduct(this.pageSize, this.pageNumber)
+        this.$Message.success('修改商品成功!')
+      },
+      handleEditFileUploaded: function (file) {
         this.uploadedFile = file
         this.editModel['file'] = this.uploadedFile
-        this.addModel['file'] = this.uploadedFile
         this.$refs.addModelUpload.clearFiles()
         this.$refs.editModelUpload.clearFiles()
         this.getProduct(this.pageSize, this.pageNumber)
       },
-      handleFileUploadSuccess: function (response, file, fileList) {
+      handleEditFileUploadSuccess: function (response, file, fileList) {
         console.log('file uploaded successfully')
-        this.$refs.addModelUpload.clearFiles()
         this.$refs.editModelUpload.clearFiles()
         this.getProduct(this.pageSize, this.pageNumber)
+        this.$Message.success('修改商品成功!')
       }
     },
     mounted () {

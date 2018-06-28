@@ -6,7 +6,7 @@ from rest_framework import serializers
 from user_manage.models import (ShopUser,)
 from sale_manage.models import (Order, Product,
     Category, ProductPicture, Express, Payment,
-    OrderStatus, Location, Address, Order,
+    OrderStatus, Order,
     OrderDetail, VisitLog, Stock, StockMoveRecord,
     StockCheck, StockDailyLog, StockUpdateLog)
 
@@ -56,35 +56,27 @@ class OrderStatusSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class LocationSerializer(serializers.ModelSerializer):
+class OrderDetailSerializer(serializers.ModelSerializer):
+    product_name = serializers.ReadOnlyField(required=False, source='product.name')
     class Meta:
-        model = Location
-        fields = "__all__"
-
-
-class AddressSerializer(serializers.ModelSerializer):
-    # user = serializers.ReadOnlyField(source='user.username')
-    user = serializers.ReadOnlyField(source='user.__str__')
-    location = serializers.ReadOnlyField(source='location.__str__')
-    class Meta:
-        model = Address
+        model = OrderDetail
         fields = "__all__"
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    # created_by = serializers.PrimaryKeyRelatedField(many=False, queryset=ShopUser.objects.all(), allow_null=True)
-    # buyer = serializers.PrimaryKeyRelatedField(many=False, queryset=ShopUser.objects.all(), allow_null=True)
-    # payment = serializers.PrimaryKeyRelatedField(many=False, queryset=Payment.objects.all(), allow_null=True, required=False)
-    # address = serializers.PrimaryKeyRelatedField(many=False, queryset=Address.objects.all(), allow_null=True, required=False)
-    # status = serializers.PrimaryKeyRelatedField(many=False, queryset=OrderStatus.objects.all(), allow_null=True, required=False)
+    created_by_name = serializers.ReadOnlyField(required=False, source='created_by.__str__')
+    buyer_name = serializers.ReadOnlyField(required=False, source='buyer.__str__')
+    # 字段可为空时不要使用__str__函数，否则报错
+    payment_name = serializers.ReadOnlyField(required=False, source='payment.name')
+    address_name = serializers.ReadOnlyField(required=False, source='address.name')
+    status_name = serializers.ReadOnlyField(required=False, source='status.__str__')
+    # payment = serializers.StringRelatedField(required=False, many=False)
+    # address = serializers.StringRelatedField(required=False, many=False)
+    # status = serializers.StringRelatedField(required=False, many=False)
+    # 名字和related_name一致才会包含在__all__中
+    order_details = OrderDetailSerializer(many=True, read_only=True)
     class Meta:
         model = Order
-        fields = "__all__"
-
-
-class OrderDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderDetail
         fields = "__all__"
 
 

@@ -16,7 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.utils import timezone
 from pypinyin import lazy_pinyin, Style
-from user_manage.models import Department
+from user_manage.models import Department, Address
 
 
 class Product(models.Model):
@@ -136,7 +136,7 @@ class ProductPicture(models.Model):
         ordering = ('product', 'order', )
 
     def __str__(self):
-        return self.product.name + '-' + self.name
+        return '%s-%s' % (self.product.name, self.name)
 
 
 class Express(models.Model):
@@ -206,81 +206,6 @@ class OrderStatus(models.Model):
         return self.name
 
 
-class Location(models.Model):
-    country_region_code = models.CharField(_('country_region_code'),
-        max_length=10)
-    country_region_name = models.CharField(_('country_region_name'),
-        max_length=30)
-    country_region_py = models.CharField(_('country_region_py'),
-        max_length=30, null=False, default='', blank=True)
-    country_region_pinyin = models.CharField(_('country_region_pinyin'),
-        max_length=256, null=False, default='', blank=True)
-    state_code = models.CharField(_('state_code'), max_length=10, null=False,
-        default='', blank=True)
-    state_name = models.CharField(_('state_name'), max_length=30,
-        null=False, default='', blank=True)
-    state_py = models.CharField(_('state_py'),
-        max_length=128, null=False, default='', blank=True)
-    state_pinyin = models.CharField(_('state_pinyin'),
-        max_length=256, null=False, default='', blank=True)
-    city_code = models.CharField(_('city_code'), max_length=10, null=False,
-        default='', blank=True)
-    city_name = models.CharField(_('city_name'), max_length=30,
-        null=False, default='', blank=True)
-    city_py = models.CharField(_('city_py'),
-        max_length=128, null=False, default='', blank=True)
-    city_pinyin = models.CharField(_('city_pinyin'),
-        max_length=256, null=False, default='', blank=True)
-    region_code = models.CharField(_('region_code'),
-        max_length=10, null=False, default='', blank=True)
-    region_name = models.CharField(_('region_name'),
-        max_length=30, null=False, default='', blank=True)
-    region_py= models.CharField(_('region_py'),
-        max_length=128, null=False, default='', blank=True)
-    region_pinyin= models.CharField(_('region_pinyin'),
-        max_length=256, null=False, default='', blank=True)
-    longitude = models.FloatField(_('longitude'),
-        null=False, default=0.0, blank=True)
-    latitude = models.FloatField(_('latitude'),
-        null=False, default=0.0, blank=True)
-    detail_location = models.CharField(_('detail_location'),
-        max_length=256, null=False, default='', blank=True)
-    is_active = models.BooleanField(_('is_active'), default=False)
-
-    def save(self, *args, **kwargs):
-        self.country_region_pinyin = ''.join(lazy_pinyin(self.country_region_name))
-        self.country_region_py = ''.join(lazy_pinyin(self.country_region_name, style=Style.FIRST_LETTER))
-        self.state_pinyin = ''.join(lazy_pinyin(self.state_name))
-        self.state_py = ''.join(lazy_pinyin(self.state_name, style=Style.FIRST_LETTER))
-        self.city_pinyin = ''.join(lazy_pinyin(self.city_name))
-        self.city_py = ''.join(lazy_pinyin(self.city_name, style=Style.FIRST_LETTER))
-        self.region_pinyin = ''.join(lazy_pinyin(self.region_name))
-        self.region_py = ''.join(lazy_pinyin(self.region_name, style=Style.FIRST_LETTER))
-        super(Location, self).save(*args, **kwargs)
-
-    class Meta:
-        verbose_name = _('Location')
-        verbose_name_plural = _('Locations')
-        index_together = [
-            'country_region_code',
-            'state_code',
-            'city_code',
-            'region_code']
-
-    def __str__(self):
-        return self.country_region_name + '|' + self.state_name + '|'\
-            + self.city_name + '|' + self.region_name
-
-
-class Address(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
-                             related_name='addresses', null=True)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True)
-    detail = models.TextField(_('detail'), blank=True,
-                                  null=False, default='')
-    is_active = models.BooleanField(_('is_active'), default=False)
-
-
 class Order(models.Model):
     order_no = models.CharField(max_length=64, unique=True, blank=True,
                                 default='')
@@ -309,14 +234,14 @@ class Order(models.Model):
         ordering = ('created_at',)
         index_together = ['order_no', 'created_at', 'express_no']
         # unique_together包含的字段不能为空，字段定义里写blank=True也不行
-        unique_together = (('buyer', 'comment'))
+        unique_together = (('buyer', 'order_no'))
 
     def __str__(self):
-        return self.order_no + '-' + self.buyer.username+ '-' + str(self.sum_price)
+        return '%s-%s-%s' % (self.order_no, self.buyer.username, self.sum_price)
 
 
 class OrderDetail(models.Model):
-    order = models.ForeignKey(Order, related_name=_('order'),
+    order = models.ForeignKey(Order, related_name=_('order_details'),
                                 blank=False, null=False)
     product = models.ForeignKey(Product, related_name=_('order_detail'),
                                 blank=False, null=False)
@@ -326,6 +251,7 @@ class OrderDetail(models.Model):
                                 default=0.00)
     comment = models.CharField(_('comment'), max_length=300, blank=True,
                                default='')
+    status = models.IntegerField(blank=False, null=False, default=0)
     created_at = models.DateTimeField(_('created_at'), auto_now_add=True)
 
     class Meta:
@@ -334,7 +260,7 @@ class OrderDetail(models.Model):
         unique_together = (('order', 'product'))
 
     def __str__(self):
-        return self.order.order_no + '-' + self.product.name
+        return '%s-%s' % (self.order.order_no, self.product.name)
 
 
 class VisitLog(models.Model):
@@ -352,7 +278,7 @@ class VisitLog(models.Model):
         verbose_name_plural = _('VisitLogs')
 
     def __str__(self):
-        return self.visit_date + '-' + self.from_ip
+        return '%s-%s' % (self.visit_date, self.from_ip)
 
 
 class Stock(models.Model):

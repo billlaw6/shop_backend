@@ -9,8 +9,9 @@ from rest_framework import permissions
 from rest_framework.renderers import JSONRenderer
 # from social_django.models import UserSocialAuth
 
-from user_manage.models import Department
+from user_manage.models import Department, Address, Location
 from user_manage.serializers import (UserSerializer,
+    AddressSerializer, LocationSerializer,
     DepartmentSerializer)
 
 # Create your views here.
@@ -103,3 +104,20 @@ class UserPermissions(APIView):
     def get(self, request, format=None):
         perms = JSONRenderer().render(request.user.get_all_permissions())
         return Response(perms)
+
+
+class LocationViewSet(viewsets.ModelViewSet):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+class AddressViewSet(viewsets.ModelViewSet):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    # The create() method of our serializer will now be passed an additional 'owner' field, along with the validated data from the request.
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+

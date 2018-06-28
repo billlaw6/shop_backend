@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from user_manage.models import (Group, Department, DictEmployeeRank,
+      Address, Location,
       DictEmployeeStatus, DictSex, DictUserStatus )
 from sale_manage.models import (Order)
 
@@ -46,6 +47,21 @@ class DictEmployeeStatusSerializer(serializers.ModelSerializer):
 class DictSexSerializer(serializers.ModelSerializer):
     class Meta:
         model = DictSex
+        fields = "__all__"
+
+
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = "__all__"
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    # user = serializers.ReadOnlyField(source='user.username')
+    user = serializers.ReadOnlyField(source='user.__str__')
+    location = serializers.ReadOnlyField(source='location.__str__')
+    class Meta:
+        model = Address
         fields = "__all__"
 
 

@@ -54,8 +54,8 @@ INSTALLED_APPS = [
     'allauth.account',
     # My apps
     'weixin.apps.WeixinConfig',
-    'sale_manage.apps.SaleManageConfig',
     'user_manage.apps.UserManageConfig',
+    'sale_manage.apps.SaleManageConfig',
     'verify_utils.apps.VerifyUtilsConfig',
 ]
 
@@ -181,7 +181,9 @@ REST_FRAMEWORK = {
         # or allow read-only access for unauthenticated users.
         # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
         # 'rest_framework.permissions.IsAdminUser',
-        'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        # 'rest_framework.permissions.AllowAny'
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10 # 设置默认的每次限额，用户可以通过修改limit和offset取所需要的数据

@@ -143,7 +143,11 @@
         logout: 'logout'
       }),
       ...mapActions('app', {
-        updateMenuList: 'updateMenuList'
+        updateMenuList: 'updateMenuList',
+        setPayments: 'setPayments',
+        setDepartments: 'setDepartments',
+        setExpresses: 'setExpresses',
+        setLocations: 'setLocations'
       }),
       // ...mapActions({
       //   setMessageCount: 'app/setMessageCount'
@@ -200,6 +204,10 @@
     },
     mounted () {
       this.updateMenuList()
+      this.setPayments()
+      this.setDepartments()
+      this.setExpresses()
+      this.setLocations()
     },
     created () {
     },

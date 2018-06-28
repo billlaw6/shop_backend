@@ -4,6 +4,8 @@ import * as types from '@/vuex-store/types'
 import i18Locales from '@/locale/locale'
 import Vue from 'vue'
 
+import { getPayments, getDepartments, getExpresses } from '@/http/api'
+
 const app = {
   namespaced: true,
 
@@ -36,7 +38,11 @@ const app = {
     ],
     tagList: [...otherRouter.children],
     messageCount: 0,
-    dontCache: ['text-editor', 'artical-publish'] // 在这里定义你不想要缓存的页面的name属性值(参见路由配置router.js)
+    dontCache: ['text-editor', 'artical-publish'], // 在这里定义你不想要缓存的页面的name属性值(参见路由配置router.js)
+    availablePayments: [],
+    availableExpresses: [],
+    availableDepartments: [],
+    availableLocations: []
   },
 
   getters: {
@@ -150,6 +156,18 @@ const app = {
     [types.INCREATE_TAG] (state, tagObj) {
       state.pageOpenedList.push(tagObj)
       localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
+    },
+    [types.SET_PAYMENTS] (state, param) {
+      state.availablePayments = param
+    },
+    [types.SET_DEPARTMENTS] (state, param) {
+      state.availableDepartments = param
+    },
+    [types.SET_EXPRESSES] (state, param) {
+      state.availableExpresses = param
+    },
+    [types.SET_LOCATIONS] (state, param) {
+      state.availableLocations = param
     }
   },
 
@@ -218,6 +236,42 @@ const app = {
         }
       })
       commit(types.UPDATE_MENU_LIST, tmpMenuList)
+    },
+    'setPayments': ({ dispatch, commit, getters, rootGetters }) => {
+      getPayments().then((res) => {
+        let { data, status, statusText } = res
+        if (status !== 200) {
+          console.log('Error in getPayments:' + statusText)
+        } else {
+          commit(types.SET_PAYMENTS, data.results)
+        }
+      }, (error) => {
+        console.log('Error in getPayments:' + error)
+      })
+    },
+    'setDepartments': ({ dispatch, commit, getters, rootGetters }) => {
+      getDepartments().then((res) => {
+        let { data, status, statusText } = res
+        if (status !== 200) {
+          console.log('Error in getDepartments:' + statusText)
+        } else {
+          commit(types.SET_DEPARTMENTS, data.results)
+        }
+      }, (error) => {
+        console.log('Error in getDepartments:' + error)
+      })
+    },
+    'setExpresses': ({ dispatch, commit, getters, rootGetters }) => {
+      getExpresses().then((res) => {
+        let { data, status, statusText } = res
+        if (status !== 200) {
+          console.log('Error in getExpresses:' + statusText)
+        } else {
+          commit(types.SET_EXPRESSES, data.results)
+        }
+      }, (error) => {
+        console.log('Error in getExpresses:' + error)
+      })
     }
   }
 }

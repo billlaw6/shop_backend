@@ -34,7 +34,7 @@ export default {
       window.localStorage.setItem('cartList', JSON.stringify(state.cartList))
     },
 
-    [types.SET_CART_ITEM_AMOUNT] (state, {item, amount}, rootState, rootGetters) {
+    [types.SET_CART_ITEM_AMOUNT] (state, {item, amount, comment}, rootState, rootGetters) {
       // 如果该品种已经存在，增加list中对应品种的amount
       // 如果该品种不存在，增加list中对应品种及amount
       let productIndex = -1
@@ -51,12 +51,14 @@ export default {
       if (productIndex === -1) {
         // console.debug('not existed')
         item['amount'] = parseFloat(amount.toFixed(state.decimals))
+        item['comment'] = comment
         tmpCartList.push(item)
         state.cartList = tmpCartList
         window.localStorage.setItem('cartList', JSON.stringify(state.cartList))
       } else {
         // console.debug('existed')
         item['amount'] = parseFloat(amount.toFixed(state.decimals))
+        item['comment'] = comment
         tmpCartList[productIndex] = item
         state.cartList = tmpCartList
         window.localStorage.setItem('cartList', JSON.stringify(state.cartList))
@@ -70,7 +72,7 @@ export default {
     },
 
     // 这是对象内方法的简化写法 es6
-    [types.ADD_CART_ITEM] (state, {item, amount}, rootState, rootGetters) {
+    [types.ADD_CART_ITEM] (state, {item, amount, comment}, rootState, rootGetters) {
       // console.debug('mutation received item:')
       // console.debug(item)
       // console.debug('mutation received amount:')
@@ -85,18 +87,17 @@ export default {
           productIndex = index
         }
       })
-      // console.debug('productIndex: ' + productIndex)
+      console.debug('productIndex: ' + productIndex)
       if (productIndex === -1) {
-        // console.debug('not existed')
-        // console.debug(typeof amount)
+        console.debug('not existed')
         item['amount'] = parseFloat(amount.toFixed(state.decimals))
+        item['comment'] = comment
         state.cartList.push(item)
         window.localStorage.setItem('cartList', JSON.stringify(state.cartList))
       } else {
-        // console.debug('existed')
-        // console.debug(typeof amount)
-        item['amount'] = parseFloat(amount.toFixed(state.decimals))
-        state.cartList[productIndex] = item
+        console.debug('existed')
+        state.cartList[productIndex]['amount'] += parseFloat(amount.toFixed(state.decimals))
+        state.cartList[productIndex]['comment'] = comment
         window.localStorage.setItem('cartList', JSON.stringify(state.cartList))
       }
     },
@@ -133,12 +134,12 @@ export default {
     },
 
     // 往购物车中添加商品
-    'addCartItem': ({ commit, state, getters, rootGetters }, { item, amount }) => {
+    'addCartItem': ({ commit, state, getters, rootGetters }, { item, amount, comment }) => {
       // console.debug('action received item:')
       // console.debug(item)
       // console.debug('action received amount:')
       // console.debug(amount)
-      commit(types.ADD_CART_ITEM, { item, amount })
+      commit(types.ADD_CART_ITEM, { item, amount, comment })
       // sessionStorage仅在当前会话下有效，关闭页面或浏览器后被清除。
       // localStorage生命周期是永久
       // 每次更新购物车后对未登录的用户将购物车信息存放本地一份，这样刷新页面时信息可从本地取

@@ -4,8 +4,10 @@ from django.contrib.auth.models import User
 
 from django.contrib.auth import get_user_model
 from user_manage.models import (ShopUser, Group,
-GroupShopUserRelation, Department, DictEmployeeRank,
-DictEmployeeStatus, DictSex, DictUserStatus)
+    Address, Location, GroupShopUserRelation,
+    Department, DictEmployeeRank,
+    DictEmployeeStatus, DictSex,
+    DictUserStatus)
 # DepartmentShopUserRelation)
 
 
@@ -54,6 +56,16 @@ class DictSexAdmin(admin.ModelAdmin):
 
 @admin.register(DictUserStatus)
 class DictUserStatusAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Location)
+class LocationAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Address)
+class AddressAdmin(admin.ModelAdmin):
     pass
 
 

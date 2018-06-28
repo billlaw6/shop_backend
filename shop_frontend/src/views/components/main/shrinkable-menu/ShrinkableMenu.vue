@@ -15,7 +15,6 @@
       :icon-color="shrinkIconColor"
       @on-change="handleChange"
     ></sidebar-menu-shrink>
-    {{ menuList }}
   </div>
 </template>
 

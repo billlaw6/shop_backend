@@ -1,0 +1,222 @@
+<template lang="html">
+  <div class="order">
+    <Table ref="orderList" stripe :columns="orderListColumns" :data="orderListData">
+      <div class="table-header" slot="header">
+        订单列表
+      </div>
+      <div class="table-footer" slot="footer">
+        共计: <span>{{ total }}</span> 订单，合计: <span></span>
+      </div>
+    </Table>
+    <div style="margin: 10px; overflow: hidden">
+      <div style="float: right;">
+        <Page :total="total" :current="pageNumber"
+          show-sizer show-elevator show-total
+          :page-size=pageSize
+          :page-size-opts=[10,20,40,10000]
+          @on-change="changePage" 
+          @on-page-size-change="changePageSize"
+        >
+        </Page>
+      </div>
+    </div>
+    <br>
+  </div>
+</template>
+
+<script>
+  // import { mapState, mapActions } from 'vuex'
+  import { getAllOrder } from '@/http/api'
+
+  export default {
+    data: function () {
+      return {
+        keyword: '',
+        dateRange: [new Date((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate() - 2), new Date()],
+        dateOptions: {
+          shortcuts: [
+            {
+              text: '最近一周',
+              value () {
+                const end = new Date()
+                const start = new Date()
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+                return [start, end]
+              }
+            },
+            {
+              text: '最近一个月',
+              value () {
+                const end = new Date()
+                const start = new Date()
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+                return [start, end]
+              }
+            },
+            {
+              text: '最近三个月',
+              value () {
+                const end = new Date()
+                const start = new Date()
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+                return [start, end]
+              }
+            }
+          ]
+        },
+        orderListData: [],
+        total: 0,
+        orderListColumns: [
+          {
+            title: this.$t('orderNo'),
+            key: 'order_no',
+            sortable: true,
+            render: (h, param) => {
+              let toUrl = {name: 'order', params: {orderId: param.row.id}}
+              return h('router-link',
+                {props: {
+                  to: toUrl
+                }}, param.row.order_no)
+            }
+          },
+          {
+            title: this.$t('buyer'),
+            key: 'buyer_name',
+            sortable: true
+          },
+          {
+            title: this.$t('sumPrice'),
+            key: 'sum_price',
+            sortable: true
+          },
+          {
+            title: this.$t('detail'),
+            key: 'order_details',
+            sortable: true,
+            render: (h, params) => {
+              return h('Poptip', {
+                props: {
+                  trigger: 'hover',
+                  title: '明细',
+                  placement: 'bottom'
+                }
+              }, [
+                h('Tag', params.row.order_details.length + '种商品'),
+                h('div', {
+                  slot: 'content'
+                }, [
+                  h('div', '商品' + ' ' + '售价' + ' ' + '数量'),
+                  h('ul', params.row.order_details.map(item => {
+                    return h('li', {
+                      style: {
+                        textAlign: 'center',
+                        padding: '4px'
+                      }
+                    }, item.product_name + ' ' + item.price + ' ' + item.amount)
+                  }))
+                ])
+              ])
+            }
+          },
+          {
+            title: this.$t('createdBy'),
+            key: 'created_by_name',
+            sortable: true
+          },
+          {
+            title: this.$t('createdAt'),
+            key: 'created_at',
+            sortable: true
+          },
+          {
+            title: '操作',
+            key: 'action',
+            render: (h, params) => {
+              return h('div', [
+                h('Button', {
+                  props: {
+                    type: 'error',
+                    size: 'small'
+                  },
+                  on: {
+                    click: () => {
+                      this.removeCartItem(params.row)
+                    }
+                  }
+                }, this.$t('process')),
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small'
+                  },
+                  on: {
+                    click: () => {
+                      this.removeCartItem(params.row)
+                    }
+                  }
+                }, this.$t('trash'))
+              ])
+            }
+          }
+        ],
+        pageNumber: 1,
+        pageSize: 10
+      }
+    },
+    computed: {
+    },
+    methods: {
+      // 不能用箭头函数，里面的this作用域会不一样
+      getOrderList: function (pageSize, pageNumber) {
+        let paras = {
+          // start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() - 1) + '-' + (this.dateRange[0].getDate() + 1),
+          // end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate() + 1),
+          keyword: this.keyword,
+          limit: pageSize,
+          offset: (pageNumber - 1) * pageSize
+        }
+        getAllOrder(paras).then((res) => {
+          let { data, status, statusText } = res
+          if (status !== 200) {
+            console.error('get Order failed:' + statusText)
+          } else {
+            this.total = data.count
+            this.orderListData = data.results
+          }
+        }, (error) => {
+          console.log('Error in getOrderList:' + error)
+        })
+      },
+      changePage (value) {
+        console.log(value)
+        this.pageNumber = value
+        this.getOrderList(this.pageSize, this.pageNumber)
+      },
+      changePageSize (value) {
+        console.log(value)
+        this.pageSize = value
+        this.getOrderList(this.pageSize, this.pageNumber)
+      },
+      checkoutCart: function (checkoutList) {
+        console.debug('checkout cart')
+        if (this.loginStatus) {
+          console.debug('checking')
+          this.$store.dispatch('emptyCart')
+        } else {
+          console.debug('redirecting')
+          this.$router.push({ name: 'login' })
+        }
+      }
+    },
+    mounted () {
+      console.debug('Cart.vue mounted')
+      this.getOrderList(this.pageSize, this.pageNumber)
+    },
+    beforeCreate () {
+      console.log('Cart.vue creating')
+    }
+  }
+</script>
+
+<style lang="stylus" scoped>
+</style>

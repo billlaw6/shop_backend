@@ -19,17 +19,17 @@ export const loginRouter = {
 
 export const page404 = {
   path: '/404',
-  name: 'error-404',
+  name: 'error404',
   icon: 'error',
-  title: {i18n: 'error-404'},
+  title: {i18n: 'error404'},
   component: resolve => require(['@/views/Error404.vue'], resolve)
 }
 
 export const page403 = {
   path: '/403',
-  name: 'error-403',
+  name: 'error403',
   icon: 'error',
-  title: {i18n: 'error-403'},
+  title: {i18n: 'error403'},
   component: resolve => require(['@/views/Error403.vue'], resolve)
 }
 
@@ -46,7 +46,7 @@ export const detail = {
   name: 'detail',
   icon: 'detail',
   title: {i18n: 'detail'},
-  component: resolve => require(['@/views/Detail.vue'], resolve)
+  component: resolve => require(['@/views/ProductDetail.vue'], resolve)
 }
 
 export const cart = {
@@ -79,8 +79,8 @@ export const otherRouter = {
   },
   children: [
     { path: '', title: {i18n: 'dashboard'}, name: 'dashboard', meta: { requireAuth: true }, component: resolve => require(['@/views/components/main/Dashboard.vue'], resolve) },
-    { path: 'ownspace', title: {i18n: 'ownspace'}, name: 'ownspace_index', meta: { requireAuth: true }, component: resolve => require(['@/views/User.vue'], resolve) },
-    { path: 'message', title: {i18n: 'message'}, name: 'message_index', meta: { requireAuth: true }, component: resolve => require(['@/views/Protocal.vue'], resolve) }
+    { path: 'ownspace', title: {i18n: 'ownspace'}, name: 'ownspaceIndex', meta: { requireAuth: true }, component: resolve => require(['@/views/User.vue'], resolve) },
+    { path: 'message', title: {i18n: 'message'}, name: 'messageIndex', meta: { requireAuth: true }, component: resolve => require(['@/views/Protocal.vue'], resolve) }
   ]
 }
 
@@ -90,8 +90,8 @@ export const appRouter = [
   {
     path: '/product-manage',
     icon: 'ios-grid-view',
-    name: 'product_manage',
-    title: { i18n: 'product_manage' },
+    name: 'productManage',
+    title: { i18n: 'productManage' },
     meta: {
       requireAuth: true,
       permission: 'sale_manage.add_product'
@@ -101,8 +101,8 @@ export const appRouter = [
       {
         path: 'list',
         icon: 'ios-grid-view',
-        title: { i18n: 'product_manage' },
-        name: 'edit_product',
+        title: { i18n: 'productManage' },
+        name: 'editProduct',
         meta: {
           requireAuth: true,
           permission: 'sale_manage.add_product'
@@ -114,8 +114,8 @@ export const appRouter = [
   {
     path: '/order-manage',
     icon: 'ios-list-outline',
-    name: 'order_manage',
-    title: { i18n: 'order_manage' },
+    name: 'orderManage',
+    title: { i18n: 'orderManage' },
     meta: {
       requireAuth: true,
       permission: 'sale_manage.add_orderdetail'
@@ -123,32 +123,43 @@ export const appRouter = [
     component: Home,
     children: [
       {
-        path: 'edit',
-        icon: 'edit',
-        title: { i18n: 'edit_order' },
-        name: 'edit_order',
-        meta: {
-          requireAuth: true,
-          permission: 'sale_manage.add_orderdetail'
-        },
-        component: resolve => require(['@/views/Error403.vue'], resolve)
-      },
-      {
         path: 'add',
         icon: 'compose',
-        title: { i18n: 'add_order' },
-        name: 'add_order',
+        title: { i18n: 'addOrder' },
+        name: 'addOrder',
         meta: {
           requireAuth: true,
           permission: 'sale_manage.add_orderdetail'
         },
-        component: resolve => require(['@/views/Error403.vue'], resolve)
+        component: resolve => require(['@/views/OrderAdd.vue'], resolve)
+      },
+      {
+        path: 'edit',
+        icon: 'edit',
+        title: { i18n: 'editOrder' },
+        name: 'editOrder',
+        meta: {
+          requireAuth: true,
+          permission: 'sale_manage.add_orderdetail'
+        },
+        component: resolve => require(['@/views/OrderManage.vue'], resolve)
+      },
+      {
+        path: '/order/:orderId',
+        name: 'order',
+        icon: 'edit',
+        title: {i18n: 'order'},
+        meta: {
+          requireAuth: true,
+          permission: 'sale_manage.add_orderdetail'
+        },
+        component: resolve => require(['@/views/OrderDetail.vue'], resolve)
       },
       {
         path: 'stats',
         icon: 'stats-bars',
-        title: { i18n: 'stats_order' },
-        name: 'stats_order',
+        title: { i18n: 'statsOrder' },
+        name: 'statsOrder',
         meta: {
           requireAuth: true,
           permission: 'sale_manage.add_orderdetail'
@@ -160,8 +171,8 @@ export const appRouter = [
   {
     path: '/user-manage',
     icon: 'key',
-    name: 'user_manage',
-    title: { i18n: 'user_manage' },
+    name: 'userManage',
+    title: { i18n: 'userManage' },
     meta: {
       requireAuth: true,
       permission: 'sale_manage.add_orderdetail'
@@ -171,8 +182,8 @@ export const appRouter = [
       {
         path: 'index',
         icon: 'key',
-        title: { i18n: 'user_manage' },
-        name: 'access_index',
+        title: { i18n: 'userManage' },
+        name: 'accessIndex',
         meta: {
           requireAuth: true,
           permission: 'sale_manage.add_orderdetail'
@@ -195,7 +206,7 @@ export const appRouter = [
       {
         path: 'index',
         title: {i18n: 'international'},
-        name: 'international_index',
+        name: 'internationalIndex',
         meta: {
           requireAuth: true,
           permission: 'sale_manage.add_orderdetail'
@@ -218,7 +229,7 @@ export const appRouter = [
       {
         path: 'text-editor',
         icon: 'compose',
-        name: 'text-editor',
+        name: 'textEditor',
         title: '富文本编辑器',
         meta: {
           requireAuth: true,
@@ -229,7 +240,7 @@ export const appRouter = [
       {
         path: 'md-editor',
         icon: 'pound',
-        name: 'md-editor',
+        name: 'mdEditor',
         title: 'Markdown编辑器',
         meta: {
           requireAuth: true,
@@ -240,7 +251,7 @@ export const appRouter = [
       {
         path: 'image-editor',
         icon: 'crop',
-        name: 'image-editor',
+        name: 'imageEditor',
         title: '图片预览编辑',
         meta: {
           requireAuth: true,
@@ -288,7 +299,7 @@ export const appRouter = [
       {
         path: 'artical-publish',
         title: '错误页面',
-        name: 'artical-publish',
+        name: 'articalPublish',
         icon: 'compose',
         meta: {
           requireAuth: true,

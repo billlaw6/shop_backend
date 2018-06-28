@@ -37,7 +37,11 @@
         saleUnit: state => state.saleUnit
       }),
       imageUrl: function () {
-        return this.item['image'].replace('sale-manage/products/shop_frontend/dist/', '')
+        if (this.item['image']) {
+          return this.item['image'].replace('sale-manage/products/shop_frontend/dist/', '')
+        } else {
+          return ''
+        }
       }
     },
     methods: {

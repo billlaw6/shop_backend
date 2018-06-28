@@ -101,8 +101,8 @@
       }
     },
     beforeCreate () {
-      console.log('Products.vue creating')
-      getProducts().then((response) => {
+      // console.log('Products.vue creating')
+      getProducts({limit: 10000, offset: 0}).then((response) => {
         let _this = this
         console.debug('data gotton in Products:')
         console.debug(response.data)

@@ -2,12 +2,12 @@ from django.conf.urls import url, include
 from rest_framework import routers
 
 from user_manage import views
-from user_manage.views import (UserViewSet, DepartmentViewSet)
 
 
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
-router.register(r'departments', DepartmentViewSet)
+router.register(r'users', views.UserViewSet)
+router.register(r'departments', views.DepartmentViewSet)
+router.register(r'addresses', views.AddressViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),

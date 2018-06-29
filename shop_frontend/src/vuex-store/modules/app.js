@@ -4,7 +4,7 @@ import * as types from '@/vuex-store/types'
 import i18Locales from '@/locale/locale'
 import Vue from 'vue'
 
-import { getPayments, getDepartments, getExpresses } from '@/http/api'
+import { getPayments, getDepartments, getExpresses, getLocations } from '@/http/api'
 
 const app = {
   namespaced: true,
@@ -271,6 +271,18 @@ const app = {
         }
       }, (error) => {
         console.log('Error in getExpresses:' + error)
+      })
+    },
+    'setLocations': ({ dispatch, commit, getters, rootGetters }) => {
+      getLocations().then((res) => {
+        let { data, status, statusText } = res
+        if (status !== 200) {
+          console.log('Error in getLocations:' + statusText)
+        } else {
+          commit(types.SET_LOCATIONS, data.results)
+        }
+      }, (error) => {
+        console.log('Error in getLocations:' + error)
       })
     }
   }

@@ -1,5 +1,25 @@
 <template lang="html">
   <div class="order">
+    <Row>
+      <Col span="6">
+        <Date-picker v-model="dateRange" type="daterange" format="yyyy-MM-dd" :options="dateOptions" placement="bottom-start" placeholder="订单创建时间"></Date-picker>
+      </Col>
+      <Col span="8">
+        <AutoComplete v-model="keyword" placeholder="本地搜索" icon="ios-search" :clearable="true">
+          <Option v-for="option in aList" :value="option.name" :key="option.id">
+            <span class="name">{{ option.name }}</span>
+            <span class="sum_price">{{ option.sum_price | currency }}</span>
+          </Option>
+        </AutoComplete>
+      </Col>
+      <Col span="3">
+        <i-button type="primary" @click="handleSearch()">{{ $t('remoteSearch') }}</i-button>
+      </Col>
+      <Col span="4" push="3">
+        <i-button type="primary" @click="">{{ $t('addOrder') }}</i-button>
+       </Col>
+    </Row>
+
     <Table ref="orderList" stripe :columns="orderListColumns" :data="orderListData">
       <div class="table-header" slot="header">
         订单列表

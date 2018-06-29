@@ -24,7 +24,7 @@ admin.site.register(get_user_model(), ShopUserAdmin)
 
 
 class GroupAdmin(admin.ModelAdmin):
-    fields = ['name', 'pinyin', 'py']
+    fields = ['code', 'name', 'pinyin', 'py']
 
 admin.site.register(Group, GroupAdmin)
 

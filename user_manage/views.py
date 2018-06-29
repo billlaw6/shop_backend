@@ -71,7 +71,6 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     The actions provided by the ModelViewSet class are .list(), .retrieve(),
     .create(), .update(), .partial_update(), and .destroy().
     """
-    print('laksjdljasfd')
     queryset = Department.objects.filter(is_active=1)
     # queryset = Department.objects.all()
     serializer_class = DepartmentSerializer

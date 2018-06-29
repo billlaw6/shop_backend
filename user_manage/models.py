@@ -90,8 +90,8 @@ class Location(models.Model):
 
 
 class Address(models.Model):
-    location = models.ForeignKey(Location, related_name='addresses',
-        on_delete=models.CASCADE, null=True)
+    location = models.ForeignKey(Location, models.SET_NULL,
+        related_name='addresses', null=True, blank=True)
     detail = models.TextField(_('detail'), blank=True,
                                   null=False, default='')
     is_active = models.BooleanField(_('is_active'), default=False)
@@ -111,8 +111,8 @@ class ShopUser(AbstractUser):
         on_delete=models.CASCADE, blank=True, null=True)
     rank = models.IntegerField(default=0)
     birthday = models.DateTimeField(blank=True, null=True)
-    home_address = models.ForeignKey(Address, related_name='liver',
-        on_delete=models.CASCADE, blank=True, null=True)
+    home_address = models.ForeignKey(Address, models.SET_NULL,
+        related_name='liver', blank=True, null=True)
     home_phone = models.CharField(max_length=20, blank=True, null=True)
     comment = models.CharField(max_length=200, blank=True, null=True)
     register_on = models.DateTimeField(blank=True, null=True)
@@ -137,6 +137,7 @@ class ShopUser(AbstractUser):
 
 
 class Group(models.Model):
+    code = models.CharField(unique=True, max_length=64, primary_key=True)
     name = models.CharField(max_length=128)
     pinyin = models.CharField(max_length=50, blank=True, null=False, default='')
     py = models.CharField(max_length=50, blank=True, null=False, default='')
@@ -146,8 +147,6 @@ class Group(models.Model):
         through_fields=('group', 'shop_user'),
     )
     created_at = models.DateTimeField(_('created_at'), auto_now=True)
-    created_by = models.ForeignKey(get_user_model(),
-                                   related_name='created_groups')
 
     def save(self, *args, **kwargs):
         self.pinyin = ''.join(lazy_pinyin(self.name))
@@ -155,7 +154,7 @@ class Group(models.Model):
         super(Group, self).save(*args, **kwargs)
 
     class Meta:
-        ordering = ('created_at',)
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
@@ -166,14 +165,16 @@ class GroupShopUserRelation(models.Model):
     shop_user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     inviter = models.ForeignKey(
         get_user_model(),
-        on_delete=models.CASCADE,
+        models.SET_NULL,
         related_name="membership_invites",
+        blank=True,
+        null=True
     )
-    invite_reason = models.CharField(max_length=128)
+    invite_comment = models.CharField(max_length=256, blank=True, null=True)
 
 
 class Department(models.Model):
-    code = models.CharField(unique=True, max_length=5)
+    code = models.CharField(unique=True, max_length=64, primary_key=True)
     name = models.CharField(unique=True, max_length=64)
     pinyin = models.CharField(max_length=64, blank=True, null=True)
     py = models.CharField(max_length=16, blank=True, null=True)
@@ -182,8 +183,8 @@ class Department(models.Model):
     #     through='DepartmentShopUserRelation',
     #     through_fields=('department', 'shop_user'),
     # )
-    address = models.ForeignKey(Address, related_name='departments',
-        on_delete=models.CASCADE, null=True)
+    address = models.ForeignKey(Address, models.SET_NULL,
+        related_name='departments', blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
     fax = models.CharField(max_length=13, blank=True, null=True)
     is_active = models.BooleanField(_('is_active'), default=False)
@@ -208,7 +209,7 @@ class Department(models.Model):
 
 
 class DictEmployeeRank(models.Model):
-    code = models.CharField(unique=True, max_length=5)
+    code = models.CharField(unique=True, max_length=64, primary_key=True)
     name = models.CharField(unique=True, max_length=64)
     pinyin = models.CharField(max_length=64, blank=True, null=True)
     py = models.CharField(max_length=16, blank=True, null=True)
@@ -227,7 +228,7 @@ class DictEmployeeRank(models.Model):
 
 
 class DictEmployeeStatus(models.Model):
-    code = models.CharField(unique=True, max_length=5)
+    code = models.CharField(unique=True, max_length=64, primary_key=True)
     name = models.CharField(unique=True, max_length=64)
     pinyin = models.CharField(max_length=64, blank=True, null=True)
     py = models.CharField(max_length=16, blank=True, null=True)
@@ -246,7 +247,7 @@ class DictEmployeeStatus(models.Model):
 
 
 class DictSex(models.Model):
-    code = models.CharField(unique=True, max_length=5)
+    code = models.CharField(unique=True, max_length=5, primary_key=True)
     name = models.CharField(unique=True, max_length=64)
     pinyin = models.CharField(max_length=64, blank=True, null=True)
     py = models.CharField(max_length=16, blank=True, null=True)
@@ -265,7 +266,7 @@ class DictSex(models.Model):
 
 
 class DictUserStatus(models.Model):
-    code = models.CharField(unique=True, max_length=5)
+    code = models.CharField(unique=True, max_length=64, primary_key=True)
     name = models.CharField(unique=True, max_length=64)
     pinyin = models.CharField(max_length=64, blank=True, null=True)
     py = models.CharField(max_length=16, blank=True, null=True)

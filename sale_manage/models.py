@@ -15,14 +15,17 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.utils import timezone
+from datetime import date
 from pypinyin import lazy_pinyin, Style
 from user_manage.models import Department, Address
 
 
 class Product(models.Model):
+    # code = models.CharField(_('code'), unique=True, max_length=64)
     name = models.CharField(_('name'), unique=True, max_length=128)
     pinyin = models.CharField(max_length=64, blank=True, null=False, default='')
     py = models.CharField(max_length=64, blank=True, null=False, default='')
+    effective_month = models.IntegerField(blank=True, null=True)
     brand = models.CharField(_('brand'), max_length=64, null=False, default='',
                              blank=True)
     # 这里带一张主图片，减少请求次数或关联查询
@@ -35,7 +38,6 @@ class Product(models.Model):
     is_active = models.BooleanField(_('is_active'), default=False)
     pinyin = models.CharField(max_length=64, blank=True, null=False, default='')
     py = models.CharField(max_length=64, blank=True, null=False, default='')
-    effective_month = models.IntegerField(blank=True, null=True)
     is_bestseller = models.BooleanField(_('is_bestseller'), default=False)
     description = models.TextField(_('description'), blank=True, null=False,
                                    default='')
@@ -53,8 +55,8 @@ class Product(models.Model):
     created_by = models.ForeignKey(get_user_model(),
                                    related_name='created_products')
     updated_at = models.DateTimeField(_('updated_at'), auto_now=True)
-    updated_by = models.ForeignKey(get_user_model(),
-                                   related_name='updated_products')
+    updated_by = models.ForeignKey(get_user_model(), models.SET_NULL,
+                   related_name='updated_products', blank=True, null=True)
     highlighted = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
@@ -105,8 +107,10 @@ class CategoryProductRelation(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     manager = models.ForeignKey(
         get_user_model(),
-        on_delete=models.CASCADE,
-        related_name="manager"
+        models.SET_NULL,
+        related_name='manager',
+        blank=True,
+        null=True
     )
     reason = models.CharField(max_length=128, blank=True, null=True)
 
@@ -140,7 +144,7 @@ class ProductPicture(models.Model):
 
 
 class Express(models.Model):
-    code = models.CharField(_('code'), unique=True, max_length=128)
+    code = models.CharField(_('code'), primary_key=True, max_length=64)
     name = models.CharField(_('name'), unique=True, max_length=128)
     pinyin = models.CharField(max_length=64, blank=True, null=False, default='')
     py = models.CharField(max_length=64, blank=True, null=False, default='')
@@ -162,7 +166,7 @@ class Express(models.Model):
 
 
 class Payment(models.Model):
-    code = models.CharField(_('code'), unique=True, max_length=128)
+    code = models.CharField(_('code'), primary_key=True, max_length=64)
     name = models.CharField(_('name'), unique=True, max_length=128)
     pinyin = models.CharField(max_length=64, blank=True, null=False, default='')
     py = models.CharField(max_length=64, blank=True, null=False, default='')
@@ -184,7 +188,7 @@ class Payment(models.Model):
 
 
 class OrderStatus(models.Model):
-    code = models.CharField(_('code'), unique=True, max_length=128)
+    code = models.CharField(_('code'), primary_key=True, max_length=128)
     name = models.CharField(_('name'), unique=True, max_length=128)
     pinyin = models.CharField(max_length=64, blank=True, null=False, default='')
     py = models.CharField(max_length=64, blank=True, null=False, default='')
@@ -208,7 +212,7 @@ class OrderStatus(models.Model):
 
 class Order(models.Model):
     order_no = models.CharField(max_length=64, unique=True, blank=True,
-                                default='')
+                                primary_key=True)
     payment = models.ForeignKey(Payment, related_name=_('orders'),
                                 blank=True, null=True)
     buyer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
@@ -282,10 +286,13 @@ class VisitLog(models.Model):
 
 
 class Stock(models.Model):
+    """库存管理到批次"""
     department = models.ForeignKey(Department, on_delete=models.CASCADE,
                             related_name=_('stock_record'), null=False)
     product = models.ForeignKey(Product, related_name=_('stock_record'),
                                 blank=False, null=False)
+    produced_at = models.DateField(_('produced_at'), blank=False, null=False, default=date.today)
+    batch_no = models.CharField(_('batch_no'), max_length=128, blank=False, null=False, default='')
     amount = models.DecimalField(_('amount'), max_digits=9, decimal_places=2,
                                 default=0.00)
     max_amount = models.DecimalField(_('max_amount'), max_digits=9, decimal_places=2,
@@ -299,10 +306,10 @@ class Stock(models.Model):
     class Meta:
         ordering = ('department', 'product',)
         index_together = ['department', 'product',]
-        unique_together = (('department', 'product',))
+        unique_together = (('department', 'product', 'batch_no',))
 
     def __str__(self):
-        return self.department.name + '-' + self.product.name
+        return '%s-%s-%s' % (self.department.name, self.product.name, self.batch_no)
 
 
 class StockMoveRecord(models.Model):
@@ -311,6 +318,8 @@ class StockMoveRecord(models.Model):
     moved_on = models.DateTimeField()
     product = models.ForeignKey(Product, related_name=_('stock_move_record'),
                                 blank=False, null=False)
+    produced_at = models.DateField(_('produced_at'), blank=False, null=False, default=date.today)
+    batch_no = models.CharField(_('batch_no'), max_length=128, blank=False, null=False, default='')
     amount = models.DecimalField(_('amount'), max_digits=9, decimal_places=2,
                                 default=0.00)
     rest_amount = models.DecimalField(_('rest_amount'), max_digits=9, decimal_places=2,
@@ -319,7 +328,7 @@ class StockMoveRecord(models.Model):
                                 default=0.00)
     entered_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
                             related_name='entered_stock_move_records', null=False)
-    processed_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
+    processed_by = models.ForeignKey(get_user_model(), models.SET_NULL,
                             related_name='processed_stock_move_records', null=True)
     comment = models.CharField(max_length=200, blank=True, null=True)
     status = models.IntegerField(blank=False, null=False, default=0)
@@ -331,10 +340,10 @@ class StockMoveRecord(models.Model):
     class Meta:
         ordering = ('dept_in', 'dept_out', 'status', 'page_no', 'product',)
         index_together = ['page_no', 'dept_in',]
-        unique_together = (('page_no', 'dept_in', 'dept_out', 'product',))
+        unique_together = (('page_no', 'dept_in', 'dept_out', 'product', 'batch_no',))
 
     def __str__(self):
-        return self.dpet_in.name + '-' + self.page_no + '-' + self.product.name + '-' + self.amount
+        return '%s-%s-%s-%s' % (self.dpet_in.name, self.page_no, self.product.name, self.amount)
 
 
 class StockCheck(models.Model):
@@ -344,6 +353,8 @@ class StockCheck(models.Model):
                              null=False)
     product = models.ForeignKey(Product, related_name=_('stock_check_record'),
                                 blank=False, null=False)
+    produced_at = models.DateField(_('produced_at'), blank=False, null=False, default=date.today)
+    batch_no = models.CharField(_('batch_no'), max_length=128, blank=False, null=False, default='')
     price = models.DecimalField(_('price'), max_digits=9, decimal_places=2,
                                 default=0.00)
     amount = models.DecimalField(_('amount'), max_digits=9, decimal_places=2,
@@ -357,16 +368,16 @@ class StockCheck(models.Model):
     entered_by = models.ForeignKey(get_user_model(), related_name=_('entered_stock_check_records'),
         on_delete=models.CASCADE, null=False)
     checked_on = models.DateTimeField(_('checked_on'), blank=True, null=True)
-    checked_by = models.ForeignKey(get_user_model(), related_name=_('checked_stock_check_records'),
-        on_delete=models.CASCADE, null=True)
+    checked_by = models.ForeignKey(get_user_model(), models.SET_NULL,
+        related_name=_('checked_stock_check_records'), null=True)
 
     class Meta:
         ordering = ('department', 'page_no', 'product', 'status', )
         index_together = ['page_no', 'department',]
-        unique_together = (('page_no', 'department', 'product',))
+        unique_together = (('page_no', 'department', 'product', 'batch_no',))
 
     def __str__(self):
-        return self.department.name + '-' + self.page_no + '-' + self.product.name + '-' + self.amount + '-' + self.check_amount
+        return '%s-%s-%s-%s' % (self.department.name, self.page_no, self.product.name, self.amount, self.check_amount)
 
 
 class StockDailyLog(models.Model):
@@ -375,6 +386,8 @@ class StockDailyLog(models.Model):
                              null=False)
     product = models.ForeignKey(Product, related_name=_('stock_daily_log'),
                                 blank=False, null=False)
+    produced_at = models.DateField(_('produced_at'), blank=False, null=False, default=date.today)
+    batch_no = models.CharField(_('batch_no'), max_length=128, blank=False, null=False, default='')
     price = models.DecimalField(_('price'), max_digits=9, decimal_places=2,
                                 default=0.00)
     amount = models.DecimalField(_('amount'), max_digits=9, decimal_places=2,
@@ -387,10 +400,10 @@ class StockDailyLog(models.Model):
     class Meta:
         ordering = ('logged_on', 'department', 'product',)
         index_together = ['logged_on', 'department', 'product',]
-        unique_together = (('logged_on', 'department', 'product',))
+        unique_together = (('logged_on', 'department', 'product', 'batch_no'))
 
     def __str__(self):
-        return self.logged_on + '-' + self.department.name + '-' + self.product.name + '-' + self.amount
+        return '%s-%s-%s-%s' % (self.logged_on, self.department.name, self.product.name, self.amount)
 
 
 class StockUpdateLog(models.Model):
@@ -399,6 +412,8 @@ class StockUpdateLog(models.Model):
                              null=False)
     product = models.ForeignKey(Product, related_name=_('stock_update_log'),
                                 blank=False, null=False)
+    produced_at = models.DateField(_('produced_at'), blank=False, null=False, default=date.today)
+    batch_no = models.CharField(_('batch_no'), max_length=128, blank=False, null=False, default='')
     amount = models.DecimalField(_('amount'), max_digits=9, decimal_places=2,
                                 default=0.00)
     from_amount = models.DecimalField(_('from_amount'), max_digits=9, decimal_places=2,
@@ -413,7 +428,7 @@ class StockUpdateLog(models.Model):
     class Meta:
         ordering = ('logged_on', 'department', 'product',)
         index_together = ['logged_on', 'department', 'product',]
-        unique_together = (('logged_on', 'department', 'product',))
+        unique_together = (('logged_on', 'department', 'product', 'batch_no'))
 
     def __str__(self):
-        return self.logged_on + '-' + self.department.name + '-' + self.product.name + '-' + self.amount
+        return '%s-%s-%s-%s' % (self.logged_on, self.department.name, self.product.name, self.amount)

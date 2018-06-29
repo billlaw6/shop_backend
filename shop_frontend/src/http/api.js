@@ -90,6 +90,10 @@ export const getPayments = params => {
   return axios.get(`/sale-manage/payments/`, {params: params}).then(res => res)
 }
 
+export const getLocations = params => {
+  return axios.get(`/user-manage/locations/`, {params: params}).then(res => res)
+}
+
 export const getProducts = params => {
   if (params['keyword'] === '') {
     delete params['keyword']

@@ -7,6 +7,7 @@ from user_manage import views
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
 router.register(r'departments', views.DepartmentViewSet)
+router.register(r'locations', views.LocationViewSet)
 router.register(r'addresses', views.AddressViewSet)
 
 urlpatterns = [

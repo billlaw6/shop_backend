@@ -5,7 +5,7 @@
         <Date-picker v-model="dateRange" type="daterange" format="yyyy-MM-dd" :options="dateOptions" placement="bottom-start" placeholder="订单创建时间"></Date-picker>
       </Col>
       <Col span="8">
-        <AutoComplete v-model="keyword" placeholder="本地搜索" icon="ios-search" :clearable="true">
+        <AutoComplete v-model="keyword" :placeholder="$t('localSearch')" icon="ios-search" :clearable="true">
           <Option v-for="option in aList" :value="option.name" :key="option.id">
             <span class="name">{{ option.name }}</span>
             <span class="sum_price">{{ option.sum_price | currency }}</span>
@@ -13,7 +13,7 @@
         </AutoComplete>
       </Col>
       <Col span="3">
-        <i-button type="primary" @click="handleSearch()">{{ $t('remoteSearch') }}</i-button>
+        <i-button type="primary" @click="handleRemoteSearch()">{{ $t('remoteSearch') }}</i-button>
       </Col>
       <Col span="4" push="3">
         <i-button type="primary" @click="">{{ $t('addOrder') }}</i-button>
@@ -87,7 +87,7 @@
         </Form-item>
         <Form-item>
           <br/>
-          <Button type="primary" size="large" @click="submitOrder"><Icon type="ios-download-outline"></Icon>{{ $t('submitOrder') }}</Button>
+          <Button type="primary" size="large" @click="confirmProcess"><Icon type="ios-download-outline"></Icon>{{ $t('confirmProcess') }}</Button>
         </Form-item>
       </Form>
     </Modal>
@@ -96,11 +96,37 @@
 </template>
 
 <script>
-  // import { mapState, mapActions } from 'vuex'
+  import { mapState } from 'vuex'
   import { getAllOrder, processOrder } from '@/http/api'
 
   export default {
     data: function () {
+      const validateExpress = (rule, value, callback) => {
+        if (value) {
+          if (this.availableCustomers.some((val, index, array) => val.username === value)) {
+            console.log('name valide')
+            callback()
+          } else {
+            console.log('name invalide')
+            callback(new Error(this.$t('invalidCustomerError')))
+          }
+        } else {
+          callback()
+        }
+      }
+      const validatePayment = (rule, value, callback) => {
+        if (!value) {
+          callback()
+        } else {
+          if (this.availablePayments.some((val, index, array) => val.name === value)) {
+            console.log('name valide')
+            callback()
+          } else {
+            console.log('name invalide')
+            callback(new Error(this.$t('invalidPaymentError')))
+          }
+        }
+      }
       return {
         keyword: '',
         dateRange: [new Date((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate() - 2), new Date()],
@@ -140,6 +166,14 @@
         total: 0,
         orderModel: {},
         orderErrors: {},
+        ruleOrderValidate: {
+          express: [
+            { validator: validateExpress, trigger: 'blur' }
+          ],
+          payement: [
+            { validator: validatePayment, trigger: 'blur' }
+          ]
+        },
         orderListColumns: [
           {
             title: this.$t('orderNo'),
@@ -220,7 +254,7 @@
             title: '操作',
             key: 'action',
             render: (h, params) => {
-              let tagNames = ['nothing', 'enter', 'sent', 'checked']
+              // let tagNames = ['nothing', 'enter', 'sent', 'checked']
               return h('div', [
                 h('Button', {
                   props: {
@@ -229,11 +263,10 @@
                   },
                   on: {
                     click: () => {
-                      // this.handleProcessOrder(params.row.id, params.row.status)
                       this.showOrderProcessModal = true
                     }
                   }
-                }, this.$t(tagNames[params.row.status])),
+                }, this.$t(params.row.status)),
                 h('Button', {
                   props: {
                     type: 'error',
@@ -250,10 +283,76 @@
           }
         ],
         pageNumber: 1,
-        pageSize: 10
+        pageSize: 10,
+        selectedPayment: {},
+        selectedExpress: {}
       }
     },
     computed: {
+      ...mapState('app', {
+        'availableExpresses': state => state.availableExpresses,
+        'availableDepartments': state => state.availableDepartments,
+        'availablePayments': state => state.availablePayemnts
+      }),
+      aList: function () {
+        // 用于autocomplete
+        if (Array.isArray(this.orderListData)) {
+          // 深度拷贝方法
+          let tmpArray = JSON.parse(JSON.stringify(this.orderListData))
+          return tmpArray.filter((item, index, array) => {
+            if (item.order_no.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+              return array.indexOf(item) === index
+            } else if (item.sum_price.toString().indexOf(this.keyword.toUpperCase()) !== -1) {
+              return true
+            } else {
+              return false
+            }
+          })
+        } else {
+          return []
+        }
+      },
+      aExpress: function () {
+        // 用于autocomplete
+        if (Array.isArray(this.availableExpresses)) {
+          // 深度拷贝方法
+          let tmpArray = JSON.parse(JSON.stringify(this.availableExpresses))
+          return tmpArray.filter((item, index, array) => {
+            if (item.name.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
+              return true
+            } else if (item.pinyin.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
+              return true
+            } else if (item.py.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
+              return true
+            } else {
+              return false
+            }
+          })
+        } else {
+          return []
+        }
+      },
+      aPayment: function () {
+        // 用于autocomplete
+        if (Array.isArray(this.availablePayments)) {
+          // 深度拷贝方法
+          let tmpArray = JSON.parse(JSON.stringify(this.availablePayments))
+          return tmpArray.filter((item, index, array) => {
+            if (item.name.toUpperCase().indexOf(this.orderModel.payment.toUpperCase()) !== -1) {
+              // return array.indexOf(item) === index
+              return true
+            } else if (item.pinyin.toUpperCase().indexOf(this.orderModel.payment.toUpperCase()) !== -1) {
+              return true
+            } else if (item.py.toUpperCase().indexOf(this.orderModel.payment.toUpperCase()) !== -1) {
+              return true
+            } else {
+              return false
+            }
+          })
+        } else {
+          return []
+        }
+      }
     },
     methods: {
       // 不能用箭头函数，里面的this作用域会不一样
@@ -287,6 +386,31 @@
         this.pageSize = value
         this.getOrderList(this.pageSize, this.pageNumber)
       },
+      handleRemoteSearch (pageSize, pageNumber) {
+        let paras = {
+          start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() + 1) + '-' + (this.dateRange[0].getDate() + 1),
+          end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate() + 1),
+          keyword: this.keyword,
+          limit: pageSize,
+          offset: (pageNumber - 1) * pageSize
+        }
+        this.getOrderList(paras).then((res) => {
+          let { data, status, statusText } = res
+          if (status !== 200) {
+            this.loginMessage = statusText
+          } else {
+            this.$Loading.finish()
+            this.total = res.data.count
+            this.tableData = data.results
+          }
+        }, (error) => {
+          console.log('Error in getProducts: ' + error)
+          this.$Message.error('获取商品列表失败!')
+        }).catch((error) => {
+          console.log('catched in getProducts:' + error)
+          this.$Message.error('获取商品列表失败!')
+        })
+      },
       confirmProcess (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
@@ -308,6 +432,24 @@
             this.$Message.error(this.$t('validateFailed'))
           }
         })
+      },
+      handleExpressSelected: function (value) {
+        this.orderModel.express = value
+        console.log(this.orderModel.express)
+        let expressList = JSON.parse(JSON.stringify(this.availableExpresses))
+        if (this.orderModel.express.length > 0 && expressList.length > 0) {
+          let tmpExpress = expressList.filter((val, index, array) => val.name === this.orderModel.express)
+          this.selectedExpress = tmpExpress[0]
+        }
+      },
+      handlePaymentSelected: function (value) {
+        this.orderModel.payment = value
+        console.log(this.orderModel.payment)
+        let paymentList = JSON.parse(JSON.stringify(this.availablePayments))
+        if (this.orderModel.payment.length > 0 && paymentList.length > 0) {
+          let tmpPayment = paymentList.filter((val, index, array) => val.name === this.orderModel.payment)
+          this.selectedPayment = tmpPayment[0]
+        }
       }
     },
     mounted () {

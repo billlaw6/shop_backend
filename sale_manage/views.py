@@ -160,7 +160,7 @@ def add_order(request, *args, **kwargs):
         print(order_serializer.errors)
         return JsonResponse(order_serializer.errors, status=400)
     for item in request.data.get('cartList'):
-        item['order'] = new_order.id
+        item['order'] = new_order.order_no
         print(item)
         item['product'] = item['id']
         item['amount'] = item['amount']
@@ -173,9 +173,8 @@ def add_order(request, *args, **kwargs):
             print("invalid")
             print(detail_serializer.errors)
             return JsonResponse(detail_serializer.errors, status=400)
-    print(request.data.get('cartListCount'))
-    # return JsonResponse(order_serializer.data, status=201)
-    return Response('order_serializer.data', status=201)
+    return JsonResponse(order_serializer.data, status=201)
+
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()

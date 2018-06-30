@@ -303,7 +303,10 @@
     },
     computed: {
       ...mapState('app', {
-        'maxSize': state => state.maxSize
+        'maxSize': state => state.maxSize,
+        'availableExpresses': state => state.availableExpresses,
+        'availableDepartments': state => state.availableDepartments,
+        'availablePayments': state => state.availablePayemnts
       }),
       ...mapState('cart', {
         'cartList': state => state.cartList,
@@ -573,9 +576,6 @@
     },
     mounted () {
       this.getProduct(this.pageSize, this.pageNumber)
-      this.getCustomer(this.pageSize, this.pageNumber)
-      this.getExpress(this.pageSize, this.pageNumber)
-      this.getPayment(this.pageSize, this.pageNumber)
     }
   }
 </script>

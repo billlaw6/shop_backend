@@ -223,7 +223,7 @@ class Order(models.Model):
                               blank=True, null=True)
     comment = models.CharField(_('comment'), max_length=128, default='')
     status = models.ForeignKey(OrderStatus, related_name=_('orders'),
-                               default=1)
+                               default='cart') # 默认为购物车状态
     express = models.ForeignKey(Express, related_name=_('orders'),
                                 null=True, blank=True)
     express_no = models.CharField(_('express_no'), max_length=128,

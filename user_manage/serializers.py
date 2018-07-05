@@ -7,17 +7,10 @@ from user_manage.models import (Group, Department, DictEmployeeRank,
 from sale_manage.models import (Order)
 
 
-# Serializers define the API representation.
-# class UserSerializer(serializers.HyperlinkedModelSerializer):
-class UserSerializer(serializers.ModelSerializer):
-    orders = serializers.PrimaryKeyRelatedField(many=True, queryset=Order.objects.all())
-
+class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = get_user_model()
-        # 如果添加url，必须有shopuser-detail名的url配置
-        # fields = "__all__"
-        fields = ('id', 'username', 'first_name', 'last_name', 'email',
-                  'department', 'is_staff', 'is_superuser', 'orders')
+        model = Department
+        fields = "__all__"
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -26,10 +19,20 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class DepartmentSerializer(serializers.ModelSerializer):
+# Serializers define the API representation.
+# class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
+    # orders = serializers.PrimaryKeyRelatedField(many=True, queryset=Order.objects.all())
+    # department = DepartmentSerializer()
+    dept_belong = DepartmentSerializer(many=True, read_only=True)
+    group_belong = GroupSerializer(many=True, read_only=True)
+
     class Meta:
-        model = Department
-        fields = "__all__"
+        model = get_user_model()
+        # 如果添加url，必须有shopuser-detail名的url配置
+        # fields = "__all__"
+        fields = ('id', 'username', 'first_name', 'last_name', 'email',
+                  'dept_belong', 'group_belong', 'is_staff', 'is_superuser')
 
 
 class DictEmployeeRankSerializer(serializers.ModelSerializer):

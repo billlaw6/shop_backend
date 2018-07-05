@@ -1,9 +1,9 @@
 <template>
-  <div class="order-manage">
+  <div class="stockMoveRecord-manage">
     <!-- 已添加列表 -->
-    <div class="cart-items">
-      <cart-items>
-      </cart-items>
+    <div class="move-record-items">
+      <move-record-items>
+      </move-record-items>
     </div>
 
     <!-- 录入框 -->
@@ -43,64 +43,25 @@
       <br/>
     </div>
 
-    <div class="order-info">
-      <Form ref="submitOrderForm" :model="orderModel" :rules="ruleOrderValidate"  label-position="left" inline>
-        <Form-item :label="$t('customer')" prop="customer">
-          <AutoComplete v-model="orderModel.customer" :placeholder="$t('selectCustomer')" icon="ios-search" 
-            :clearable="true"
-            @on-select="handleCustomerSelected"
-          >
-            <Option v-for="option in aCustomer" :value="option.username" :key="option.id">
-              <span class="product-name">{{ option.username }}</span>
-              <span class="product-price">{{ option.last_name }}</span>
-              <span class="product-price">{{ option.first_name }}</span>
-            </Option>
-          </AutoComplete>
-          <ul v-for="error in orderErrors.customer">
-            <li class="error">{{ error }}</li>
-          </ul>
-        </Form-item>
-        <Form-item :label="$t('payment')" prop="payment">
-          <AutoComplete v-model="orderModel.payment" :placeholder="$t('selectPayment')" icon="ios-search" 
-            :clearable="true"
-            @on-select="handlePaymentSelected"
-          >
-            <Option v-for="option in aPayment" :value="option.name" :key="option.id">
-              <span class="product-name">{{ option.name }}</span>
-            </Option>
-          </AutoComplete>
-          <ul v-for="error in orderErrors.payment">
-            <li class="error">{{ error }}</li>
-          </ul>
-        </Form-item>
-        <Form-item :label="$t('express')" prop="express">
-          <AutoComplete v-model="orderModel.express" :placeholder="$t('selectExpress')" icon="ios-search" 
-            :clearable="true"
-            @on-select="handleExpressSelected"
-          >
-            <Option v-for="option in aExpress" :value="option.name" :key="option.id">
-              <span class="product-name">{{ option.name }}</span>
-            </Option>
-          </AutoComplete>
-          <ul v-for="error in orderErrors.express">
-            <li class="error">{{ error }}</li>
-          </ul>
-        </Form-item>
-        <Form-item :label="$t('expressNo')" prop="express_no">
-          <Input v-model="orderModel.express_no" type="text"></Input>
-          <ul v-for="error in orderErrors.express_no">
+    <div class="stockMoveRecord-info">
+      <Form ref="submitOrderForm" :model="stockMoveRecordModel" :rules="ruleOrderValidate"  label-position="left" inline>
+        <Form-item :label="$t('dept_in')" prop="dept_in">
+          <Select v-model="stockMoveRecordModel.dept_in">
+            <Option v-for="option in otherDepartments" :value="option.code" :key="option.code">{{ option.name }}</Option>
+          </Select>
+          <ul v-for="error in stockMoveRecordErrors.dept_in">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
         <Form-item :label="$t('comment')" prop="comment">
-          <Input v-model="orderModel.comment" type="text"></Input>
-          <ul v-for="error in orderErrors.comment">
+          <Input v-model="stockMoveRecordModel.comment" type="text"></Input>
+          <ul v-for="error in stockMoveRecordErrors.comment">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
         <Form-item>
           <br/>
-          <Button type="primary" size="large" @click="submitOrder"><Icon type="ios-download-outline"></Icon>{{ $t('submitOrder') }}</Button>
+          <Button type="primary" size="large" @click="submitMoveRecord"><Icon type="ios-download-outline"></Icon>{{ $t('submitMoveRecord') }}</Button>
         </Form-item>
       </Form>
     </div>
@@ -110,11 +71,11 @@
 <script>
   import { mapState, mapGetters } from 'vuex'
   import { getProducts, getCustomers, getExpresses, getPayments, addOrder } from '@/http/api'
-  import CartItems from '@/views/components/cart/CartItems.vue'
+  import MoveRecordItems from '@/views/components/stock/MoveRecordItems.vue'
 
   export default {
     components: {
-      'cart-items': CartItems
+      'move-record-items': MoveRecordItems
     },
     data: function () {
       const validateProductName = (rule, value, callback) => {
@@ -171,10 +132,6 @@
         }
       }
       return {
-        availableProducts: [],
-        selectedProduct: null,
-        availableCustomers: [],
-        selectedCustomer: null,
         addModel: {
           name: '',
           amount: 0,
@@ -189,7 +146,8 @@
           ]
         },
         addModelErrors: {},
-        orderModel: {
+        stockMoveRecordModel: {
+          dept_in: '',
           customer: '',
           payment: '',
           express: '',
@@ -203,7 +161,7 @@
             { validator: validatePayment, trigger: 'blur' }
           ]
         },
-        orderErrors: {},
+        stockMoveRecordErrors: {},
         addedProducts: [],
         total: 0,
         pageNumber: 1,
@@ -341,7 +299,7 @@
           // 深度拷贝方法
           let tmpArray = JSON.parse(JSON.stringify(this.availableCustomers))
           return tmpArray.filter((item, index, array) => {
-            if (item.username.toUpperCase().indexOf(this.orderModel.customer.toUpperCase()) !== -1) {
+            if (item.username.toUpperCase().indexOf(this.stockMoveRecordModel.customer.toUpperCase()) !== -1) {
               return true
             } else {
               return false
@@ -357,11 +315,11 @@
           // 深度拷贝方法
           let tmpArray = JSON.parse(JSON.stringify(this.availableExpresses))
           return tmpArray.filter((item, index, array) => {
-            if (item.name.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
+            if (item.name.toUpperCase().indexOf(this.stockMoveRecordModel.express.toUpperCase()) !== -1) {
               return true
-            } else if (item.pinyin.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
+            } else if (item.pinyin.toUpperCase().indexOf(this.stockMoveRecordModel.express.toUpperCase()) !== -1) {
               return true
-            } else if (item.py.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
+            } else if (item.py.toUpperCase().indexOf(this.stockMoveRecordModel.express.toUpperCase()) !== -1) {
               return true
             } else {
               return false
@@ -377,12 +335,12 @@
           // 深度拷贝方法
           let tmpArray = JSON.parse(JSON.stringify(this.availablePayments))
           return tmpArray.filter((item, index, array) => {
-            if (item.name.toUpperCase().indexOf(this.orderModel.payment.toUpperCase()) !== -1) {
+            if (item.name.toUpperCase().indexOf(this.stockMoveRecordModel.payment.toUpperCase()) !== -1) {
               // return array.indexOf(item) === index
               return true
-            } else if (item.pinyin.toUpperCase().indexOf(this.orderModel.payment.toUpperCase()) !== -1) {
+            } else if (item.pinyin.toUpperCase().indexOf(this.stockMoveRecordModel.payment.toUpperCase()) !== -1) {
               return true
-            } else if (item.py.toUpperCase().indexOf(this.orderModel.payment.toUpperCase()) !== -1) {
+            } else if (item.py.toUpperCase().indexOf(this.stockMoveRecordModel.payment.toUpperCase()) !== -1) {
               return true
             } else {
               return false
@@ -481,7 +439,7 @@
       },
       handleProductSelected: function (value) {
         this.addModel.name = value
-        // console.log(this.availableProducts)
+        console.log(this.availableProducts)
         let productList = JSON.parse(JSON.stringify(this.availableProducts))
         if (this.addModel.name.length > 0 && productList.length > 0) {
           let tmpProduct = productList.filter((val, index, array) => val.name === this.addModel.name)
@@ -490,32 +448,32 @@
       },
       handleCustomerSelected: function (value) {
         if (value) {
-          this.orderModel.customer = value
+          this.stockMoveRecordModel.customer = value
         }
-        console.log(this.orderModel.customer)
+        console.log(this.stockMoveRecordModel.customer)
         console.log(this.availableCustomers)
         let customerList = JSON.parse(JSON.stringify(this.availableCustomers))
         console.log(customerList)
-        if (this.orderModel.customer.length > 0 && customerList.length > 0) {
-          let tmpCustomer = customerList.filter((val, index, array) => val.username === this.orderModel.customer)
+        if (this.stockMoveRecordModel.customer.length > 0 && customerList.length > 0) {
+          let tmpCustomer = customerList.filter((val, index, array) => val.username === this.stockMoveRecordModel.customer)
           this.selectedCustomer = tmpCustomer[0]
         }
       },
       handleExpressSelected: function (value) {
-        this.orderModel.express = value
-        console.log(this.orderModel.express)
+        this.stockMoveRecordModel.express = value
+        console.log(this.stockMoveRecordModel.express)
         let expressList = JSON.parse(JSON.stringify(this.availableExpresses))
-        if (this.orderModel.express.length > 0 && expressList.length > 0) {
-          let tmpExpress = expressList.filter((val, index, array) => val.name === this.orderModel.express)
+        if (this.stockMoveRecordModel.express.length > 0 && expressList.length > 0) {
+          let tmpExpress = expressList.filter((val, index, array) => val.name === this.stockMoveRecordModel.express)
           this.selectedExpress = tmpExpress[0]
         }
       },
       handlePaymentSelected: function (value) {
-        this.orderModel.payment = value
-        console.log(this.orderModel.payment)
+        this.stockMoveRecordModel.payment = value
+        console.log(this.stockMoveRecordModel.payment)
         let paymentList = JSON.parse(JSON.stringify(this.availablePayments))
-        if (this.orderModel.payment.length > 0 && paymentList.length > 0) {
-          let tmpPayment = paymentList.filter((val, index, array) => val.name === this.orderModel.payment)
+        if (this.stockMoveRecordModel.payment.length > 0 && paymentList.length > 0) {
+          let tmpPayment = paymentList.filter((val, index, array) => val.name === this.stockMoveRecordModel.payment)
           this.selectedPayment = tmpPayment[0]
         }
       },
@@ -548,12 +506,12 @@
               cartListCount: this.cartListCount,
               cartListSum: this.cartListSum.toFixed(this.decimals),
               express: this.selectedExpress,
-              express_no: this.orderModel.express_no
+              express_no: this.stockMoveRecordModel.express_no
             }
             addOrder(params).then((res) => {
               let { data, status, statusText } = res
               if (status !== 201) {
-                console.log('submit order fail:' + statusText)
+                console.log('submit stockMoveRecord fail:' + statusText)
               } else {
                 this.total = res.data.count
                 this.availableExpresses = data.results
@@ -580,10 +538,10 @@
 <style lang="stylus" scoped>
   @import '../common/vars'
 
-  .cart-items
+  .move-record-items
     margin: 4px
   .cart-enter
     margin: 4px
-  .order-info
+  .stockMoveRecord-info
     margin: 4px
 </style>

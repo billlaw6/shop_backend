@@ -7,8 +7,7 @@ from user_manage.models import (ShopUser, Group,
     Address, Location, GroupShopUserRelation,
     Department, DictEmployeeRank,
     DictEmployeeStatus, DictSex,
-    DictUserStatus)
-# DepartmentShopUserRelation)
+    DictUserStatus, DepartmentShopUserRelation)
 
 
 
@@ -31,6 +30,11 @@ admin.site.register(Group, GroupAdmin)
 
 @admin.register(GroupShopUserRelation)
 class GroupShopUserRelationAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(DepartmentShopUserRelation)
+class DepartmentShopUserRelationAdmin(admin.ModelAdmin):
     pass
 
 

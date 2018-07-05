@@ -107,8 +107,6 @@ class ShopUser(AbstractUser):
     py_code = models.CharField(max_length=8, blank=True, null=True)
     sex = models.IntegerField(blank=True, null=True)
     unit = models.CharField(max_length=60, blank=True, null=True)
-    department = models.ForeignKey('Department', related_name='users',
-        on_delete=models.CASCADE, blank=True, null=True)
     rank = models.IntegerField(default=0)
     birthday = models.DateTimeField(blank=True, null=True)
     home_address = models.ForeignKey(Address, models.SET_NULL,
@@ -144,6 +142,7 @@ class Group(models.Model):
     members = models.ManyToManyField(
         ShopUser,
         through='GroupShopUserRelation',
+        related_name=_('group_belong'),
         through_fields=('group', 'shop_user'),
     )
     created_at = models.DateTimeField(_('created_at'), auto_now=True)
@@ -172,17 +171,25 @@ class GroupShopUserRelation(models.Model):
     )
     invite_comment = models.CharField(max_length=256, blank=True, null=True)
 
+    class Meta:
+        ordering = ('group', 'shop_user',)
+        unique_together = (('group', 'shop_user',))
+
+    def __str__(self):
+        return '%s-%s' % (self.group.name, self.shop_user.username,)
+
 
 class Department(models.Model):
     code = models.CharField(unique=True, max_length=64, primary_key=True)
     name = models.CharField(unique=True, max_length=64)
     pinyin = models.CharField(max_length=64, blank=True, null=True)
     py = models.CharField(max_length=16, blank=True, null=True)
-    # members = models.ManyToManyField(
-    #     ShopUser,
-    #     through='DepartmentShopUserRelation',
-    #     through_fields=('department', 'shop_user'),
-    # )
+    staff = models.ManyToManyField(
+        ShopUser,
+        through='DepartmentShopUserRelation',
+        related_name=_('dept_belong'),
+        through_fields=('department', 'shop_user'),
+    )
     address = models.ForeignKey(Address, models.SET_NULL,
         related_name='departments', blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
@@ -202,10 +209,17 @@ class Department(models.Model):
         return self.name
 
 
-# class DepartmentShopUserRelation(models.Model):
-#     department = models.ForeignKey(Department, on_delete=models.CASCADE)
-#     shop_user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-#     comment = models.CharField(max_length=256, blank=True, null=True)
+class DepartmentShopUserRelation(models.Model):
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    shop_user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    comment = models.CharField(max_length=256, blank=True, null=True)
+
+    class Meta:
+        ordering = ('department', 'shop_user',)
+        unique_together = (('department', 'shop_user',))
+
+    def __str__(self):
+        return '%s-%s' % (self.department.name, self.shop_user.username,)
 
 
 class DictEmployeeRank(models.Model):

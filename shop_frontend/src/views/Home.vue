@@ -42,6 +42,11 @@
                 <theme-switch></theme-switch>
               </MenuItem>
               -->
+              <MenuItem v-if="currentUser.dept_belong" name="current-dept">
+                <Select v-model="current_dept">
+                  <Option v-for="item in currentUser.dept_belong" :value="item.code" :key="item.code">{{ item.name }}</Option>
+                </Select>
+              </MenuItem>
               <div class="user-dropdown-menu">
                 <Row type="flex" justify="end" align="middle" class="user-dropdown-innercon">
                   <Dropdown transfer trigger="click" @on-click="handleClickUserDropdown">
@@ -50,10 +55,10 @@
                       <Icon type="arrow-down-b"></Icon>
                     </a>
                     <DropdownMenu slot="list">
-                        <DropdownItem name="ownSpace">个人中心</DropdownItem>
-                        <DropdownItem name="loginout" divided>退出登录</DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
+                      <DropdownItem name="ownSpace">{{ $t('ownSpace') }}</DropdownItem>
+                      <DropdownItem name="logout" divided>{{ $t('logout') }}</DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
                   <Avatar :src="avatorPath" style="background: #619fe7;margin-left: 10px;"></Avatar>
                 </Row>
               </div>
@@ -102,6 +107,7 @@
       return {
         shrink: false,
         userName: '',
+        current_dept: '',
         isFullScreen: false
       }
     },
@@ -144,14 +150,12 @@
       }),
       ...mapActions('app', {
         updateMenuList: 'updateMenuList',
+        setProducts: 'setProducts',
         setPayments: 'setPayments',
         setDepartments: 'setDepartments',
         setExpresses: 'setExpresses',
         setLocations: 'setLocations'
       }),
-      // ...mapActions({
-      //   setMessageCount: 'app/setMessageCount'
-      // }),
       toggleClick () {
         this.shrink = !this.shrink
         // 直接commit需要自己写module name前缀
@@ -174,7 +178,7 @@
           this.$router.push({
             name: 'ownspace_index'
           })
-        } else if (name === 'loginout') {
+        } else if (name === 'logout') {
           // 退出登录
           this.logout()
           this.clearOpenedSubmenu()
@@ -204,6 +208,7 @@
     },
     mounted () {
       this.updateMenuList()
+      this.setProducts()
       this.setPayments()
       this.setDepartments()
       this.setExpresses()

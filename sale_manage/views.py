@@ -185,14 +185,34 @@ class OrderViewSet(viewsets.ModelViewSet):
 @authentication_classes([authentication.TokenAuthentication,])
 @permission_classes([my_perms.IsAdminOrOwner,])
 def process_order(request):
-    if (request.data.get('id') and request.data.get('orderStatus')):
-        if (request.data.get('orderStatus') <= 2):
-            Order.objects.filter(pk=request.data.get('id')).update(status = request.data.get('orderStatus') + 1)
-        elif (request.data.get('orderStatus') == 9):
-            Order.objects.filter(pk=request.data.get('id')).update(status = 9)
-        else:
-            return Response('OK', status=203)
-        return Response('OK', status=203)
+    print(request.data)
+    if (request.data.get('order_no') and request.data.get('status')):
+        params = {}
+        if (request.data.get('express', '') != ''):
+            params['express'] = request.data.get('express')
+        if (request.data.get('express_no', '') != ''):
+            params['express_no'] = request.data.get('express_no')
+        if (request.data.get('payment', '') != ''):
+            params['payment'] = request.data.get('payment')
+        if (request.data.get('comment', '') != ''):
+            params['comment'] = request.data.get('comment')
+
+        if (request.data.get('status', '') == 'cart'):
+            params['status'] = 'order'
+            Order.objects.filter(pk=request.data.get('order_no')).update(**params)
+            return Response(params['status'], status=203)
+        elif (request.data.get('status', '') in ['order', 'sent']):
+            if (request.data.get('express', '') != ''):
+                params['status'] = 'sent'
+            if (request.data.get('payment', '') != ''):
+                params['status'] = 'checked'
+            else:
+                params['status'] = request.data.get('status')
+            # print(params)
+            Order.objects.filter(pk=request.data.get('order_no')).update(**params)
+            return Response(params['status'], status=203)
+        elif (request.data.get('status', '') in ['checked', 'trashed']):
+            return Response('no process', status=203)
     else:
         return Response('error', status=303)
 
@@ -213,7 +233,6 @@ def toggle_order_detail(request, *args, **kwargs):
             updated_by=request.user
           )
     return JsonResponse(OrderDetailSerializer(aim).data, status=201, safe=False)
-
 
 
 class OrderStatusViewSet(viewsets.ModelViewSet):
@@ -261,3 +280,49 @@ class StockViewSet(viewsets.ModelViewSet):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
+@api_view(['GET'])
+# @renderer_classes([renderers.JSONRenderer,])
+# @authentication_classes([authentication.TokenAuthentication,])
+# @permission_classes([permissions.IsAdminUser])
+def get_stock_move_record(request, *args, **kwargs):
+    print(request.data)
+    department = request.data.get('department', None)
+    if (request.data.get('offset', None)) and (request.data.get('limit', None)):
+        start = request.data.get('offset', None)
+        end = start + request.data.get('limit', None)
+        if department is None:
+            queryset = StockMoveRecord.objects.all()[start:end]
+        else:
+          queryset = StockMoveRecord.objects.filter(department=department)[start:end]
+    else:
+        if department is None:
+            queryset = StockMoveRecord.objects.all()
+        else:
+          queryset = StockMoveRecord.objects.filter(department=department)
+    print(queryset)
+    return Response(StockMoveRecordSerializer(queryset, many=True).data, status='200')
+
+
+@api_view(['GET'])
+# @renderer_classes([renderers.JSONRenderer,])
+# @authentication_classes([authentication.TokenAuthentication,])
+# @permission_classes([permissions.IsAdminUser])
+def get_stock(request, *args, **kwargs):
+    print(request.data)
+    department = request.data.get('department', None)
+    if (request.data.get('offset', None)) and (request.data.get('limit', None)):
+        start = request.data.get('offset', None)
+        end = start + request.data.get('limit', None)
+        if department is None:
+            queryset = Stock.objects.all()[start:end]
+        else:
+          queryset = Stock.objects.filter(department=department)[start:end]
+    else:
+        if department is None:
+            queryset = Stock.objects.all()
+        else:
+          queryset = Stock.objects.filter(department=department)
+    print(queryset)
+    return Response(StockSerializer(queryset, many=True).data, status='200')

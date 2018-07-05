@@ -144,22 +144,79 @@ export const appRouter = [
         },
         component: resolve => require(['@/views/OrderManage.vue'], resolve)
       },
-      {
-        path: '/order/:orderId',
-        name: 'order',
-        icon: 'edit',
-        title: {i18n: 'order'},
-        meta: {
-          requireAuth: true,
-          permission: 'sale_manage.add_orderdetail'
-        },
-        component: resolve => require(['@/views/OrderDetail.vue'], resolve)
-      },
+      // {
+      //   path: '/order/:orderNo',
+      //   name: 'order',
+      //   icon: 'edit',
+      //   title: {i18n: 'order'},
+      //   meta: {
+      //     requireAuth: true,
+      //     permission: 'sale_manage.add_orderdetail'
+      //   },
+      //   component: resolve => require(['@/views/OrderDetail.vue'], resolve)
+      // },
       {
         path: 'stats',
         icon: 'stats-bars',
         title: { i18n: 'statsOrder' },
         name: 'statsOrder',
+        meta: {
+          requireAuth: true,
+          permission: 'sale_manage.add_orderdetail'
+        },
+        component: resolve => require(['@/views/Error403.vue'], resolve)
+      }
+    ]
+  },
+  {
+    path: '/stock-manage',
+    icon: 'ios-list-outline',
+    name: 'stockManage',
+    title: { i18n: 'stockManage' },
+    meta: {
+      requireAuth: true,
+      permission: 'sale_manage.add_orderdetail'
+    },
+    component: Home,
+    children: [
+      {
+        path: 'stock',
+        icon: 'compose',
+        title: { i18n: 'addStockCheck' },
+        name: 'addStockCheck',
+        meta: {
+          requireAuth: true,
+          permission: 'sale_manage.add_orderdetail'
+        },
+        component: resolve => require(['@/views/StockCheck.vue'], resolve)
+      },
+      {
+        path: 'add',
+        icon: 'compose',
+        title: { i18n: 'addStockMoveRecord' },
+        name: 'addStockMoveRecord',
+        meta: {
+          requireAuth: true,
+          permission: 'sale_manage.add_orderdetail'
+        },
+        component: resolve => require(['@/views/StockMoveRecordAdd.vue'], resolve)
+      },
+      {
+        path: 'edit',
+        icon: 'edit',
+        title: { i18n: 'editStockMoveRecord' },
+        name: 'editStockMoveRecord',
+        meta: {
+          requireAuth: true,
+          permission: 'sale_manage.add_orderdetail'
+        },
+        component: resolve => require(['@/views/StockMoveRecordManage.vue'], resolve)
+      },
+      {
+        path: 'stats',
+        icon: 'stats-bars',
+        title: { i18n: 'statsStockMoveRecord' },
+        name: 'statsStockMoveRecord',
         meta: {
           requireAuth: true,
           permission: 'sale_manage.add_orderdetail'

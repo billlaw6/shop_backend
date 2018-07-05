@@ -6,8 +6,9 @@
       </Col>
       <Col span="8">
         <AutoComplete v-model="keyword" :placeholder="$t('localSearch')" icon="ios-search" :clearable="true">
-          <Option v-for="option in aList" :value="option.name" :key="option.id">
-            <span class="name">{{ option.name }}</span>
+          <Option v-for="option in aList" :value="option.order_no" :key="option.order_no">
+            <span class="name">{{ option.order_no}}</span>
+            <span class="sum_price">{{ option.buyer_name }}</span>
             <span class="sum_price">{{ option.sum_price | currency }}</span>
           </Option>
         </AutoComplete>
@@ -42,30 +43,14 @@
       </div>
     </div>
 
-    <Modal v-model="showOrderProcessModal" :title="$t('orderProcess')" @on-ok="confirmProcess('orderModelForm')" @on-cancel="cancelAdd('orderModelForm')" >
+    <Modal v-model="showOrderProcessModal" :title="$t('orderProcess')" @on-ok="confirmProcess('processOrderForm')" @on-cancel="cancelProcess('orderModelForm')" >
       <Form ref="processOrderForm" :model="orderModel" :rules="ruleOrderValidate"  label-position="left" inline>
-        <Form-item :label="$t('customer')" prop="customer">
-          <Input v-model="orderModel.buyer_name"></Input>
-        </Form-item>
-        <Form-item :label="$t('payment')" prop="payment">
-          <AutoComplete v-model="orderModel.payment" :placeholder="$t('selectPayment')" icon="ios-search" 
-            :clearable="true"
-            @on-select="handlePaymentSelected"
-          >
-            <Option v-for="option in aPayment" :value="option.name" :key="option.id">
-              <span class="product-name">{{ option.name }}</span>
-            </Option>
-          </AutoComplete>
-          <ul v-for="error in orderErrors.payment">
-            <li class="error">{{ error }}</li>
-          </ul>
-        </Form-item>
         <Form-item :label="$t('express')" prop="express">
           <AutoComplete v-model="orderModel.express" :placeholder="$t('selectExpress')" icon="ios-search" 
             :clearable="true"
             @on-select="handleExpressSelected"
           >
-            <Option v-for="option in aExpress" :value="option.name" :key="option.id">
+            <Option v-for="option in aExpress" :value="option.name" :key="option.code">
               <span class="product-name">{{ option.name }}</span>
             </Option>
           </AutoComplete>
@@ -79,16 +64,24 @@
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
+        <Form-item :label="$t('payment')" prop="payment">
+          <Select v-model="orderModel.payment">
+            <Option v-for="item in availablePayments" :value="item.code" :key="item.code">{{ item.name }}</Option>
+          </Select>
+          <ul v-for="error in orderErrors.payment">
+            <li class="error">{{ error }}</li>
+          </ul>
+        </Form-item>
         <Form-item :label="$t('comment')" prop="comment">
           <Input v-model="orderModel.comment" type="text"></Input>
           <ul v-for="error in orderErrors.comment">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item>
-          <br/>
-          <Button type="primary" size="large" @click="confirmProcess"><Icon type="ios-download-outline"></Icon>{{ $t('confirmProcess') }}</Button>
-        </Form-item>
+        <div style="display: none">
+          <Input v-model="orderModel.order_no"></Input>
+          <Input v-model="orderModel.status"></Input>
+        </div>
       </Form>
     </Modal>
     <br>
@@ -103,12 +96,12 @@
     data: function () {
       const validateExpress = (rule, value, callback) => {
         if (value) {
-          if (this.availableCustomers.some((val, index, array) => val.username === value)) {
+          if (this.availableExpresses.some((val, index, array) => val.name === value)) {
             console.log('name valide')
             callback()
           } else {
             console.log('name invalide')
-            callback(new Error(this.$t('invalidCustomerError')))
+            callback(new Error(this.$t('invalidExpressError')))
           }
         } else {
           callback()
@@ -164,7 +157,14 @@
         orderListData: [],
         showOrderProcessModal: false,
         total: 0,
-        orderModel: {},
+        orderModel: {
+          express: '',
+          payment: '',
+          payment_no: '',
+          comment: '',
+          order_no: '',
+          status: ''
+        },
         orderErrors: {},
         ruleOrderValidate: {
           express: [
@@ -180,7 +180,7 @@
             key: 'order_no',
             sortable: true,
             render: (h, param) => {
-              let toUrl = {name: 'order', params: {orderId: param.row.id}}
+              let toUrl = {name: 'order', params: {orderNo: param.row.order_no}}
               return h('router-link',
                 {props: {
                   to: toUrl
@@ -251,6 +251,39 @@
             sortable: true
           },
           {
+            title: this.$t('status'),
+            key: 'status',
+            sortable: true,
+            align: 'center',
+            filters: [
+              {
+                label: this.$t('cart'),
+                value: 'cart'
+              },
+              {
+                label: this.$t('order'),
+                value: 'order'
+              },
+              {
+                label: this.$t('sent'),
+                value: 'sent'
+              },
+              {
+                label: this.$t('checked'),
+                value: 'checked'
+              }
+            ],
+            filterMultiple: true,
+            filterMethod (value, row) {
+              // 比较时注意变量类型
+              return row.status === value
+            },
+            render: (h, params) => {
+              return h('span', this.$t(params.row.status))
+              // }, params.row.status)
+            }
+          },
+          {
             title: '操作',
             key: 'action',
             render: (h, params) => {
@@ -261,16 +294,24 @@
                     type: 'primary',
                     size: 'small'
                   },
+                  style: {
+                    marginRight: '5px'
+                  },
                   on: {
                     click: () => {
-                      this.showOrderProcessModal = true
+                      this.showEdit(params.index)
+                      // this.orderModel = this.orderListData[index]
+                      // this.showOrderProcessModal = true
                     }
                   }
-                }, this.$t(params.row.status)),
+                }, this.$t('process')),
                 h('Button', {
                   props: {
                     type: 'error',
                     size: 'small'
+                  },
+                  style: {
+                    marginRight: '5px'
                   },
                   on: {
                     click: () => {
@@ -292,7 +333,7 @@
       ...mapState('app', {
         'availableExpresses': state => state.availableExpresses,
         'availableDepartments': state => state.availableDepartments,
-        'availablePayments': state => state.availablePayemnts
+        'availablePayments': state => state.availablePayments
       }),
       aList: function () {
         // 用于autocomplete
@@ -314,36 +355,17 @@
       },
       aExpress: function () {
         // 用于autocomplete
+        // console.error(this.availableExpresses)
         if (Array.isArray(this.availableExpresses)) {
           // 深度拷贝方法
           let tmpArray = JSON.parse(JSON.stringify(this.availableExpresses))
+          // console.error(tmpArray)
           return tmpArray.filter((item, index, array) => {
             if (item.name.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
               return true
             } else if (item.pinyin.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
               return true
             } else if (item.py.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
-              return true
-            } else {
-              return false
-            }
-          })
-        } else {
-          return []
-        }
-      },
-      aPayment: function () {
-        // 用于autocomplete
-        if (Array.isArray(this.availablePayments)) {
-          // 深度拷贝方法
-          let tmpArray = JSON.parse(JSON.stringify(this.availablePayments))
-          return tmpArray.filter((item, index, array) => {
-            if (item.name.toUpperCase().indexOf(this.orderModel.payment.toUpperCase()) !== -1) {
-              // return array.indexOf(item) === index
-              return true
-            } else if (item.pinyin.toUpperCase().indexOf(this.orderModel.payment.toUpperCase()) !== -1) {
-              return true
-            } else if (item.py.toUpperCase().indexOf(this.orderModel.payment.toUpperCase()) !== -1) {
               return true
             } else {
               return false
@@ -411,6 +433,20 @@
           this.$Message.error('获取商品列表失败!')
         })
       },
+      showEdit (index) {
+        this.showOrderProcessModal = true
+        // console.error(this.orderListData[index].express)
+        if (this.orderListData[index].express === null) {
+          this.orderListData[index].express = ''
+        }
+        // console.error(this.orderListData[index].express.toUpperCase())
+        // console.error(this.orderListData[index].payment)
+        if (this.orderListData[index].payment === null) {
+          this.orderListData[index].payment = ''
+        }
+        // console.error(this.orderListData[index].payment.toUpperCase())
+        this.orderModel = this.orderListData[index]
+      },
       confirmProcess (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
@@ -433,6 +469,9 @@
           }
         })
       },
+      cancelProcess (name) {
+        this.$Message.warning(this.$t('canceled'))
+      },
       handleExpressSelected: function (value) {
         this.orderModel.express = value
         console.log(this.orderModel.express)
@@ -440,15 +479,6 @@
         if (this.orderModel.express.length > 0 && expressList.length > 0) {
           let tmpExpress = expressList.filter((val, index, array) => val.name === this.orderModel.express)
           this.selectedExpress = tmpExpress[0]
-        }
-      },
-      handlePaymentSelected: function (value) {
-        this.orderModel.payment = value
-        console.log(this.orderModel.payment)
-        let paymentList = JSON.parse(JSON.stringify(this.availablePayments))
-        if (this.orderModel.payment.length > 0 && paymentList.length > 0) {
-          let tmpPayment = paymentList.filter((val, index, array) => val.name === this.orderModel.payment)
-          this.selectedPayment = tmpPayment[0]
         }
       }
     },

@@ -39,6 +39,27 @@ axios.interceptors.request.use(
   }
 )
 
+export const authUser = params => { return axios.get(`/rest-auth/user/`, {params: params}).then(res => res) }
+
+export const authRegister = params => { return axios.post(`/rest-auth/registration/`, params).then(res => res) }
+
+export const authPassReset = params => { return axios.post(`/rest-auth/password/reset/`, params).then(res => res) }
+
+export const authPassResetConfirm = params => { return axios.post(`/rest-auth/password/reset/confirm/`, params).then(res => res) }
+
+export const authPassChange = params => { return axios.post(`/rest-auth/password/change/`, params).then(res => res) }
+
+export const authWeixinLogin = params => { return axios.post(`/rest-auth/weixin/`, params).then(res => res) }
+
+export const getCaptcha = params => { return axios.get(`/utils/get-captcha`, {params: params}).then(res => res) }
+
+// 微信公众号相关API
+export const weixinUserList = params => { return axios.post(`/weixin/user-list/`, params).then(res => res) }
+
+export const weixinUserInfo = params => { return axios.post(`/weixin/user-info/`, params).then(res => res) }
+
+export const weixinBatchUserInfo = params => { return axios.post(`/weixin/batch-user-info/`, params).then(res => res) }
+
 export const getDepartments = params => {
   return axios.get(`/user-manage/departments/`, {params: params}).then(res => res)
 }
@@ -95,9 +116,9 @@ export const getLocations = params => {
 }
 
 export const getProducts = params => {
-  if (params['keyword'] === '') {
-    delete params['keyword']
-  }
+  // if (params['keyword'] === '') {
+  //   delete params['keyword']
+  // }
   return axios.get(`/sale-manage/products/`, {params: params}).then(res => res)
 }
 
@@ -127,23 +148,10 @@ export const addOrder = params => {
   return axios.post(`/sale-manage/order/add/`, params).then(res => res)
 }
 
-export const authUser = params => { return axios.get(`/rest-auth/user/`, {params: params}).then(res => res) }
+export const getStockMoveRecord = params => {
+  return axios.get(`/sale-manage/move-record/`, params).then(res => res)
+}
 
-export const authRegister = params => { return axios.post(`/rest-auth/registration/`, params).then(res => res) }
-
-export const authPassReset = params => { return axios.post(`/rest-auth/password/reset/`, params).then(res => res) }
-
-export const authPassResetConfirm = params => { return axios.post(`/rest-auth/password/reset/confirm/`, params).then(res => res) }
-
-export const authPassChange = params => { return axios.post(`/rest-auth/password/change/`, params).then(res => res) }
-
-export const authWeixinLogin = params => { return axios.post(`/rest-auth/weixin/`, params).then(res => res) }
-
-export const getCaptcha = params => { return axios.get(`/utils/get-captcha`, {params: params}).then(res => res) }
-
-// 微信公众号相关API
-export const weixinUserList = params => { return axios.post(`/weixin/user-list/`, params).then(res => res) }
-
-export const weixinUserInfo = params => { return axios.post(`/weixin/user-info/`, params).then(res => res) }
-
-export const weixinBatchUserInfo = params => { return axios.post(`/weixin/batch-user-info/`, params).then(res => res) }
+export const getStock = params => {
+  return axios.get(`/sale-manage/stock/`, params).then(res => res)
+}

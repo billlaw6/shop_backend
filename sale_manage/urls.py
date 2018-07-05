@@ -20,4 +20,6 @@ urlpatterns = [
     url(r'^product/create/$', views.create_product, name='create_product'),
     url(r'^product/update/$', views.update_product, name='update_product'),
     url(r'^product/toggle/$', views.toggle_product, name='toggle_product'),
+    url(r'^move-record/$', views.get_stock_move_record, name='stock_move_record'),
+    url(r'^stock/$', views.get_stock, name='stock'),
 ]

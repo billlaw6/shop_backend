@@ -315,27 +315,32 @@ class Stock(models.Model):
 class StockMoveRecord(models.Model):
     page_no = models.CharField(max_length=64, unique=True, blank=True,
                                 default='')
-    moved_on = models.DateTimeField()
     product = models.ForeignKey(Product, related_name=_('stock_move_record'),
                                 blank=False, null=False)
     produced_at = models.DateField(_('produced_at'), blank=False, null=False, default=date.today)
     batch_no = models.CharField(_('batch_no'), max_length=128, blank=False, null=False, default='')
-    amount = models.DecimalField(_('amount'), max_digits=9, decimal_places=2,
+    dept_out = models.ForeignKey(Department, on_delete=models.CASCADE,
+                             related_name='out_stock_move_records', null=True)
+    dept_in = models.ForeignKey(Department, on_delete=models.CASCADE,
+                             related_name='in_stock_move_records', null=False)
+    move_amount = models.DecimalField(_('move_amount'), max_digits=9, decimal_places=2,
                                 default=0.00)
-    rest_amount = models.DecimalField(_('rest_amount'), max_digits=9, decimal_places=2,
+    in_result_amount = models.DecimalField(_('in_result_amount'), max_digits=9, decimal_places=2,
                                 default=0.00)
     price = models.DecimalField(_('price'), max_digits=9, decimal_places=2,
                                 default=0.00)
+    entered_on = models.DateTimeField(_('entered_on'), auto_now=True)
     entered_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
                             related_name='entered_stock_move_records', null=False)
+    processed_on = models.DateTimeField(_('processed_on'), blank=True, null=True)
     processed_by = models.ForeignKey(get_user_model(), models.SET_NULL,
                             related_name='processed_stock_move_records', null=True)
-    comment = models.CharField(max_length=200, blank=True, null=True)
+    # 采购记录需要结算
+    checked_on = models.DateTimeField(_('checked_on'), blank=True, null=True)
+    checked_by = models.ForeignKey(get_user_model(), models.SET_NULL,
+                            related_name='checked_stock_move_records', null=True)
     status = models.IntegerField(blank=False, null=False, default=0)
-    dept_in = models.ForeignKey(Department, on_delete=models.CASCADE,
-                             related_name='in_stock_move_records', null=False)
-    dept_out = models.ForeignKey(Department, on_delete=models.CASCADE,
-                             related_name='out_stock_move_records', null=True)
+    comment = models.CharField(max_length=200, blank=True, null=True)
 
     class Meta:
         ordering = ('dept_in', 'dept_out', 'status', 'page_no', 'product',)

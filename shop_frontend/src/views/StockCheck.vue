@@ -14,37 +14,45 @@
         <Select 
           v-model="formInline.product"
           filterable
+          clearable
           remote
+          :label-in-value="true"
           :remote-method="getRemoteProduct"
-        >
-          <Option v-for="(option, index) in filteredProductList" :value="option.id" :key="index">
+          :loading="loadingProduct">
+          <Option v-for="(option, index) in filteredProductList"
+            :value="option.id"
+            :key="index">
             <span>{{ option.name }}</span>
             <span style="margin-left: 5px; color:red">{{ option.sale_price | currency}}</span>
           </Option>
         </Select>
-        <ul v-for="error in formInlineErrors.product">
+        <ul v-for="error in filteredProductList">
+          <li class="error">{{ error }}</li>
+        </ul>
+        <ul v-if="formInlineErrors.product" v-for="error in formInlineErrors.product">
           <li class="error">{{ error }}</li>
         </ul>
       </FormItem>
       <FormItem :label="$t('amount')" prop="amount">
         <InputNumber :max="10000" :min="0.0" :step="0.1" v-model="formInline.amount"></InputNumber>
-        <ul v-for="error in formInlineErrors.amount">
+        <ul v-if="formInlineErrors.amount" v-for="error in formInlineErrors.amount">
           <li class="error">{{ error }}</li>
         </ul>
       </FormItem>
-      <FormItem :label="$t('batch_no')" prop="batch_no">
+      <FormItem :label="$t('batchNo')" prop="batch_no">
         <Input v-model="formInline.batch_no"></Input>
-        <ul v-for="error in formInlineErrors.batch_no">
+        <ul v-if="formInlineErrors.batch_no" v-for="error in formInlineErrors.batch_no">
           <li class="error">{{ error }}</li>
         </ul>
       </FormItem>
       <FormItem :label="$t('comment')" prop="comment">
-        <Input v-model="formInline.comment" type="text></Input>
-        <ul v-for="error in formInlineErrors.comment">
+        <Input v-model="formInline.comment" type="text"></Input>
+        <ul v-if="formInlineErrors.comment" v-for="error in formInlineErrors.comment">
           <li class="error">{{ error }}</li>
         </ul>
       </FormItem>
     </Form>
+    {{ filteredProductList }}
   </div>
 </template>
 
@@ -58,7 +66,6 @@
     data: function () {
       return {
         total: 0,
-        filteredProductList: [],
         ruleInline: {
           product: [
             { required: true }
@@ -69,20 +76,21 @@
         },
         formInlineErrors: {},
         loadingProduct: false,
+        filteredProductList: [],
         addedProductColumns: [
-          // {
-          //   title: this.$t('orderNo'),
-          //   key: 'product',
-          //   sortable: true,
-          //   render: (h, param) => {
-          //     let toUrl = {name: 'order', params: {orderId: param.row.id}}
-          //     return h('router-link', {
-          //       props: {
-          //         to: toUrl
-          //       }
-          //     }, param.row.name)
-          //   }
-          // }
+          {
+            title: this.$t('product'),
+            key: 'product',
+            sortable: true,
+            render: (h, param) => {
+              let toUrl = {name: 'order', params: {orderId: param.row.id}}
+              return h('router-link', {
+                props: {
+                  to: toUrl
+                }
+              }, param.row.name)
+            }
+          }
         ]
       }
     },

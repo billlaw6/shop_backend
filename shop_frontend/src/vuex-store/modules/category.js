@@ -8,7 +8,6 @@ export default {
   },
 
   getters: {
-    'productListCount': (state, getters, rootState, rootGetters) => { return state.productList.results.length }
   },
 
   mutations: {

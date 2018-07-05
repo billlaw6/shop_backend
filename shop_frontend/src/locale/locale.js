@@ -6,6 +6,7 @@ export default {
     switchLangTitle: '切换语言',
     international: '多语言切换',
     productManage: '商品管理',
+    batchNo: '批号',
     productList: '商品列表',
     formatError: '请选择正确的文件类型',
     exceededSizeError: '文件过大，请选择合适大小的文件',

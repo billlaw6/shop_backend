@@ -10,26 +10,21 @@
     </Table>
 
     <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
-      <FormItem :label="$t('product')" prop="product">
+      <FormItem :label="$t('product')" prop="productInfo">
         <Select 
-          v-model="formInline.product"
+          v-model="formInline.productInfo"
           filterable
           clearable
-          remote
-          :label-in-value="true"
-          :remote-method="getRemoteProduct"
-          :loading="loadingProduct">
-          <Option v-for="(option, index) in filteredProductList"
-            :value="option.id"
+          >
+          <!-- Select自带的filter过滤的是value值 -->
+          <Option v-for="(option, index) in availableProducts"
+            :value="option.id+'|'+option.name+'|'+option.py+'|'+option.sale_price"
             :key="index">
             <span>{{ option.name }}</span>
             <span style="margin-left: 5px; color:red">{{ option.sale_price | currency}}</span>
           </Option>
         </Select>
-        <ul v-for="error in filteredProductList">
-          <li class="error">{{ error }}</li>
-        </ul>
-        <ul v-if="formInlineErrors.product" v-for="error in formInlineErrors.product">
+        <ul v-if="formInlineErrors.productInfo" v-for="error in formInlineErrors.productInfo">
           <li class="error">{{ error }}</li>
         </ul>
       </FormItem>
@@ -51,13 +46,16 @@
           <li class="error">{{ error }}</li>
         </ul>
       </FormItem>
+      <Form-item>
+        <br/>
+        <Button type="primary" @click="addToList()">{{ $t('addToList') }}</Button>
+      </Form-item>
     </Form>
-    {{ filteredProductList }}
   </div>
 </template>
 
 <script>
-  import { mapState } from 'vuex'
+  import { mapState, mapActions } from 'vuex'
   import { getStock } from '@/http/api'
 
   export default{
@@ -65,32 +63,54 @@
     },
     data: function () {
       return {
-        total: 0,
         ruleInline: {
-          product: [
+          productInfo: [
             { required: true }
           ]
         },
         formInline: {
-          product: ''
+          productInfo: '',
+          amount: 0,
+          batch_no: '',
+          comment: ''
         },
         formInlineErrors: {},
         loadingProduct: false,
-        filteredProductList: [],
+        addedProduct: [],
         addedProductColumns: [
           {
             title: this.$t('product'),
-            key: 'product',
-            sortable: true,
-            render: (h, param) => {
-              let toUrl = {name: 'order', params: {orderId: param.row.id}}
-              return h('router-link', {
-                props: {
-                  to: toUrl
-                }
-              }, param.row.name)
-            }
+            key: 'product_name',
+            sortable: true
+          },
+          {
+            title: this.$t('salePrice'),
+            key: 'sale_price',
+            sortable: true
+          },
+          {
+            title: this.$t('amount'),
+            key: 'amount',
+            sortable: true
+          },
+          {
+            title: this.$t('batchNo'),
+            key: 'batch_no',
+            sortable: true
           }
+          // {
+          //   title: this.$t('product'),
+          //   key: 'product',
+          //   sortable: true,
+          //   render: (h, param) => {
+          //     let toUrl = {name: 'order', params: {orderId: param.row.id}}
+          //     return h('router-link', {
+          //       props: {
+          //         to: toUrl
+          //       }
+          //     }, param.row.name)
+          //   }
+          // }
         ]
       }
     },
@@ -98,37 +118,15 @@
       ...mapState('app', {
         availableProducts: state => state.availableProducts
       }),
-      addedProduct: function () {
-        return window.localStorage['addedProduct'] ? JSON.parse(window.localStorage['addedProduct']) : []
+      total: function () {
+        return this.addedProduct.length
       }
     },
     methods: {
-      getRemoteProduct (query) {
-        let tmpArray = JSON.parse(JSON.stringify(this.availableProducts))
-        // console.log(query)
-        if (query !== '') {
-          this.loadingProduct = true
-          this.filteredProductList = tmpArray.filter((item, index, array) => {
-            // console.log(query)
-            // console.log(item)
-            if (item.name.toUpperCase().indexOf(query.toUpperCase()) !== -1) {
-              return true
-            } else if (item.pinyin.toUpperCase().indexOf(query.toUpperCase()) !== -1) {
-              return true
-            } else if (item.py.toUpperCase().indexOf(query.toUpperCase()) !== -1) {
-              return true
-            } else if (item.sale_price.toString().toUpperCase().indexOf(query.toUpperCase()) !== -1) {
-              return true
-            } else {
-              return false
-            }
-          })
-          this.loadingProduct = false
-        } else {
-          this.filteredProductList = tmpArray
-        }
-      },
-      getDate (from, to, pageSize, pageNumber) {
+      ...mapActions('app', {
+        setProducts: 'setProducts'
+      }),
+      getStockDate: function (from, to, pageSize, pageNumber) {
         let params = {
           from: from,
           to: to,
@@ -146,7 +144,27 @@
         }, (error) => {
           console.error(error)
         })
+      },
+      addToList () {
+        // console.log(this.formInline)
+        this.$refs['formInline'].validate((valid) => {
+          if (valid) {
+            console.log('valid')
+            let product = this.formInline['productInfo'].split('|')
+            // console.log(product)
+            this.formInline['product'] = product[0]
+            this.formInline['product_name'] = product[1]
+            this.formInline['sale_price'] = product[3]
+            this.addedProduct.push(this.formInline)
+            console.log(this.addedProduct)
+          } else {
+            this.$Message.error(this.$t('validateFailed'))
+          }
+        })
       }
+    },
+    mounted () {
+      this.setProducts()
     }
   }
 </script>

@@ -10,12 +10,12 @@ const app = {
   namespaced: true,
 
   state: {
-    cachePage: [],
+    cachePage: window.localStorage['cachePage'] ? JSON.parse(window.localStorage['cachePage']) : [],
     lang: '',
     pageSize: 10, // 默认取数时每次获取行数，转成limit参数发送给服务器
     isFullScreen: false,
     maxSize: 1024, // 单位kb
-    openedSubmenuArr: [], // 要展开的菜单数组
+    openedSubmenuArr: window.localStorage['openedSubmenuArr'] ? JSON.parse(window.localStorage['openedSubmenuArr']) : [], // 要展开的菜单数组
     menuTheme: 'dark', // 主题
     themeColor: '',
     pageOpenedList: [{
@@ -39,10 +39,10 @@ const app = {
     tagList: [...otherRouter.children],
     messageCount: 0,
     dontCache: ['text-editor', 'artical-publish'], // 在这里定义你不想要缓存的页面的name属性值(参见路由配置router.js)
-    availablePayments: [],
-    availableExpresses: [],
-    availableDepartments: [],
-    availableLocations: []
+    availablePayments: window.localStorage['availablePayments'] ? JSON.parse(window.localStorage['availablePayments']) : [],
+    availableExpresses: window.localStorage['availableExpresses'] ? JSON.parse(window.localStorage['availableExpresses']) : [],
+    availableDepartments: window.localStorage['availableDepartments'] ? JSON.parse(window.localStorage['availableDepartments']) : [],
+    availableLocations: window.localStorage['availableLocations'] ? JSON.parse(window.localStorage['availableLocations']) : [],
   },
 
   getters: {
@@ -129,7 +129,7 @@ const app = {
         return item === currentName
       })
       state.cachePage = newCachepage
-      localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
+      window.localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
     },
     [types.SET_OPENED_LIST] (state) {
       state.pageOpenedList = localStorage.pageOpenedList ? JSON.parse(localStorage.pageOpenedList) : [otherRouter.children[0]]
@@ -159,18 +159,23 @@ const app = {
     },
     [types.SET_PRODUCTS] (state, param) {
       state.availableProducts = param
+      localStorage.availableProducts = JSON.stringify(state.availableProducts)
     },
     [types.SET_PAYMENTS] (state, param) {
       state.availablePayments = param
+      localStorage.availablePayments = JSON.stringify(state.availablePayments)
     },
     [types.SET_DEPARTMENTS] (state, param) {
       state.availableDepartments = param
+      localStorage.availableDepartments = JSON.stringify(state.availableDepartments)
     },
     [types.SET_EXPRESSES] (state, param) {
       state.availableExpresses = param
+      localStorage.availableExpresses = JSON.stringify(state.availableExpresses)
     },
     [types.SET_LOCATIONS] (state, param) {
       state.availableLocations = param
+      localStorage.availableLocations = JSON.stringify(state.availableLocations)
     }
   },
 

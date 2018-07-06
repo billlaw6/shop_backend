@@ -82,7 +82,7 @@
             _this.login(_this.formLogin).then(() => {
               // 箭头函数里的this会自动带入上下文的
               // 常规函数则需要使用bind传入this
-              console.error(this.cUser)
+              // console.error(this.cUser)
               // if (_this.cUser.is_staff) {
               //   _this.$router.push({'name': 'home'})
               // } else {

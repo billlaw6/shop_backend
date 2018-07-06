@@ -119,8 +119,8 @@ export default {
       window.localStorage.setItem('currentUser', null)
       authLogout().then((res) => {
         // console.debug(res)
-        let {data, status} = res
-        console.log(data)
+        let {status} = res
+        // console.log(data)
         if (status !== 200) {
           return res
         } else {

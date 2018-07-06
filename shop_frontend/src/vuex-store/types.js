@@ -21,6 +21,13 @@ export const REMOVE_CART_ITEM = 'REMOVE_CART_ITEM'
 export const SET_CART_LIST = 'SET_CART_LIST'
 export const EMPTY_CART = 'EMPTY_CART'
 
+// modules/stock.js
+export const ADD_MOVE_RECORD_ITEM = 'ADD_MOVE_RECORD_ITEM'
+export const SET_MOVE_RECORD_ITEM_AMOUNT = 'SET_MOVE_RECORD_ITEM_AMOUNT'
+export const REMOVE_MOVE_RECORD_ITEM = 'REMOVE_MOVE_RECORD_ITEM'
+export const SET_MOVE_RECORD_LIST = 'SET_MOVE_RECORD_LIST'
+export const EMPTY_MOVE_RECORD = 'EMPTY_MOVE_RECORD'
+
 // modules/app.js
 // actions中commit时会自动加上 'app/'
 // VUE组件中commit时用types不方便，需要手动添加 'app/'前缀

@@ -326,3 +326,25 @@ def get_stock(request, *args, **kwargs):
           queryset = Stock.objects.filter(department=department)
     print(queryset)
     return Response(StockSerializer(queryset, many=True).data, status='200')
+
+
+@api_view(['POST'])
+@authentication_classes([authentication.TokenAuthentication,])
+@permission_classes([permissions.IsAdminUser])
+@transaction.atomic
+def add_move_record(request, *args, **kwargs):
+    """
+    """
+    print(request.data)
+    for item in request.data.get('moveRecordList'):
+        print(item)
+        serializer = StockMoveRecordSerializer(request.data)
+        if serializer.is_valid():
+            print('validated_data')
+            print(serializer.validated_data)
+            serializer.save()
+        else:
+            print("invalid")
+            print(serializer.errors)
+            return JsonResponse(serializer.errors, status=400)
+    return JsonResponse(serializer.data, status=201)

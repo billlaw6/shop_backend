@@ -12,6 +12,7 @@ const app = {
   state: {
     cachePage: window.localStorage['cachePage'] ? JSON.parse(window.localStorage['cachePage']) : [],
     lang: '',
+    currentDepartment: window.localStorage['currentDepartment'] ? JSON.parse(window.localStorage['currentDepartment']) : null,
     pageSize: 10, // 默认取数时每次获取行数，转成limit参数发送给服务器
     isFullScreen: false,
     maxSize: 1024, // 单位kb
@@ -42,7 +43,7 @@ const app = {
     availablePayments: window.localStorage['availablePayments'] ? JSON.parse(window.localStorage['availablePayments']) : [],
     availableExpresses: window.localStorage['availableExpresses'] ? JSON.parse(window.localStorage['availableExpresses']) : [],
     availableDepartments: window.localStorage['availableDepartments'] ? JSON.parse(window.localStorage['availableDepartments']) : [],
-    availableLocations: window.localStorage['availableLocations'] ? JSON.parse(window.localStorage['availableLocations']) : [],
+    availableLocations: window.localStorage['availableLocations'] ? JSON.parse(window.localStorage['availableLocations']) : []
   },
 
   getters: {
@@ -157,6 +158,10 @@ const app = {
       state.pageOpenedList.push(tagObj)
       localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
     },
+    [types.SET_CURRENT_DEPARTMENT] (state, department) {
+      state.currentDepartment = department
+      localStorage.currentDepartment = JSON.stringify(state.currentDepartment)
+    },
     [types.SET_PRODUCTS] (state, param) {
       state.availableProducts = param
       localStorage.availableProducts = JSON.stringify(state.availableProducts)
@@ -182,6 +187,9 @@ const app = {
   actions: {
     'setMessageCount': ({ dispatch, commit, getters, rootGetters }, count) => {
       commit(types.SET_MESSAGE_COUNT, count)
+    },
+    'setCurrentDepartment': ({ dispatch, commit, getters, rootGetters }, department) => {
+      commit(types.SET_MESSAGE_COUNT, department)
     },
     // 用actions中的rootGetters绕开mutations中取不到rootState的问题
     'updateMenuList': ({ dispatch, commit, getters, rootGetters }, count) => {

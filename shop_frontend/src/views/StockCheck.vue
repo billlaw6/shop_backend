@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Table ref="addedProduct" stripe :columns="addedProductColumns" :data="addedProduct">
+    <Table ref="addedProduct" stripe :columns="addedProductColumns" :data="moveRecordList">
       <div class="table-header" slot="header">
         已添加商品
       </div>
@@ -28,9 +28,9 @@
           <li class="error">{{ error }}</li>
         </ul>
       </FormItem>
-      <FormItem :label="$t('amount')" prop="amount">
-        <InputNumber :max="10000" :min="0.0" :step="0.1" v-model="formInline.amount"></InputNumber>
-        <ul v-if="formInlineErrors.amount" v-for="error in formInlineErrors.amount">
+      <FormItem :label="$t('moveAmount')" prop="move_amount">
+        <InputNumber :max="10000" :min="0.1" :step="0.1" v-model="formInline.move_amount"></InputNumber>
+        <ul v-if="formInlineErrors.move_amount" v-for="error in formInlineErrors.move_amount">
           <li class="error">{{ error }}</li>
         </ul>
       </FormItem>
@@ -48,15 +48,21 @@
       </FormItem>
       <Form-item>
         <br/>
-        <Button type="primary" @click="addToList()">{{ $t('addToList') }}</Button>
+        <Button type="primary" size="small" @click="addToList()">{{ $t('addToList') }}</Button>
+      </Form-item>
+    </Form>
+    <Form>
+      <Form-item>
+        <br/>
+        <Button type="primary" size="small" @click="submitMoveRecord()">{{ $t('submitMoveRecord') }}</Button>
       </Form-item>
     </Form>
   </div>
 </template>
 
 <script>
-  import { mapState, mapActions } from 'vuex'
-  import { getStock } from '@/http/api'
+  import { mapState, mapGetters, mapActions } from 'vuex'
+  import { addMoveRecord } from '@/http/api'
 
   export default{
     components: {
@@ -65,12 +71,15 @@
       return {
         ruleInline: {
           productInfo: [
-            { required: true }
+            { required: true, message: this.$t('invalidProduct'), trigger: 'blur' }
           ]
+          // move_amount: [
+          //   { required: true, message: this.$t('invalidmove_amount'), trigger: 'blur' }
+          // ]
         },
         formInline: {
           productInfo: '',
-          amount: 0,
+          move_amount: 0.1,
           batch_no: '',
           comment: ''
         },
@@ -89,28 +98,35 @@
             sortable: true
           },
           {
-            title: this.$t('amount'),
-            key: 'amount',
+            title: this.$t('move_amount'),
+            key: 'move_amount',
             sortable: true
           },
           {
             title: this.$t('batchNo'),
             key: 'batch_no',
             sortable: true
+          },
+          {
+            title: '操作',
+            key: 'action',
+            render: (h, params) => {
+              return h('Button', {
+                props: {
+                  type: 'error',
+                  size: 'small'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.removeFromList(params.index)
+                  }
+                }
+              }, this.$t('remove'))
+            }
           }
-          // {
-          //   title: this.$t('product'),
-          //   key: 'product',
-          //   sortable: true,
-          //   render: (h, param) => {
-          //     let toUrl = {name: 'order', params: {orderId: param.row.id}}
-          //     return h('router-link', {
-          //       props: {
-          //         to: toUrl
-          //       }
-          //     }, param.row.name)
-          //   }
-          // }
         ]
       }
     },
@@ -118,53 +134,75 @@
       ...mapState('app', {
         availableProducts: state => state.availableProducts
       }),
+      ...mapState('stock', {
+        moveRecordList: state => state.moveRecordList
+      }),
+      ...mapGetters('stock', [
+        'moveRecordListCount',
+        'moveRecordListSum'
+      ]),
       total: function () {
         return this.addedProduct.length
       }
     },
     methods: {
       ...mapActions('app', {
-        setProducts: 'setProducts'
+        setProducts: 'setProducts',
+        setCurrentDepartment: 'setCurrentDepartment'
       }),
-      getStockDate: function (from, to, pageSize, pageNumber) {
-        let params = {
-          from: from,
-          to: to,
-          limit: pageSize,
-          offset: (pageNumber - 1) * pageSize
-        }
-        getStock(params).then((res) => {
-          let { data, status, statusText } = res
-          if (status !== 200) {
-            console.log('get moveRecord failed:' + statusText)
-          } else {
-            this.total = data.count
-            this.moveRecordList = data.results
-          }
-        }, (error) => {
-          console.error(error)
-        })
-      },
-      addToList () {
+      ...mapActions('stock', {
+        addMoveRecordItem: 'addMoveRecordItem',
+        removeMoveRecordItem: 'removeMoveRecordItem',
+        emptyMoveRecordItem: 'emptyMoveRecordItem',
+        setMoveRecordList: 'setMoveRecordList'
+      }),
+      addToList: function () {
         // console.log(this.formInline)
         this.$refs['formInline'].validate((valid) => {
           if (valid) {
-            console.log('valid')
+            // console.log('valid')
+            let payload = {}
             let product = this.formInline['productInfo'].split('|')
-            // console.log(product)
-            this.formInline['product'] = product[0]
+            this.formInline['id'] = product[0]
             this.formInline['product_name'] = product[1]
             this.formInline['sale_price'] = product[3]
-            this.addedProduct.push(this.formInline)
-            console.log(this.addedProduct)
+            payload['item'] = JSON.parse(JSON.stringify(this.formInline))
+            payload['move_amount'] = this.formInline.move_amount
+            payload['batch_no'] = this.formInline.batch_no
+            payload['comment'] = this.formInline.comment
+            // console.log(product)
+            this.$store.dispatch('stock/addMoveRecordItem', payload)
           } else {
             this.$Message.error(this.$t('validateFailed'))
           }
         })
+      },
+      removeFromList: function (index) {
+        this.removeMoveRecordItem(this.moveRecordList[index])
+      },
+      submitMoveRecord: function () {
+        console.log('submitting move record')
+        if (this.currentDepartment) {
+          let params = {
+            dept_in: this.currentDepartment,
+            moveRecordList: this.moveRecordList
+          }
+          addMoveRecord(params).then((res) => {
+            let { status, data, statusText } = res
+            if (status !== 201) {
+              this.$Message.error(this.$t('failed'))
+            } else {
+              console.log(data)
+              console.log(statusText)
+            }
+          })
+        } else {
+          this.$Message.error(this.$t('invalideDeptIn'))
+        }
       }
     },
     mounted () {
-      this.setProducts()
+      // this.setProducts()
     }
   }
 </script>

@@ -43,7 +43,8 @@
               </MenuItem>
               -->
               <MenuItem v-if="currentUser.dept_belong" name="current-dept">
-                <Select v-model="current_dept">
+                <Select v-model="current_dept"
+                  @on-change="handleCurrentDeptChange">
                   <Option v-for="item in currentUser.dept_belong" :value="item.code" :key="item.code">{{ item.name }}</Option>
                 </Select>
               </MenuItem>
@@ -154,7 +155,8 @@
         setPayments: 'setPayments',
         setDepartments: 'setDepartments',
         setExpresses: 'setExpresses',
-        setLocations: 'setLocations'
+        setLocations: 'setLocations',
+        setCurrentDepartment: 'setCurrentDepartment'
       }),
       toggleClick () {
         this.shrink = !this.shrink
@@ -186,6 +188,10 @@
             name: 'login'
           })
         }
+      },
+      handleCurrentDeptChange (value) {
+        console.log(value)
+        // this.setCurrentDepartment(value)
       }
     },
     watch: {

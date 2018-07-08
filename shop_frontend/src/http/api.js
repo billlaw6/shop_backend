@@ -148,6 +148,10 @@ export const addOrder = params => {
   return axios.post(`/sale-manage/order/add/`, params).then(res => res)
 }
 
+export const addMoveRecord = params => {
+  return axios.post(`/sale-manage/remove-record/add/`, params).then(res => res)
+}
+
 export const getStockMoveRecord = params => {
   return axios.get(`/sale-manage/move-record/`, params).then(res => res)
 }

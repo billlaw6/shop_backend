@@ -10,6 +10,7 @@ import login from './modules/login'
 import app from './modules/app'
 import category from './modules/category'
 import cart from './modules/cart'
+import stock from './modules/stock'
 // import detail from './modules/detail'
 // import category from './modules/category'
 
@@ -38,7 +39,8 @@ export default new Vuex.Store({
     login: login,
     app: app,
     category: category,
-    cart: cart
+    cart: cart,
+    stock: stock
   },
   strict: debug,
   plugins: debug ? [createLogger()] : []

@@ -378,6 +378,26 @@
     },
     methods: {
       // 不能用箭头函数，里面的this作用域会不一样
+      // getStockDate: function (from, to, pageSize, pageNumber) {
+      //   let params = {
+      //     from: from,
+      //     to: to,
+      //     limit: pageSize,
+      //     offset: (pageNumber - 1) * pageSize
+      //   }
+      //   getStock(params).then((res) => {
+      //     let { data, status, statusText } = res
+      //     if (status !== 200) {
+      //       console.log('get moveRecord failed:' + statusText)
+      //     } else {
+      //       this.total = data.count
+      //       console.log(data)
+      //       // this.moveRecordList = data.results
+      //     }
+      //   }, (error) => {
+      //     console.error(error)
+      //   })
+      // },
       getOrderList: function (pageSize, pageNumber) {
         let paras = {
           // start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() - 1) + '-' + (this.dateRange[0].getDate() + 1),

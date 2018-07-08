@@ -169,8 +169,8 @@
       beforePush () {
         return true
       },
-      handleSubmenuChange () {
-        console.log('submenu changed')
+      handleSubmenuChange (name) {
+        console.log('submenu changed to:' + name)
       },
       fullscreenChange (isFullScreen) {
         console.log(isFullScreen)
@@ -223,7 +223,7 @@
       this.setCurrentDepartment()
     },
     created () {
-      window.localStorage.clear()
+      // window.localStorage.clear()
     },
     dispatch () {
     }

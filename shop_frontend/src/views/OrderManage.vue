@@ -188,6 +188,11 @@
             }
           },
           {
+            title: this.$t('department'),
+            key: 'department_name',
+            sortable: true
+          },
+          {
             title: this.$t('buyer'),
             key: 'buyer_name',
             sortable: true
@@ -476,6 +481,7 @@
               let { data, status, statusText } = res
               if (status !== 203) {
                 console.error('get Order failed:' + statusText)
+                console.error(data)
               } else {
                 console.log(data)
                 this.$Message.success(this.$t('processSucceed'))

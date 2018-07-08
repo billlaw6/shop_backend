@@ -43,7 +43,7 @@
               </MenuItem>
               -->
               <MenuItem v-if="currentUser.dept_belong" name="current-dept">
-                <Select v-model="current_dept"
+                <Select v-model="currentDepartment"
                   @on-change="handleCurrentDeptChange">
                   <Option v-for="item in currentUser.dept_belong" :value="item.code" :key="item.code">{{ item.name }}</Option>
                 </Select>
@@ -121,7 +121,8 @@
         'lang': state => state.lang,
         'menuTheme': state => state.menuTheme,
         'cachePage': state => state.cachePage,
-        'msgCount': state => state.messageCount
+        'msgCount': state => state.messageCount,
+        'currentDepartment': state => state.currentDepartment
       }),
       ...mapState('login', {
         'currentUser': state => state.currentUser
@@ -191,7 +192,7 @@
       },
       handleCurrentDeptChange (value) {
         console.log(value)
-        // this.setCurrentDepartment(value)
+        this.setCurrentDepartment(value)
       }
     },
     watch: {
@@ -219,8 +220,10 @@
       this.setDepartments()
       this.setExpresses()
       this.setLocations()
+      this.setCurrentDepartment()
     },
     created () {
+      window.localStorage.clear()
     },
     dispatch () {
     }

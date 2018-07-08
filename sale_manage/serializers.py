@@ -95,6 +95,9 @@ class StockSerializer(serializers.ModelSerializer):
 
 
 class StockMoveRecordSerializer(serializers.ModelSerializer):
+    productName = serializers.ReadOnlyField(source='product.name')
+    sale_price = serializers.ReadOnlyField(source='product.sale_price')
+
     class Meta:
         model = StockMoveRecord
         fields = "__all__"

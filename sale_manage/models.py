@@ -213,6 +213,8 @@ class OrderStatus(models.Model):
 class Order(models.Model):
     order_no = models.CharField(max_length=64, unique=True, blank=True,
                                 primary_key=True)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE,
+                            related_name=_('orders'), null=False)
     payment = models.ForeignKey(Payment, related_name=_('orders'),
                                 blank=True, null=True)
     buyer = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
@@ -292,7 +294,7 @@ class Stock(models.Model):
     product = models.ForeignKey(Product, related_name=_('stock_record'),
                                 blank=False, null=False)
     produced_at = models.DateField(_('produced_at'), blank=False, null=False, default=date.today)
-    batch_no = models.CharField(_('batch_no'), max_length=128, blank=False, null=False, default='')
+    batch_no = models.CharField(_('batch_no'), max_length=128, blank=True, null=False, default='')
     amount = models.DecimalField(_('amount'), max_digits=9, decimal_places=2,
                                 default=0.00)
     max_amount = models.DecimalField(_('max_amount'), max_digits=9, decimal_places=2,
@@ -301,7 +303,7 @@ class Stock(models.Model):
                                 default=0.00)
     location = models.CharField(max_length=256, blank=True, null=True)
     comment = models.CharField(max_length=256, blank=True, null=True)
-    status = models.IntegerField(blank=False, null=False, default=0)
+    is_active = models.BooleanField(_('is_active'), default=False)
 
     class Meta:
         ordering = ('department', 'product',)
@@ -318,7 +320,7 @@ class StockMoveRecord(models.Model):
     product = models.ForeignKey(Product, related_name=_('stock_move_record'),
                                 blank=False, null=False)
     produced_at = models.DateField(_('produced_at'), blank=False, null=False, default=date.today)
-    batch_no = models.CharField(_('batch_no'), max_length=128, blank=False, null=False, default='')
+    batch_no = models.CharField(_('batch_no'), max_length=128, blank=True, null=False, default='')
     dept_out = models.ForeignKey(Department, on_delete=models.CASCADE,
                              related_name='out_stock_move_records', null=True)
     dept_in = models.ForeignKey(Department, on_delete=models.CASCADE,
@@ -348,7 +350,7 @@ class StockMoveRecord(models.Model):
         unique_together = (('page_no', 'dept_in', 'dept_out', 'product', 'batch_no',))
 
     def __str__(self):
-        return '%s-%s-%s-%s' % (self.dpet_in.name, self.page_no, self.product.name, self.amount)
+        return '%s-%s-%s-%s' % (self.dept_in.name, self.page_no, self.product.name, self.move_amount)
 
 
 class StockCheck(models.Model):
@@ -359,7 +361,7 @@ class StockCheck(models.Model):
     product = models.ForeignKey(Product, related_name=_('stock_check_record'),
                                 blank=False, null=False)
     produced_at = models.DateField(_('produced_at'), blank=False, null=False, default=date.today)
-    batch_no = models.CharField(_('batch_no'), max_length=128, blank=False, null=False, default='')
+    batch_no = models.CharField(_('batch_no'), max_length=128, blank=True, null=False, default='')
     price = models.DecimalField(_('price'), max_digits=9, decimal_places=2,
                                 default=0.00)
     amount = models.DecimalField(_('amount'), max_digits=9, decimal_places=2,
@@ -392,7 +394,7 @@ class StockDailyLog(models.Model):
     product = models.ForeignKey(Product, related_name=_('stock_daily_log'),
                                 blank=False, null=False)
     produced_at = models.DateField(_('produced_at'), blank=False, null=False, default=date.today)
-    batch_no = models.CharField(_('batch_no'), max_length=128, blank=False, null=False, default='')
+    batch_no = models.CharField(_('batch_no'), max_length=128, blank=True, null=False, default='')
     price = models.DecimalField(_('price'), max_digits=9, decimal_places=2,
                                 default=0.00)
     amount = models.DecimalField(_('amount'), max_digits=9, decimal_places=2,
@@ -418,7 +420,7 @@ class StockUpdateLog(models.Model):
     product = models.ForeignKey(Product, related_name=_('stock_update_log'),
                                 blank=False, null=False)
     produced_at = models.DateField(_('produced_at'), blank=False, null=False, default=date.today)
-    batch_no = models.CharField(_('batch_no'), max_length=128, blank=False, null=False, default='')
+    batch_no = models.CharField(_('batch_no'), max_length=128, blank=True, null=False, default='')
     amount = models.DecimalField(_('amount'), max_digits=9, decimal_places=2,
                                 default=0.00)
     from_amount = models.DecimalField(_('from_amount'), max_digits=9, decimal_places=2,

@@ -132,12 +132,13 @@ def add_order(request, *args, **kwargs):
     """
     """
     order = {}
-    print(request.data.get('cartListSum'))
-    print(request.data.get('cartListCount'))
-    print(request.data.get('customer'))
     order['order_no'] = utils._generate_order_no()
     # order['order_no'] = str(uuid.uuid4())
     order['created_by'] = request.user.id
+    if request.data.get('department') is not None:
+        order['department'] = request.data.get('department')
+    else:
+        order['department'] = '20001'
     if request.data.get('customer') is not None:
         order['buyer'] = request.data.get('customer').get('id')
     if request.data.get('cartListSum') is not None:
@@ -146,6 +147,10 @@ def add_order(request, *args, **kwargs):
         order['payment'] = request.data.get('payment').get('id')
     if request.data.get('express') is not None:
         order['express'] = request.data.get('express').get('id')
+    if request.data.get('status') is not None:
+        order['status'] = request.data.get('status')
+    else:
+        order['status'] = 'submited'
 
 # transaction 方式二
 # with transaction.atomic():
@@ -181,9 +186,11 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+
 @api_view(['POST'])
 @authentication_classes([authentication.TokenAuthentication,])
 @permission_classes([my_perms.IsAdminOrOwner,])
+@transaction.atomic
 def process_order(request):
     print(request.data)
     if (request.data.get('order_no') and request.data.get('status')):
@@ -197,22 +204,39 @@ def process_order(request):
         if (request.data.get('comment', '') != ''):
             params['comment'] = request.data.get('comment')
 
+        order = Order.objects.filter(pk=request.data.get('order_no'))
         if (request.data.get('status', '') == 'cart'):
             params['status'] = 'order'
-            Order.objects.filter(pk=request.data.get('order_no')).update(**params)
+            order.update(**params)
             return Response(params['status'], status=203)
-        elif (request.data.get('status', '') in ['order', 'sent']):
+        elif (request.data.get('status', '') in ['submited', 'sent']):
             if (request.data.get('express', '') != ''):
                 params['status'] = 'sent'
+                # 减库存
+                for item in OrderDetail.objects.filter(order_id=request.data.get('order_no')):
+                    print(order[0].department.code)
+                    print(item.product.id)
+                    aim = Stock.objects.filter(department=order[0].department.code, product=item.product.id)
+                    print(aim)
+                    if len(aim) > 0:
+                        if aim[0].amount >= item.amount:
+                            aim.update(amount=aim[0].amount - item.amount)
+                        else:
+                            print('inc')
+                            return Response('insufficient', status=303)
+                    else:
+                        print('nostock')
+                        return Response('no stock', status=303)
             if (request.data.get('payment', '') != ''):
                 params['status'] = 'checked'
             else:
                 params['status'] = request.data.get('status')
-            # print(params)
             Order.objects.filter(pk=request.data.get('order_no')).update(**params)
             return Response(params['status'], status=203)
         elif (request.data.get('status', '') in ['checked', 'trashed']):
             return Response('no process', status=203)
+        else:
+            return Response('error', status=303)
     else:
         return Response('error', status=303)
 
@@ -282,6 +306,12 @@ class StockViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
+class StockMoveRecordViewSet(viewsets.ModelViewSet):
+    queryset = StockMoveRecord.objects.all()
+    serializer_class = StockMoveRecordSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+
 @api_view(['GET'])
 # @renderer_classes([renderers.JSONRenderer,])
 # @authentication_classes([authentication.TokenAuthentication,])
@@ -310,11 +340,12 @@ def get_stock_move_record(request, *args, **kwargs):
 # @authentication_classes([authentication.TokenAuthentication,])
 # @permission_classes([permissions.IsAdminUser])
 def get_stock(request, *args, **kwargs):
-    print(request.data)
-    department = request.data.get('department', None)
-    if (request.data.get('offset', None)) and (request.data.get('limit', None)):
-        start = request.data.get('offset', None)
-        end = start + request.data.get('limit', None)
+    # print(request.data)
+    print(request.GET.get('department', ''))
+    department = request.GET.get('department', None)
+    if (request.GET.get('offset', None)) and (request.GET.get('limit', None)):
+        start = request.GET.get('offset', None)
+        end = start + request.GET.get('limit', None)
         if department is None:
             queryset = Stock.objects.all()[start:end]
         else:
@@ -324,8 +355,10 @@ def get_stock(request, *args, **kwargs):
             queryset = Stock.objects.all()
         else:
           queryset = Stock.objects.filter(department=department)
-    print(queryset)
-    return Response(StockSerializer(queryset, many=True).data, status='200')
+    res_data = {}
+    res_data['count'] = len(queryset)
+    res_data['results'] = StockSerializer(queryset, many=True).data
+    return Response(res_data, status='200')
 
 
 @api_view(['POST'])
@@ -335,16 +368,51 @@ def get_stock(request, *args, **kwargs):
 def add_move_record(request, *args, **kwargs):
     """
     """
-    print(request.data)
+    # print(request.data)
     for item in request.data.get('moveRecordList'):
-        print(item)
-        serializer = StockMoveRecordSerializer(request.data)
+        if (request.data.get('dept_out', '') == ''):
+            item['dept_out'] = '00001'
+        item['dept_in'] = request.data.get('dept_in')
+        item['entered_by'] = request.user.id
+        # print(item)
+        serializer = StockMoveRecordSerializer(data=item)
         if serializer.is_valid():
-            print('validated_data')
-            print(serializer.validated_data)
+            # print('validated_data')
+            # print(serializer.validated_data)
             serializer.save()
         else:
-            print("invalid")
-            print(serializer.errors)
+            # print("invalid")
+            # print(serializer.errors)
             return JsonResponse(serializer.errors, status=400)
     return JsonResponse(serializer.data, status=201)
+
+
+@api_view(['POST'])
+@authentication_classes([authentication.TokenAuthentication,])
+@permission_classes([permissions.IsAdminUser])
+@transaction.atomic
+def process_move_record(request, *args, **kwargs):
+    """
+    """
+    print(request.data)
+    data = StockMoveRecord.objects.get(pk=request.data.get('id', 0))
+    print(data)
+    stock_records = Stock.objects.filter(department=data.dept_in, product=data.product.id, batch_no=data.batch_no)
+    if len(stock_records) > 0:
+        print('exists')
+        stock_records.update(amount = stock_records[0].amount + data.move_amount)
+    else:
+        print('not exists')
+        new_data = {}
+        print(data.dept_in.code)
+        new_data['department'] = data.dept_in.code
+        new_data['product'] = data.product.id
+        new_data['batch_no'] = data.batch_no
+        new_data['amount'] = data.move_amount
+        new_serializer = StockSerializer(data = new_data)
+        if new_serializer.is_valid():
+            print(new_serializer.validated_data)
+            new_serializer.save()
+        else:
+            return JsonResponse(new_serializer.errors, status=400)
+    return Response('OK', status=203)

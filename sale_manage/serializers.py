@@ -64,6 +64,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    department_name = serializers.ReadOnlyField(required=False, source='department.name')
     created_by_name = serializers.ReadOnlyField(required=False, source='created_by.__str__')
     buyer_name = serializers.ReadOnlyField(required=False, source='buyer.__str__')
     # 字段可为空时不要使用__str__函数，否则报错
@@ -87,14 +88,18 @@ class VisitLogSerializer(serializers.ModelSerializer):
 
 
 class StockSerializer(serializers.ModelSerializer):
-    department = serializers.ReadOnlyField(source='department.__str__')
-    product = serializers.ReadOnlyField(source='product.__str__')
+    department_name = serializers.ReadOnlyField(source='department.name')
+    product_name = serializers.ReadOnlyField(source='product.name')
+    sale_price = serializers.ReadOnlyField(source='product.sale_price')
     class Meta:
         model = Stock
         fields = "__all__"
 
 
 class StockMoveRecordSerializer(serializers.ModelSerializer):
+    product_name = serializers.ReadOnlyField(source='product.name')
+    sale_price = serializers.ReadOnlyField(source='product.sale_price')
+
     class Meta:
         model = StockMoveRecord
         fields = "__all__"

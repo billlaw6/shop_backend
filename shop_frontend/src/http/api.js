@@ -149,13 +149,17 @@ export const addOrder = params => {
 }
 
 export const addMoveRecord = params => {
-  return axios.post(`/sale-manage/remove-record/add/`, params).then(res => res)
+  return axios.post(`/sale-manage/move-record/add/`, params).then(res => res)
+}
+
+export const processStockMoveRecord = params => {
+  return axios.post(`/sale-manage/move-record/process/`, params).then(res => res)
 }
 
 export const getStockMoveRecord = params => {
-  return axios.get(`/sale-manage/move-record/`, params).then(res => res)
+  return axios.get(`/sale-manage/move-records/`, params).then(res => res)
 }
 
 export const getStock = params => {
-  return axios.get(`/sale-manage/stock/`, params).then(res => res)
+  return axios.get(`/sale-manage/stock/`, {params: params}).then(res => res)
 }

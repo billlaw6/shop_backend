@@ -54,7 +54,7 @@
     <Form>
       <Form-item>
         <br/>
-        <Button type="primary" size="large" @click="submitMoveRecord()">{{ $t('submitMoveRecord') }}</Button>
+        <Button type="primary" size="small" @click="submitMoveRecord()">{{ $t('submitMoveRecord') }}</Button>
       </Form-item>
     </Form>
   </div>
@@ -85,6 +85,7 @@
         },
         formInlineErrors: {},
         loadingProduct: false,
+        moveRecordList: [],
         moveRecordListColumns: [
           {
             title: this.$t('product'),

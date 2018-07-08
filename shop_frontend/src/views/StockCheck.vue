@@ -1,92 +1,28 @@
 <template>
   <div>
-    <Table ref="addedProduct" stripe :columns="addedProductColumns" :data="moveRecordList">
+    <Table ref="stockList" stripe :columns="stockColumns" :data="stockList">
       <div class="table-header" slot="header">
-        已添加商品
+        <span style="text-align: center; font: 1.8em">当前库存</span>
       </div>
       <div class="table-footer" slot="footer">
         共计: <span>{{ total }}</span> 订单，合计: <span></span>
       </div>
     </Table>
-
-    <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
-      <FormItem :label="$t('product')" prop="productInfo">
-        <Select 
-          v-model="formInline.productInfo"
-          filterable
-          clearable
-          >
-          <!-- Select自带的filter过滤的是value值 -->
-          <Option v-for="(option, index) in availableProducts"
-            :value="option.id+'|'+option.name+'|'+option.py+'|'+option.sale_price"
-            :key="index">
-            <span>{{ option.name }}</span>
-            <span style="margin-left: 5px; color:red">{{ option.sale_price | currency}}</span>
-          </Option>
-        </Select>
-        <ul v-if="formInlineErrors.productInfo" v-for="error in formInlineErrors.productInfo">
-          <li class="error">{{ error }}</li>
-        </ul>
-      </FormItem>
-      <FormItem :label="$t('moveAmount')" prop="move_amount">
-        <InputNumber :max="10000" :min="0.1" :step="0.1" v-model="formInline.move_amount"></InputNumber>
-        <ul v-if="formInlineErrors.move_amount" v-for="error in formInlineErrors.move_amount">
-          <li class="error">{{ error }}</li>
-        </ul>
-      </FormItem>
-      <FormItem :label="$t('batchNo')" prop="batch_no">
-        <Input v-model="formInline.batch_no"></Input>
-        <ul v-if="formInlineErrors.batch_no" v-for="error in formInlineErrors.batch_no">
-          <li class="error">{{ error }}</li>
-        </ul>
-      </FormItem>
-      <FormItem :label="$t('comment')" prop="comment">
-        <Input v-model="formInline.comment" type="text"></Input>
-        <ul v-if="formInlineErrors.comment" v-for="error in formInlineErrors.comment">
-          <li class="error">{{ error }}</li>
-        </ul>
-      </FormItem>
-      <Form-item>
-        <br/>
-        <Button type="primary" size="small" @click="addToList()">{{ $t('addToList') }}</Button>
-      </Form-item>
-    </Form>
-    <Form>
-      <Form-item>
-        <br/>
-        <Button type="primary" size="small" @click="submitMoveRecord()">{{ $t('submitMoveRecord') }}</Button>
-      </Form-item>
-    </Form>
   </div>
 </template>
 
 <script>
-  import { mapState, mapGetters, mapActions } from 'vuex'
-  import { addMoveRecord } from '@/http/api'
+  import { mapState } from 'vuex'
+  import { getStock } from '@/http/api'
 
   export default{
     components: {
     },
     data: function () {
       return {
-        ruleInline: {
-          productInfo: [
-            { required: true, message: this.$t('invalidProduct'), trigger: 'blur' }
-          ]
-          // move_amount: [
-          //   { required: true, message: this.$t('invalidmove_amount'), trigger: 'blur' }
-          // ]
-        },
-        formInline: {
-          productInfo: '',
-          move_amount: 0.1,
-          batch_no: '',
-          comment: ''
-        },
-        formInlineErrors: {},
-        loadingProduct: false,
-        addedProduct: [],
-        addedProductColumns: [
+        total: 0,
+        stockList: [],
+        stockColumns: [
           {
             title: this.$t('product'),
             key: 'product_name',
@@ -98,8 +34,8 @@
             sortable: true
           },
           {
-            title: this.$t('move_amount'),
-            key: 'move_amount',
+            title: this.$t('amount'),
+            key: 'amount',
             sortable: true
           },
           {
@@ -108,12 +44,12 @@
             sortable: true
           },
           {
-            title: '操作',
+            title: this.$t('process'),
             key: 'action',
             render: (h, params) => {
               return h('Button', {
                 props: {
-                  type: 'error',
+                  type: 'primary',
                   size: 'small'
                 },
                 style: {
@@ -121,10 +57,10 @@
                 },
                 on: {
                   click: () => {
-                    this.removeFromList(params.index)
+                    this.handleProcessMoveRecord(params)
                   }
                 }
-              }, this.$t('remove'))
+              }, this.$t('toggle'))
             }
           }
         ]
@@ -132,77 +68,33 @@
     },
     computed: {
       ...mapState('app', {
-        availableProducts: state => state.availableProducts
-      }),
-      ...mapState('stock', {
-        moveRecordList: state => state.moveRecordList
-      }),
-      ...mapGetters('stock', [
-        'moveRecordListCount',
-        'moveRecordListSum'
-      ]),
-      total: function () {
-        return this.addedProduct.length
-      }
+        currentDepartment: state => state.currentDepartment
+      })
     },
     methods: {
-      ...mapActions('app', {
-        setProducts: 'setProducts',
-        setCurrentDepartment: 'setCurrentDepartment'
-      }),
-      ...mapActions('stock', {
-        addMoveRecordItem: 'addMoveRecordItem',
-        removeMoveRecordItem: 'removeMoveRecordItem',
-        emptyMoveRecordItem: 'emptyMoveRecordItem',
-        setMoveRecordList: 'setMoveRecordList'
-      }),
-      addToList: function () {
-        // console.log(this.formInline)
-        this.$refs['formInline'].validate((valid) => {
-          if (valid) {
-            // console.log('valid')
-            let payload = {}
-            let product = this.formInline['productInfo'].split('|')
-            this.formInline['id'] = product[0]
-            this.formInline['product_name'] = product[1]
-            this.formInline['sale_price'] = product[3]
-            payload['item'] = JSON.parse(JSON.stringify(this.formInline))
-            payload['move_amount'] = this.formInline.move_amount
-            payload['batch_no'] = this.formInline.batch_no
-            payload['comment'] = this.formInline.comment
-            // console.log(product)
-            this.$store.dispatch('stock/addMoveRecordItem', payload)
+      getStockData: function (department) {
+        let params = {
+          department: department
+        }
+        getStock(params).then((res) => {
+          let { status, data, statusText } = res
+          if (status !== 200) {
+            console.log(statusText)
+            console.log(data)
           } else {
-            this.$Message.error(this.$t('validateFailed'))
+            console.log('data:')
+            console.log(data)
+            this.total = data.count
+            this.stockList = data.results
           }
         })
-      },
-      removeFromList: function (index) {
-        this.removeMoveRecordItem(this.moveRecordList[index])
-      },
-      submitMoveRecord: function () {
-        console.log('submitting move record')
-        if (this.currentDepartment) {
-          let params = {
-            dept_in: this.currentDepartment,
-            moveRecordList: this.moveRecordList
-          }
-          addMoveRecord(params).then((res) => {
-            let { status, data, statusText } = res
-            if (status !== 201) {
-              this.$Message.error(this.$t('failed'))
-            } else {
-              console.log(data)
-              console.log(statusText)
-            }
-          })
-        } else {
-          this.$Message.error(this.$t('invalideDeptIn'))
-        }
       }
     },
     mounted () {
-      // this.setProducts()
+      if (this.currentDepartment) {
+        this.getStockData(this.currentDepartment)
+      }
+      this.getStockData('20001')
     }
   }
 </script>

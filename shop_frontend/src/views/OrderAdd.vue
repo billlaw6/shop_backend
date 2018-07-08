@@ -174,6 +174,8 @@
         availableProducts: [],
         selectedProduct: null,
         availableCustomers: [],
+        availablePayments: [],
+        availableExpresses: [],
         selectedCustomer: null,
         addModel: {
           name: '',
@@ -299,10 +301,10 @@
     },
     computed: {
       ...mapState('app', {
-        'maxSize': state => state.maxSize,
-        'availableExpresses': state => state.availableExpresses,
-        'availableDepartments': state => state.availableDepartments,
-        'availablePayments': state => state.availablePayemnts
+        'maxSize': state => state.maxSize
+        // 'availableExpresses': state => state.availableExpresses,
+        // 'availableDepartments': state => state.availableDepartments,
+        // 'availablePayments': state => state.availablePayemnts
       }),
       ...mapState('cart', {
         'cartList': state => state.cartList,
@@ -492,8 +494,8 @@
         if (value) {
           this.orderModel.customer = value
         }
-        console.log(this.orderModel.customer)
-        console.log(this.availableCustomers)
+        // console.log(this.orderModel.customer)
+        // console.log(this.availableCustomers)
         let customerList = JSON.parse(JSON.stringify(this.availableCustomers))
         console.log(customerList)
         if (this.orderModel.customer.length > 0 && customerList.length > 0) {
@@ -572,6 +574,9 @@
     },
     mounted () {
       this.getProduct(this.pageSize, this.pageNumber)
+      this.getCustomer(this.pageSize, this.pageNumber)
+      this.getExpress(this.pageSize, this.pageNumber)
+      this.getPayment(this.pageSize, this.pageNumber)
     }
   }
 </script>

@@ -16,7 +16,7 @@ export default {
       let tmpSum = 0.0
       // 直接修改moveRecordList能触发state相关的getters重新计算，但修改moveRecordList中某元素的某属性好像不会触发
       state.moveRecordList.forEach((item, index) => {
-        tmpSum += item.price * item.amount
+        tmpSum += item.price * item.move_amount
       })
       return tmpSum
     }
@@ -30,11 +30,11 @@ export default {
       window.localStorage.setItem('moveRecordList', JSON.stringify(state.moveRecordList))
     },
 
-    [types.SET_MOVE_RECORD_ITEM_AMOUNT] (state, {item, batch_no, amount, comment}, rootState, rootGetters) {
-      // 如果该品种已经存在，增加list中对应品种的amount
-      // 如果该品种不存在，增加list中对应品种及amount
+    [types.SET_MOVE_RECORD_ITEM_AMOUNT] (state, {item, batch_no, move_amount, comment}, rootState, rootGetters) {
+      // 如果该品种已经存在，增加list中对应品种的move_amount
+      // 如果该品种不存在，增加list中对应品种及move_amount
       let productIndex = -1
-      // 直接修改state.moveRecordList中某元素item的amount会出现切换页面最后添加的item不会触发getters重新计算的问题
+      // 直接修改state.moveRecordList中某元素item的move_amount会出现切换页面最后添加的item不会触发getters重新计算的问题
       // 所以改成直接修改moveRecordList
       let tmpMoveRecordList = JSON.parse(JSON.stringify(state.moveRecordList))
       tmpMoveRecordList.forEach((el, index, array) => {
@@ -45,14 +45,14 @@ export default {
       // console.debug('productIndex: ' + productIndex)
       if (productIndex === -1) {
         // console.debug('not existed')
-        item['amount'] = parseFloat(amount.toFixed(state.decimals))
+        item['move_amount'] = parseFloat(move_amount.toFixed(state.decimals))
         item['comment'] = comment
         tmpMoveRecordList.push(item)
         state.moveRecordList = tmpMoveRecordList
         window.localStorage.setItem('moveRecordList', JSON.stringify(state.moveRecordList))
       } else {
         // console.debug('existed')
-        item['amount'] = parseFloat(amount.toFixed(state.decimals))
+        item['move_amount'] = parseFloat(move_amount.toFixed(state.decimals))
         item['comment'] = comment
         tmpMoveRecordList[productIndex] = item
         state.moveRecordList = tmpMoveRecordList
@@ -66,7 +66,7 @@ export default {
     },
 
     // 这是对象内方法的简化写法 es6
-    [types.ADD_MOVE_RECORD_ITEM] (state, {item, amount, batch_no, comment}, rootState, rootGetters) {
+    [types.ADD_MOVE_RECORD_ITEM] (state, {item, move_amount, batch_no, comment}, rootState, rootGetters) {
       let productIndex = -1
       state.moveRecordList.forEach((el, index, array) => {
         if (el.id === item.id && el.batch_no === item.batch_no) {
@@ -74,15 +74,15 @@ export default {
         }
       })
       if (productIndex === -1) {
-        item['amount'] = parseFloat(amount.toFixed(state.decimals))
+        item['move_amount'] = parseFloat(move_amount.toFixed(state.decimals))
         item['comment'] = comment
         state.moveRecordList.push(item)
         window.localStorage.setItem('moveRecordList', JSON.stringify(state.moveRecordList))
       } else {
-        console.debug(state.moveRecordList[productIndex]['amount'])
-        console.debug(parseFloat(amount.toFixed(state.decimals)))
+        console.debug(state.moveRecordList[productIndex]['move_amount'])
+        console.debug(parseFloat(move_amount.toFixed(state.decimals)))
         console.debug(state.decimals)
-        state.moveRecordList[productIndex]['amount'] += parseFloat(amount.toFixed(state.decimals))
+        state.moveRecordList[productIndex]['move_amount'] += parseFloat(move_amount.toFixed(state.decimals))
         state.moveRecordList[productIndex]['comment'] = comment
         window.localStorage.setItem('moveRecordList', JSON.stringify(state.moveRecordList))
       }
@@ -106,8 +106,8 @@ export default {
 
   actions: {
     // 往购物车中添加商品
-    'addMoveRecordItem': ({ commit, state, getters, rootGetters }, { item, amount, batch_no, comment }) => {
-      commit(types.ADD_MOVE_RECORD_ITEM, { item, amount, batch_no, comment })
+    'addMoveRecordItem': ({ commit, state, getters, rootGetters }, { item, move_amount, batch_no, comment }) => {
+      commit(types.ADD_MOVE_RECORD_ITEM, { item, move_amount, batch_no, comment })
       if (state.loginStatus) {
         console.debug('post moveRecordList to server')
       }
@@ -115,7 +115,7 @@ export default {
     },
 
     'decreaseMoveRecordItemAmount': ({ commit, state, getters, rootState, rootGetters }, item) => {
-      commit(types.SET_MOVE_RECORD_ITEM_AMOUNT, { 'item': item, 'amount': item.amount - rootState.saleUnit })
+      commit(types.SET_MOVE_RECORD_ITEM_AMOUNT, { 'item': item, 'move_amount': item.move_amount - rootState.saleUnit })
       if (state.loginStatus) {
         console.debug('post moveRecordList to server')
       }
@@ -123,7 +123,7 @@ export default {
     },
 
     'increaseMoveRecordItemAmount': ({ commit, state, getters, rootState, rootGetters }, item) => {
-      commit(types.SET_MOVE_RECORD_ITEM_AMOUNT, { 'item': item, 'amount': item.amount + rootState.saleUnit })
+      commit(types.SET_MOVE_RECORD_ITEM_AMOUNT, { 'item': item, 'move_amount': item.move_amount + rootState.saleUnit })
       if (state.loginStatus) {
         console.debug('post moveRecordList to server')
       }

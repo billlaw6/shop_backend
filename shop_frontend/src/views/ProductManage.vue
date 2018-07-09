@@ -1,18 +1,18 @@
 <template>
   <div class="product-manage">
-    <Row>
+    <Row class="search-box">
       <Col span="8">
-        <AutoComplete v-model="keyword" :placeholder="$t('localSearch')" icon="ios-search" :clearable="true">
+        <AutoComplete v-model="keyword" :placeholder="$t('localSearch')" icon="ios-Textsearch" :clearable="true">
           <Option v-for="option in aList" :value="option.name" :key="option.id">
             <span class="product-name">{{ option.name }}</span>
-            <span class="product-price">{{ option.price | currency }}</span>
+            <span class="product-price">{{ option.sale_price | currency }}</span>
           </Option>
         </AutoComplete>
       </Col>
       <Col span="3">
-        <i-button type="primary" @click="searchProduct(pageSize, pageNumber)">{{ $t('remoteSearch') }}</i-button>
+        <i-button type="primary" @click="getProductData(pageSize, pageNumber)">{{ $t('remoteSearch') }}</i-button>
       </Col>
-      <Col span="4" push="3">
+      <Col span="4" push="9">
         <i-button type="primary" @click="showAddModal=true">{{ $t('addProduct') }}</i-button>
        </Col>
     </Row>
@@ -190,7 +190,7 @@
 
 <script>
   import { mapState } from 'vuex'
-  import { getProducts, createProduct, updateProduct, toggleProduct } from '@/http/api'
+  import { searchProducts, createProduct, updateProduct, toggleProduct } from '@/http/api'
 
   export default {
     data: function () {
@@ -386,7 +386,7 @@
                       this.showEdit(params.index)
                     }
                   }
-                }, '编辑'),
+                }, this.$t('edit')),
                 h('Button', {
                   props: {
                     type: 'primary',
@@ -400,7 +400,7 @@
                       this.showDelete(params.index)
                     }
                   }
-                }, '开/关')
+                }, this.$t('toggle'))
               ])
             }
           }
@@ -428,7 +428,7 @@
           return tmpArray.filter((item, index, array) => {
             if (item.name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
               return array.indexOf(item) === index
-            } else if (item.price.toString().indexOf(this.keyword.toUpperCase()) !== -1) {
+            } else if (item.sale_price.toString().indexOf(this.keyword.toUpperCase()) !== -1) {
               return true
             } else if (item.pinyin.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
               return true
@@ -446,8 +446,8 @@
     methods: {
       showEdit (index) {
         this.showEditModal = true
-        // console.error(this.tableData[index])
-        this.editModel = this.tableData[index]
+        // this.editModel = this.tableData[index]
+        this.editModel = this.aList[index]
         // Django-restful-framework将decimal转出来就已经是string类型
         this.editModel.sale_price = Number(this.editModel.sale_price)
         this.editModel.price = Number(this.editModel.price)
@@ -462,28 +462,29 @@
         this.$Message.info('点击了取消')
       },
       // 获取商品列表
-      searchProduct: function (pageSize, pageNumber) {
+      getProductData: function (pageSize, pageNumber) {
         this.loadingStatus = true
         let paras = {
           keyword: this.keyword,
           limit: pageSize,
           offset: (pageNumber - 1) * pageSize
         }
-        console.log(paras)
-        getProducts(paras).then((res) => {
+        // console.log(paras)
+        searchProducts(paras).then((res) => {
           let { data, status, statusText } = res
           if (status !== 200) {
             this.loginMessage = statusText
           } else {
+            console.log(data)
             this.$Loading.finish()
             this.total = res.data.count
             this.tableData = data.results
           }
         }, (error) => {
-          console.log('Error in getProducts: ' + error)
+          console.log('Error in searchProducts: ' + error)
           this.$Message.error('获取商品列表失败!')
         }).catch((error) => {
-          console.log('catched in getProducts:' + error)
+          console.log('catched in searchProducts:' + error)
           this.$Message.error('获取商品列表失败!')
         })
         this.loadingStatus = false
@@ -491,12 +492,12 @@
       changePage (pageNumber) {
         console.log(pageNumber)
         this.pageNumber = pageNumber
-        this.searchProduct(this.pageSize, this.pageNumber)
+        this.getProductData(this.pageSize, this.pageNumber)
       },
       changePageSize (pageSize) {
         console.log(pageSize)
         this.pageSize = pageSize
-        this.searchProduct(this.pageSize, this.pageNumber)
+        this.getProductData(this.pageSize, this.pageNumber)
       },
       exportData (type) {
         if (type === 1) {
@@ -543,7 +544,7 @@
                 this.$Message.success('添加商品成功!')
                 // this.showAddModel = false
                 // 更新商品列表
-                this.getProduct(this.pageSize, this.pageNumber)
+                this.getProductData(this.pageSize, this.pageNumber)
               }
             }, (error) => {
               console.log('Error in addProduct: ' + error)
@@ -587,7 +588,7 @@
                 // this.editModel = data
                 // this.showEditModel = false
                 this.$Message.success('修改商品成功!')
-                this.getProduct(this.pageSize, this.pageNumber)
+                this.getProductData(this.pageSize, this.pageNumber)
               }
             }, (error) => {
               console.log('Error in editProduct: ' + error)
@@ -605,19 +606,15 @@
       confirmToggle: function (name) {
         this.$refs[name].validate((valid) => {
           if (valid) {
-            console.log('deleting')
             let deleteModelSubmit = JSON.stringify(this.deleteModel)
             deleteModelSubmit = JSON.parse(deleteModelSubmit)
-            deleteModelSubmit.status = 7
             toggleProduct(deleteModelSubmit).then((res) => {
-              let { data, status, statusText } = res
+              let { status, statusText } = res
               if (status !== 201) {
-                console.log(statusText)
-                console.log(data)
-                this.$Message.error(status)
+                this.$Message.error(statusText)
               } else {
                 this.$Message.success('开关商品成功!')
-                this.getProduct(this.pageSize, this.pageNumber)
+                this.getProductData(this.pageSize, this.pageNumber)
               }
             }, (error) => {
               console.log('Error in deleteProduct: ' + error)
@@ -644,12 +641,12 @@
         this.uploadedFile = file
         this.addModel['file'] = this.uploadedFile
         this.$refs.addModelUpload.clearFiles()
-        this.getProduct(this.pageSize, this.pageNumber)
+        this.getProductData(this.pageSize, this.pageNumber)
       },
       handleAddFileUploadSuccess: function (response, file, fileList) {
         console.log('file uploaded successfully')
         this.$refs.addModelUpload.clearFiles()
-        this.getProduct(this.pageSize, this.pageNumber)
+        this.getProductData(this.pageSize, this.pageNumber)
         this.$Message.success('修改商品成功!')
       },
       handleEditFileUploaded: function (file) {
@@ -657,17 +654,17 @@
         this.editModel['file'] = this.uploadedFile
         this.$refs.addModelUpload.clearFiles()
         this.$refs.editModelUpload.clearFiles()
-        this.getProduct(this.pageSize, this.pageNumber)
+        this.getProductData(this.pageSize, this.pageNumber)
       },
       handleEditFileUploadSuccess: function (response, file, fileList) {
         console.log('file uploaded successfully')
         this.$refs.editModelUpload.clearFiles()
-        this.getProduct(this.pageSize, this.pageNumber)
+        this.getProductData(this.pageSize, this.pageNumber)
         this.$Message.success('修改商品成功!')
       }
     },
     mounted () {
-      this.searchProduct(this.pageSize, this.pageNumber)
+      this.getProductData(this.pageSize, this.pageNumber)
     }
   }
 </script>
@@ -675,6 +672,8 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="stylus" scoped>
   @import '../common/vars'
+  .search-box
+    margin: 6px
   .product-manage
     margin: 6px
   .data-table

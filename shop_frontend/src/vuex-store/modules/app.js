@@ -4,7 +4,7 @@ import * as types from '@/vuex-store/types'
 import i18Locales from '@/locale/locale'
 import Vue from 'vue'
 
-import { getProducts, getPayments, getDepartments, getExpresses, getLocations } from '@/http/api'
+import { getPayments, getDepartments, getExpresses, getLocations } from '@/http/api'
 
 const app = {
   namespaced: true,
@@ -253,18 +253,6 @@ const app = {
         }
       })
       commit(types.UPDATE_MENU_LIST, tmpMenuList)
-    },
-    'setProducts': ({ dispatch, commit, getters, rootGetters }) => {
-      getProducts().then((res) => {
-        let { data, status, statusText } = res
-        if (status !== 200) {
-          console.log('Error in getProducts:' + statusText)
-        } else {
-          commit(types.SET_PRODUCTS, data.results)
-        }
-      }, (error) => {
-        console.log('Error in getProducts:' + error)
-      })
     },
     'setPayments': ({ dispatch, commit, getters, rootGetters }) => {
       getPayments().then((res) => {

@@ -13,7 +13,7 @@
 
 <script>
   import { mapState } from 'vuex'
-  import { getStock } from '@/http/api'
+  import { searchStocks } from '@/http/api'
 
   export default{
     components: {
@@ -76,7 +76,7 @@
         let params = {
           department: department
         }
-        getStock(params).then((res) => {
+        searchStocks(params).then((res) => {
           let { status, data, statusText } = res
           if (status !== 200) {
             console.log(statusText)

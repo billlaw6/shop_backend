@@ -1,8 +1,7 @@
 // 直接在一个文件里定义全部API更合理
-//
 import axios from 'axios'
 import store from '@/vuex-store/index'
-import * as types from '@/vuex-store/types'
+// import * as types from '@/vuex-store/types'
 import { router } from '@/router/index'
 
 axios.defaults.baseURL = 'http://123.56.115.20'
@@ -30,19 +29,20 @@ axios.interceptors.request.use(
 // 如果Token过期导致401错误，测清空本地Token再登录
 axios.interceptors.response.use(
   response => {
-    // console.log(response)
     return response
   },
   error => {
-    // console.log(error)
     if (error.response.status === 401) {
       // 如果Token过期等原因导致401错误，测清空本地Token再登录
-      store.commit(types.SET_ACCESS_TOKEN, null)
-      this.$t('loginPlease')
+      // store.commit(types.SET_ACCESS_TOKEN, null)
+      store.commit('login/SET_ACCESS_TOKEN', null)
+      // this.$Message(this.$t('loginPlease'))
       router.replace({
-        path: 'login',
+        name: 'login',
         query: {redirect: router.currentRoute.fullPath}
       })
+    } else {
+      console.error(error.response.status)
     }
     return Promise.reject(error)
   }
@@ -125,10 +125,11 @@ export const getLocations = params => {
 }
 
 export const getProducts = params => {
-  // if (params['keyword'] === '') {
-  //   delete params['keyword']
-  // }
   return axios.get(`/sale-manage/products/`, {params: params}).then(res => res)
+}
+
+export const searchProducts = params => {
+  return axios.get(`/sale-manage/product/search/`, {params: params}).then(res => res)
 }
 
 export const getProductDetail = params => { return axios.get(`/sale-manage/products/${params}`).then(res => res) }
@@ -169,6 +170,10 @@ export const getStockMoveRecord = params => {
   return axios.get(`/sale-manage/move-records/`, params).then(res => res)
 }
 
-export const getStock = params => {
+export const getStocks = params => {
   return axios.get(`/sale-manage/stock/`, {params: params}).then(res => res)
+}
+
+export const searchStocks = params => {
+  return axios.get(`/sale-manage/stock/search/`, {params: params}).then(res => res)
 }

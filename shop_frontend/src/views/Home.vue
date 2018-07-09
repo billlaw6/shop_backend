@@ -155,7 +155,6 @@
       }),
       ...mapActions('app', {
         updateMenuList: 'updateMenuList',
-        setProducts: 'setProducts',
         setPayments: 'setPayments',
         setDepartments: 'setDepartments',
         setExpresses: 'setExpresses',
@@ -229,7 +228,6 @@
     },
     mounted () {
       this.updateMenuList()
-      this.setProducts()
       this.setPayments()
       this.setDepartments()
       this.setExpresses()

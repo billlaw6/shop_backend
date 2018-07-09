@@ -14,7 +14,7 @@
             :clearable="true"
             @on-select="handleProductSelected"
           >
-            <Option v-for="option in aList" :value="option.name" :key="option.id">
+            <Option v-for="option in aProduct" :value="option.name" :key="option.id">
               <span class="product-name">{{ option.name }}</span>
               <span class="product-price">{{ option.sale_price | currency }}</span>
             </Option>
@@ -109,7 +109,7 @@
 
 <script>
   import { mapState, mapGetters } from 'vuex'
-  import { getProducts, getCustomers, getExpresses, getPayments, addOrder } from '@/http/api'
+  import { searchStocks, getCustomers, getExpresses, getPayments, addOrder } from '@/http/api'
   import CartItems from '@/views/components/cart/CartItems.vue'
 
   export default {
@@ -118,15 +118,12 @@
     },
     data: function () {
       const validateProductName = (rule, value, callback) => {
-        // console.log(value)
         if (!value) {
           callback(new Error(this.$t('noProductError')))
         } else {
-          if (this.availableProducts.some((val, index, array) => val.name === value)) {
-            console.log('name valide')
+          if (this.availableProducts.filter((val, index, array) => val.name === value).length > 0) {
             callback()
           } else {
-            console.log('name valide')
             callback(new Error(this.$t('invalidProductError')))
           }
         }
@@ -249,7 +246,7 @@
                 props: {
                   color: 'red'
                 }
-              }, params.row.sale_price * params.row.amount)
+              }, (Number(params.row.sale_price) * Number(params.row.amount)).foFixed(this.decimals))
             }
           },
           {
@@ -301,8 +298,8 @@
     },
     computed: {
       ...mapState('app', {
-        'maxSize': state => state.maxSize
-        // 'availableExpresses': state => state.availableExpresses,
+        'maxSize': state => state.maxSize,
+        'currentDepartment': state => state.currentDepartment
         // 'availableDepartments': state => state.availableDepartments,
         // 'availablePayments': state => state.availablePayemnts
       }),
@@ -314,28 +311,22 @@
         'cartListCount',
         'cartListSum'
       ]),
-      aList: function () {
-        // 用于autocomplete
-        if (Array.isArray(this.availableProducts)) {
-          // 深度拷贝方法
-          let tmpArray = JSON.parse(JSON.stringify(this.availableProducts))
-          return tmpArray.filter((item, index, array) => {
-            if (item.name.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
-              // return array.indexOf(item) === index
-              return true
-            } else if (item.price.toString().indexOf(this.addModel.name.toUpperCase()) !== -1) {
-              return true
-            } else if (item.pinyin.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
-              return true
-            } else if (item.py.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
-              return true
-            } else {
-              return false
-            }
-          })
-        } else {
-          return []
-        }
+      aProduct: function () {
+        // filter, concat, slice方法会生成亲的数组
+        return this.availableProducts.filter((item, index, array) => {
+          if (item.name.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
+            // return array.indexOf(item) === index
+            return true
+          } else if (item.price.toString().indexOf(this.addModel.name.toUpperCase()) !== -1) {
+            return true
+          } else if (item.pinyin.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
+            return true
+          } else if (item.py.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
+            return true
+          } else {
+            return false
+          }
+        })
       },
       aCustomer: function () {
         // 用于autocomplete
@@ -397,12 +388,14 @@
     },
     methods: {
       // 获取商品列表
-      getProduct: function (pageSize, pageNumber) {
+      getStockData: function (pageSize, pageNumber) {
         let paras = {
+          department: this.currentDepartment,
           limit: pageSize,
           offset: (pageNumber - 1) * pageSize
         }
-        getProducts(paras).then((res) => {
+        console.log(paras)
+        searchStocks(paras).then((res) => {
           let { data, status, statusText } = res
           if (status !== 200) {
             this.loginMessage = statusText
@@ -411,10 +404,10 @@
             this.availableProducts = data.results
           }
         }, (error) => {
-          console.log('Error in getProducts: ' + error)
+          console.log('Error in getStockDatas: ' + error)
           this.$Message.error('获取商品列表失败!')
         }).catch((error) => {
-          console.log('catched in getProducts:' + error)
+          console.log('catched in getStockDatas:' + error)
           this.$Message.error('获取商品列表失败!')
         })
         this.loadingStatus = false
@@ -573,7 +566,7 @@
       }
     },
     mounted () {
-      this.getProduct(this.pageSize, this.pageNumber)
+      this.getStockData(this.pageSize, this.pageNumber)
       this.getCustomer(this.pageSize, this.pageNumber)
       this.getExpress(this.pageSize, this.pageNumber)
       this.getPayment(this.pageSize, this.pageNumber)

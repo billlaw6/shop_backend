@@ -16,9 +16,9 @@ export default {
       let tmpSum = 0.0
       // 直接修改cartList能触发state相关的getters重新计算，但修改cartList中某元素的某属性好像不会触发
       state.cartList.forEach((item, index) => {
-        console.debug(item.price)
-        console.debug(item.amount)
-        tmpSum += item.price * item.amount
+        // console.debug(item.price)
+        // console.debug(item.amount)
+        tmpSum += item.sale_price * item.amount
       })
       return tmpSum
     }
@@ -73,14 +73,6 @@ export default {
 
     // 这是对象内方法的简化写法 es6
     [types.ADD_CART_ITEM] (state, {item, amount, comment}, rootState, rootGetters) {
-      // console.debug('mutation received item:')
-      // console.debug(item)
-      // console.debug('mutation received amount:')
-      // console.debug(amount)
-      // 如果该品种已经存在，不增加count，只增加list中对应品种的amount
-      // 如果该品种不存在，增加count，增加list中对应品种及amount
-      // indexOf函数只适合查元素自己，不能直接查值相等的复制元素
-      // let productIndex = state.cartList.indexOf(item)
       let productIndex = -1
       state.cartList.forEach((el, index, array) => {
         if (el.id === item.id) {

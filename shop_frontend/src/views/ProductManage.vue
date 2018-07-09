@@ -1,11 +1,8 @@
 <template>
   <div class="product-manage">
     <Row>
-      <Col span="6">
-        <Date-picker v-model="dateRange" type="daterange" format="yyyy-MM-dd" :options="dateOptions" placement="bottom-start" placeholder="商品创建时间"></Date-picker>
-      </Col>
       <Col span="8">
-        <AutoComplete v-model="keyword" placeholder="本地搜索" icon="ios-search" :clearable="true">
+        <AutoComplete v-model="keyword" :placeholder="$t('localSearch')" icon="ios-search" :clearable="true">
           <Option v-for="option in aList" :value="option.name" :key="option.id">
             <span class="product-name">{{ option.name }}</span>
             <span class="product-price">{{ option.price | currency }}</span>
@@ -13,10 +10,10 @@
         </AutoComplete>
       </Col>
       <Col span="3">
-        <i-button type="primary" @click="searchProduct()">全局查询</i-button>
+        <i-button type="primary" @click="searchProduct(pageSize, pageNumber)">{{ $t('remoteSearch') }}</i-button>
       </Col>
       <Col span="4" push="3">
-        <i-button type="primary" @click="showAddModal=true">添加商品</i-button>
+        <i-button type="primary" @click="showAddModal=true">{{ $t('addProduct') }}</i-button>
        </Col>
     </Row>
 
@@ -465,42 +462,14 @@
         this.$Message.info('点击了取消')
       },
       // 获取商品列表
-      getProduct: function (pageSize, pageNumber) {
-        this.loadingStatus = true
-        let paras = {
-          start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() + 1) + '-' + (this.dateRange[0].getDate() + 1),
-          end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate() + 1),
-          keyword: this.keyword,
-          limit: pageSize,
-          offset: (pageNumber - 1) * pageSize
-        }
-        getProducts(paras).then((res) => {
-          let { data, status, statusText } = res
-          if (status !== 200) {
-            this.loginMessage = statusText
-          } else {
-            this.$Loading.finish()
-            this.total = res.data.count
-            this.tableData = data.results
-          }
-        }, (error) => {
-          console.log('Error in getProducts: ' + error)
-          this.$Message.error('获取商品列表失败!')
-        }).catch((error) => {
-          console.log('catched in getProducts:' + error)
-          this.$Message.error('获取商品列表失败!')
-        })
-        this.loadingStatus = false
-      },
       searchProduct: function (pageSize, pageNumber) {
         this.loadingStatus = true
         let paras = {
-          start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() + 1) + '-' + (this.dateRange[0].getDate() + 1),
-          end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate() + 1),
           keyword: this.keyword,
           limit: pageSize,
           offset: (pageNumber - 1) * pageSize
         }
+        console.log(paras)
         getProducts(paras).then((res) => {
           let { data, status, statusText } = res
           if (status !== 200) {
@@ -522,12 +491,12 @@
       changePage (pageNumber) {
         console.log(pageNumber)
         this.pageNumber = pageNumber
-        this.getProduct(this.pageSize, this.pageNumber)
+        this.searchProduct(this.pageSize, this.pageNumber)
       },
       changePageSize (pageSize) {
         console.log(pageSize)
         this.pageSize = pageSize
-        this.getProduct(this.pageSize, this.pageNumber)
+        this.searchProduct(this.pageSize, this.pageNumber)
       },
       exportData (type) {
         if (type === 1) {
@@ -698,7 +667,7 @@
       }
     },
     mounted () {
-      this.getProduct(this.pageSize, this.pageNumber)
+      this.searchProduct(this.pageSize, this.pageNumber)
     }
   }
 </script>

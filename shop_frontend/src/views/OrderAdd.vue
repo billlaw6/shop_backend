@@ -538,7 +538,7 @@
         })
       },
       submitOrder: function () {
-        console.log('submitting')
+        // console.log('submitting')
         this.$refs['submitOrderForm'].validate((valid) => {
           console.log('submit Order validating')
           console.log(valid)

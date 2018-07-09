@@ -31,6 +31,8 @@ export default {
     noAmountError: '请录入商品数量',
     noCustomerError: '请选择顾客',
     noPaymentError: '请选择支付方式',
+    selectDepartment: '请选择当前库房',
+    invalidDepartment: '请选择正确的库房',
     invalidProductError: '请选择正确的商品',
     invalidAmountError: '请录入正确的商品数量',
     invalidCustomerError: '请选择正确的顾客',

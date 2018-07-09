@@ -38,15 +38,18 @@
                 <message-tip v-model="msgCount"></message-tip>
               </MenuItem>
               <!--
+              {{ currentDepartment }}
               <MenuItem name="theme-switch">
                 <theme-switch></theme-switch>
               </MenuItem>
               -->
               <MenuItem v-if="currentUser.dept_belong" name="current-dept">
-                <Select v-model="currentDepartment"
-                  @on-change="handleCurrentDeptChange">
-                  <Option v-for="item in currentUser.dept_belong" :value="item.code" :key="item.code">{{ item.name }}</Option>
-                </Select>
+                <AutoComplete v-model="currDeptName"
+                  :placeholder="$t('selectDepartment')"
+                  @on-select="handleCurrentDeptChange"
+                  >
+                  <Option v-for="item in currentUser.dept_belong" :value="item.name" :key="item.code">{{ item.name }}</Option>
+                </AutoComplete>
               </MenuItem>
               <div class="user-dropdown-menu">
                 <Row type="flex" justify="end" align="middle" class="user-dropdown-innercon">
@@ -108,7 +111,7 @@
       return {
         shrink: false,
         userName: '',
-        current_dept: '',
+        currDeptName: '',
         isFullScreen: false
       }
     },
@@ -191,8 +194,19 @@
         }
       },
       handleCurrentDeptChange (value) {
-        console.log(value)
-        this.setCurrentDepartment(value)
+        // filter() 方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素。
+        // console.log(value)
+        let current = this.currentUser.dept_belong.filter((val, index, array) => {
+          return val.name === value
+        })
+        // console.log(current)
+        if (current.length > 0) {
+          this.setCurrentDepartment(current[0])
+        } else {
+          // 编辑内容时value为undefined，所以将它修改回原值。
+          this.$Message.error(this.$t('invalidDepartment'))
+          this.currDeptName = this.currentDepartment.name
+        }
       }
     },
     watch: {
@@ -221,6 +235,11 @@
       this.setExpresses()
       this.setLocations()
       this.setCurrentDepartment()
+      console.log(this.currentUser.dept_belong)
+      if (this.currentUser.dept_belong.length > 0) {
+        this.setCurrentDepartment(this.currentUser.dept_belong[0])
+        this.currDeptName = this.currentDepartment.name
+      }
     },
     created () {
       // window.localStorage.clear()

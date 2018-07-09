@@ -10,32 +10,41 @@ axios.defaults.timeout = 5000
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 axios.defaults.headers.post['X-Requested-With'] = 'XMLHttpRequest'
 
-// 添加响应拦截器
+// 添加请求拦截器
 // 如果本地有Token则每次请求都带上Token
 axios.interceptors.request.use(
+  // 请求之前做的事
   config => {
     if (store.state.login.accessToken) {
-      console.debug('setting accessToken to: ' + store.state.login.accessToken)
       config.headers.Authorization = 'Token ' + store.state.login.accessToken
-    } else {
-      console.debug('No accessToken')
     }
     return config
   },
+  // 请求错误处理
   err => {
-    console.debug(err)
-    if (err.response) {
-      if (err.response.status === 401) {
-        // 如果返回401 即没有权限，跳到登录页重新登录
-        store.commit(types.SET_ACCESS_TOKEN, null)
-        alert('请重新登录')
-        router.replace({
-          path: 'login',
-          query: {redirect: router.currentRoute.fullPath}
-        })
-      }
-      return Promise.reject(err)
+    return Promise.reject(err)
+  }
+)
+
+// 添加响应拦截器
+// 如果Token过期导致401错误，测清空本地Token再登录
+axios.interceptors.response.use(
+  response => {
+    // console.log(response)
+    return response
+  },
+  error => {
+    // console.log(error)
+    if (error.response.status === 401) {
+      // 如果Token过期等原因导致401错误，测清空本地Token再登录
+      store.commit(types.SET_ACCESS_TOKEN, null)
+      this.$t('loginPlease')
+      router.replace({
+        path: 'login',
+        query: {redirect: router.currentRoute.fullPath}
+      })
     }
+    return Promise.reject(error)
   }
 )
 

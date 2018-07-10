@@ -12,10 +12,9 @@
         <Form-item :label="$t('product')" prop="name">
           <AutoComplete v-model="addModel.name" :placeholder="$t('selectProduct')" icon="ios-search" 
             :clearable="true"
-            @on-select="handleProductSelected"
-          >
-            <Option v-for="option in aProduct" :value="option.name" :key="option.id">
-              <span class="product-name">{{ option.name }}</span>
+            @on-select="handleProductSelected">
+            <Option v-for="option in aProduct" :value="option.product.name" :key="option.id">
+              <span class="product-name">{{ option.product.name }}</span>
               <span class="product-price">{{ option.sale_price | currency }}</span>
             </Option>
           </AutoComplete>
@@ -121,7 +120,7 @@
         if (!value) {
           callback(new Error(this.$t('noProductError')))
         } else {
-          if (this.availableProducts.filter((val, index, array) => val.name === value).length > 0) {
+          if (this.availableProducts.filter((val, index, array) => val.product.name === value).length > 0) {
             callback()
           } else {
             callback(new Error(this.$t('invalidProductError')))
@@ -129,7 +128,7 @@
         }
       }
       const validateAmount = (rule, value, callback) => {
-        console.log(value)
+        // console.log(value)
         if (!value) {
           callback(new Error(this.$t('noAmountError')))
         } else {
@@ -141,15 +140,15 @@
         }
       }
       const validateCustomer = (rule, value, callback) => {
-        console.log(value)
+        // console.log(value)
         if (!value) {
           callback(new Error(this.$t('noCustomerError')))
         } else {
           if (this.availableCustomers.some((val, index, array) => val.username === value)) {
-            console.log('name valide')
+            // console.log('name valide')
             callback()
           } else {
-            console.log('name invalide')
+            // console.log('name invalide')
             callback(new Error(this.$t('invalidCustomerError')))
           }
         }
@@ -159,10 +158,10 @@
           callback()
         } else {
           if (this.availablePayments.some((val, index, array) => val.name === value)) {
-            console.log('name valide')
+            // console.log('name valide')
             callback()
           } else {
-            console.log('name invalide')
+            // console.log('name invalide')
             callback(new Error(this.$t('invalidPaymentError')))
           }
         }
@@ -303,6 +302,9 @@
         // 'availableDepartments': state => state.availableDepartments,
         // 'availablePayments': state => state.availablePayemnts
       }),
+      ...mapState('login', {
+        'currentDepartment': state => state.currentDepartment
+      }),
       ...mapState('cart', {
         'cartList': state => state.cartList,
         'decimals': state => state.decimals
@@ -314,14 +316,14 @@
       aProduct: function () {
         // filter, concat, slice方法会生成亲的数组
         return this.availableProducts.filter((item, index, array) => {
-          if (item.name.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
+          if (item.product.name.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
             // return array.indexOf(item) === index
             return true
-          } else if (item.price.toString().indexOf(this.addModel.name.toUpperCase()) !== -1) {
+          } else if (item.product.sale_price.toString().indexOf(this.addModel.name.toUpperCase()) !== -1) {
             return true
-          } else if (item.pinyin.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
+          } else if (item.product.pinyin.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
             return true
-          } else if (item.py.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
+          } else if (item.product.py.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
             return true
           } else {
             return false
@@ -390,16 +392,16 @@
       // 获取商品列表
       getStockData: function (pageSize, pageNumber) {
         let paras = {
-          department: this.currentDepartment,
+          department: this.currentDepartment.code,
           limit: pageSize,
           offset: (pageNumber - 1) * pageSize
         }
-        console.log(paras)
         searchStocks(paras).then((res) => {
           let { data, status, statusText } = res
           if (status !== 200) {
             this.loginMessage = statusText
           } else {
+            // console.log(data)
             this.total = res.data.count
             this.availableProducts = data.results
           }
@@ -477,10 +479,11 @@
       handleProductSelected: function (value) {
         this.addModel.name = value
         // console.log(this.availableProducts)
-        let productList = JSON.parse(JSON.stringify(this.availableProducts))
-        if (this.addModel.name.length > 0 && productList.length > 0) {
-          let tmpProduct = productList.filter((val, index, array) => val.name === this.addModel.name)
-          this.selectedProduct = tmpProduct[0]
+        if (this.addModel.name.length > 0 && this.availableProducts.length > 0) {
+          let tmpProduct = this.availableProducts.filter((val, index, array) => val.product.name === this.addModel.name)
+          this.selectedProduct = tmpProduct[0].product
+        } else {
+          this.$Message.error('invalideProduct')
         }
       },
       handleCustomerSelected: function (value) {
@@ -516,9 +519,9 @@
       },
       addToCart: function () {
         this.$refs['addModelForm'].validate((valid) => {
-          console.log('addToCart validating')
+          // console.log('addToCart validating')
           if (valid) {
-            console.log('valid')
+            // console.log('valid')
             this.$store.dispatch('cart/addCartItem', {'item': this.selectedProduct, 'amount': this.addModel.amount, 'comment': this.addModel.comment})
             this.$Message.success({
               title: '加入购物车成功',

@@ -12,8 +12,6 @@ const app = {
   state: {
     cachePage: window.localStorage['cachePage'] ? JSON.parse(window.localStorage['cachePage']) : [],
     lang: '',
-    currentDepartment: '',
-    // currentDepartment: window.localStorage['currentDepartment'] ? JSON.parse(window.localStorage['currentDepartment']) : null,
     pageSize: 10, // 默认取数时每次获取行数，转成limit参数发送给服务器
     isFullScreen: false,
     maxSize: 1024, // 单位kb
@@ -159,10 +157,6 @@ const app = {
       state.pageOpenedList.push(tagObj)
       window.localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
     },
-    [types.SET_CURRENT_DEPARTMENT] (state, department) {
-      state.currentDepartment = department
-      // window.localStorage.currentDepartment = JSON.stringify(state.currentDepartment)
-    },
     [types.SET_PRODUCTS] (state, param) {
       state.availableProducts = param
       window.localStorage.availableProducts = JSON.stringify(state.availableProducts)
@@ -188,9 +182,6 @@ const app = {
   actions: {
     'setMessageCount': ({ dispatch, commit, getters, rootGetters }, count) => {
       commit(types.SET_MESSAGE_COUNT, count)
-    },
-    'setCurrentDepartment': ({ dispatch, commit, getters, rootGetters }, department) => {
-      commit(types.SET_CURRENT_DEPARTMENT, department)
     },
     // 用actions中的rootGetters绕开mutations中取不到rootState的问题
     'updateMenuList': ({ dispatch, commit, getters, rootGetters }, count) => {

@@ -124,11 +124,11 @@
         'lang': state => state.lang,
         'menuTheme': state => state.menuTheme,
         'cachePage': state => state.cachePage,
-        'msgCount': state => state.messageCount,
-        'currentDepartment': state => state.currentDepartment
+        'msgCount': state => state.messageCount
       }),
       ...mapState('login', {
-        'currentUser': state => state.currentUser
+        'currentUser': state => state.currentUser,
+        'currentDepartment': state => state.currentDepartment
       }),
       rotateIcon () {
         return [
@@ -146,20 +146,20 @@
         setTagList: types.SET_TAG_LIST,
         changeMenuTheme: types.CHANGE_MENU_THEME,
         changeMainTheme: types.CHANGE_MAIN_THEME,
-        setCurrentPageName: types.SET_CURRENT_PAGENAME,
         addOpenedSubmenu: types.ADD_OPENED_SUBMENU,
         clearOpenedSubmenu: types.CLEAR_OPENED_SUBMENU
       }),
       ...mapActions('login', {
-        logout: 'logout'
+        logout: 'logout',
+        setCurrentDepartment: 'setCurrentDepartment'
       }),
       ...mapActions('app', {
         updateMenuList: 'updateMenuList',
+        setCurrentPageName: 'setCurrentPageName',
         setPayments: 'setPayments',
         setDepartments: 'setDepartments',
         setExpresses: 'setExpresses',
-        setLocations: 'setLocations',
-        setCurrentDepartment: 'setCurrentDepartment'
+        setLocations: 'setLocations'
       }),
       toggleClick () {
         this.shrink = !this.shrink
@@ -232,12 +232,8 @@
       this.setDepartments()
       this.setExpresses()
       this.setLocations()
-      this.setCurrentDepartment()
-      console.log(this.currentUser.dept_belong)
-      if (this.currentUser.dept_belong.length > 0) {
-        this.setCurrentDepartment(this.currentUser.dept_belong[0])
-        this.currDeptName = this.currentDepartment.name
-      }
+      // console.error(this.currentDepartment)
+      this.currDeptName = this.currentDepartment.name
     },
     created () {
       // window.localStorage.clear()

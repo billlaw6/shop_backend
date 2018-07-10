@@ -8,7 +8,9 @@ export default {
 
   state: {
     accessToken: window.localStorage['accessToken'] ? JSON.parse(window.localStorage['accessToken']) : null,
-    currentUser: window.localStorage['currentUser'] ? JSON.parse(window.localStorage['currentUser']) : null
+    currentUser: window.localStorage['currentUser'] ? JSON.parse(window.localStorage['currentUser']) : null,
+    // currentDepartment: null
+    currentDepartment: window.localStorage['currentDepartment'] ? JSON.parse(window.localStorage['currentDepartment']) : null
   },
 
   // 对于模块内部的 mutation 和 getters，接收的第一个参数是模块的局部状态对象。
@@ -49,6 +51,13 @@ export default {
       state.currentUser = currentUser
       // 同步更新localStorage内容，与state中从localStorage取值配合解决刷新页面state值丢失的问题
       window.localStorage.setItem('currentUser', JSON.stringify(state.currentUser))
+    },
+
+    [types.SET_CURRENT_DEPARTMENT] (state, department) {
+      state.currentDepartment = department
+      if (department) {
+        window.localStorage.currentDepartment = JSON.stringify(state.currentDepartment)
+      }
     }
   },
 
@@ -85,8 +94,11 @@ export default {
                 } else {
                   // console.error(data)
                   tmpUser.permissions = JSON.parse(data)
-                  // tmpUser.permissions = data
                   commit(types.SET_CURRENT_USER, tmpUser)
+                  // console.error(tmpUser)
+                  if (tmpUser.dept_belong.length > 0) {
+                    commit(types.SET_CURRENT_DEPARTMENT, tmpUser.dept_belong[0])
+                  }
                   if (tmpUser.is_staff) {
                     router.push({'name': 'dashboard'})
                   } else {
@@ -128,6 +140,9 @@ export default {
           commit(types.SET_CURRENT_USER, null)
         }
       })
+    },
+    'setCurrentDepartment': ({ dispatch, commit, getters, rootGetters }, department) => {
+      commit(types.SET_CURRENT_DEPARTMENT, department)
     }
   },
 

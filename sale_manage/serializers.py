@@ -4,6 +4,7 @@ from pypinyin import lazy_pinyin, Style
 from rest_framework import serializers
 
 from user_manage.models import (ShopUser,)
+from user_manage.serializers import (DepartmentSerializer,)
 from sale_manage.models import (Order, Product,
     Category, ProductPicture, Express, Payment,
     OrderStatus, Order,
@@ -88,7 +89,9 @@ class VisitLogSerializer(serializers.ModelSerializer):
 
 
 class StockSerializer(serializers.ModelSerializer):
+    department = DepartmentSerializer(many=False, read_only=True)
     department_name = serializers.ReadOnlyField(source='department.name')
+    product = ProductSerializer(many=False, read_only=True)
     product_name = serializers.ReadOnlyField(source='product.name')
     sale_price = serializers.ReadOnlyField(source='product.sale_price')
     class Meta:

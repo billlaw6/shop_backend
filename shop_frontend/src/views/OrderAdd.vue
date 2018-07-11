@@ -451,7 +451,7 @@
         this.loadingStatus = false
       },
       // 获取顾客列表
-      getCustomer: function (pageSize, pageNumber) {
+      getCustomerData: function (pageSize, pageNumber) {
         let paras = {
           limit: pageSize,
           offset: (pageNumber - 1) * pageSize
@@ -472,7 +472,7 @@
         this.loadingStatus = false
       },
       // 获取快递列表
-      getExpress: function (pageSize, pageNumber) {
+      getExpressData: function (pageSize, pageNumber) {
         let paras = {
           limit: pageSize,
           offset: (pageNumber - 1) * pageSize
@@ -492,7 +492,7 @@
         })
         this.loadingStatus = false
       },
-      getPayment: function (pageSize, pageNumber) {
+      getPaymentData: function (pageSize, pageNumber) {
         let paras = {
           limit: pageSize,
           offset: (pageNumber - 1) * pageSize
@@ -615,9 +615,9 @@
     },
     mounted () {
       this.getStockData(this.pageSize, this.pageNumber)
-      this.getCustomer(this.pageSize, this.pageNumber)
-      this.getExpress(this.pageSize, this.pageNumber)
-      this.getPayment(this.pageSize, this.pageNumber)
+      this.getCustomerData(this.pageSize, this.pageNumber)
+      this.getExpressData(this.pageSize, this.pageNumber)
+      this.getPaymentData(this.pageSize, this.pageNumber)
     }
   }
 </script>

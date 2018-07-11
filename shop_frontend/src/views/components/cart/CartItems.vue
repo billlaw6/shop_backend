@@ -167,17 +167,17 @@
         'resetCartList',
         'decreaseCartItemAmount',
         'increaseCartItemAmount'
-      ]),
-      checkoutCart: function (checkoutList) {
-        console.debug('checkout cart')
-        if (this.loginStatus) {
-          console.debug('checking')
-          this.$store.dispatch('emptyCart')
-        } else {
-          console.debug('redirecting')
-          this.$router.push({ name: 'login' })
-        }
-      }
+      ])
+      // checkoutCart: function (checkoutList) {
+      //   console.debug('checkout cart')
+      //   if (this.loginStatus) {
+      //     console.debug('checking')
+      //     this.$store.dispatch('emptyCart')
+      //   } else {
+      //     console.debug('redirecting')
+      //     this.$router.push({ name: 'login' })
+      //   }
+      // }
     },
     mounted () {
       console.debug('Cart.vue mounted')

@@ -32,6 +32,7 @@ axios.interceptors.response.use(
     return response
   },
   error => {
+    console.error(error.response)
     if (error.response.status === 401) {
       // 如果Token过期等原因导致401错误，测清空本地Token再登录
       // store.commit(types.SET_ACCESS_TOKEN, null)

@@ -355,7 +355,6 @@
       aCustomer: function () {
         // 用于autocomplete
         if (Array.isArray(this.availableCustomers)) {
-          // 深度拷贝方法
           return this.availableCustomers.filter((item, index, array) => {
             // 删除选择项内容时，对应的值会被赋值成undefined
             if (this.addModel.customer) {

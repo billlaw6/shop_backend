@@ -180,12 +180,17 @@
             key: 'order_no',
             sortable: true,
             render: (h, param) => {
-              let toUrl = {name: 'order', params: {orderNo: param.row.order_no}}
-              return h('router-link',
-                {props: {
-                  to: toUrl
-                }}, param.row.order_no)
+              return h('span', param.row.order_no.substring(0, 4))
             }
+            // render: (h, param) => {
+            //   let toUrl = {name: 'order', params: {orderNo: param.row.order_no}}
+            //   return h('router-link',
+            //     {
+            //       props: {
+            //         to: toUrl
+            //       }
+            //     }, param.row.order_no)
+            // }
           },
           {
             title: this.$t('department'),

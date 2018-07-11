@@ -28,6 +28,7 @@ export default {
     invalidAmount: '请输入正确的数量',
     remoteSearch: '远程搜索',
     addProduct: '添加商品',
+    orderAddedSucceed: '订单添加成功',
     noProductError: '请选择商品',
     noAmountError: '请录入商品数量',
     noCustomerError: '请选择顾客',

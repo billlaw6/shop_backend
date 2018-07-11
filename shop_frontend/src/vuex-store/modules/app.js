@@ -245,6 +245,9 @@ const app = {
       })
       commit(types.UPDATE_MENU_LIST, tmpMenuList)
     },
+    'setCurrentPageName': ({ dispatch, commit, getters, rootGetters }, name) => {
+      commit(types.SET_CURRENT_PAGENAME, name)
+    },
     'setPayments': ({ dispatch, commit, getters, rootGetters }) => {
       getPayments().then((res) => {
         let { data, status, statusText } = res

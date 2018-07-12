@@ -193,19 +193,30 @@ export const appRouter = [
       {
         path: 'add',
         icon: 'compose',
-        title: { i18n: 'addStockMoveRecord' },
+        title: { i18n: 'addStockMoveIn' },
         name: 'addStockMoveRecord',
         meta: {
           requireAuth: true,
           permission: 'sale_manage.add_orderdetail'
         },
-        component: resolve => require(['@/views/StockMoveRecordAdd.vue'], resolve)
+        component: resolve => require(['@/views/StockMoveInAdd.vue'], resolve)
+      },
+      {
+        path: 'add',
+        icon: 'compose',
+        title: { i18n: 'addStockMoveOut' },
+        name: 'addStockMoveIn',
+        meta: {
+          requireAuth: true,
+          permission: 'sale_manage.add_orderdetail'
+        },
+        component: resolve => require(['@/views/StockMoveOutAdd.vue'], resolve)
       },
       {
         path: 'edit',
         icon: 'edit',
         title: { i18n: 'editStockMoveRecord' },
-        name: 'editStockMoveRecord',
+        name: 'editStockMoveOut',
         meta: {
           requireAuth: true,
           permission: 'sale_manage.add_orderdetail'

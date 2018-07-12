@@ -82,6 +82,7 @@ export default {
       console.debug('productIndex: ' + productIndex)
       if (productIndex === -1) {
         console.debug('not existed')
+        // 不应该用item变量，应该尽可能保留提交的参数原型
         item['amount'] = parseFloat(amount.toFixed(state.decimals))
         item['comment'] = comment
         state.cartList.push(item)

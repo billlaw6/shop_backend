@@ -11,19 +11,16 @@
 
     <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
       <FormItem :label="$t('product')" prop="productInfo">
-        <Select 
-          v-model="formInline.productInfo"
-          filterable
-          clearable
-          >
-          <!-- Select自带的filter过滤的是value值 -->
-          <Option v-for="(option, index) in availableProducts"
-            :value="option.id+'|'+option.name+'|'+option.py+'|'+option.sale_price"
-            :key="index">
-            <span>{{ option.name }}</span>
-            <span style="margin-left: 5px; color:red">{{ option.sale_price | currency}}</span>
+        <AutoComplete v-model="formInline.productInfo"
+          :placeholder="$t('selectProduct')"
+          icon="ios-search" 
+          :clearable="true"
+          @on-select="handleProductSelected">
+          <Option v-for="option in aProduct" :value="option.name" :key="option.id">
+            <span class="product-name">{{ option.name }}</span>
+            <span class="product-price">{{ option.sale_price | currency }}</span>
           </Option>
-        </Select>
+        </AutoComplete>
         <ul v-if="formInlineErrors.productInfo" v-for="error in formInlineErrors.productInfo">
           <li class="error">{{ error }}</li>
         </ul>
@@ -68,14 +65,42 @@
     components: {
     },
     data: function () {
+      const validateProductName = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error(this.$t('noProductError')))
+        } else {
+          if (this.availableProducts.filter((val, index, array) => val.name === value).length > 0) {
+            callback()
+          } else {
+            callback(new Error(this.$t('invalidProductError')))
+          }
+        }
+      }
+      const validateMoveAmount = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error(this.$t('noMoveAmountError')))
+        } else {
+          if (value >= 0.1 && value < 1000) {
+            callback()
+          } else {
+            callback(new Error(this.$t('invalidMoveAmountError')))
+          }
+        }
+      }
       return {
+        selectedProduct: null,
         ruleInline: {
           productInfo: [
+            { validator: validateProductName, trigger: 'blur' },
             { required: true, message: this.$t('invalidProduct'), trigger: 'blur' }
+          ],
+          move_amount: [
+            // 此两项合并使用时输入了数字也报空
+            // { type: 'number', message: this.$t('invalideNumber'), trigger: 'blur' },
+            // { required: true, message: this.$t('invalidmove_amount'), trigger: 'blur' }
+            // 建议解决方案：Input设为text型，判断空使用系统自带的，判断数字自定义方法。
+            { validator: validateMoveAmount, trigger: 'blur' }
           ]
-          // move_amount: [
-          //   { required: true, message: this.$t('invalidmove_amount'), trigger: 'blur' }
-          // ]
         },
         formInline: {
           productInfo: '',
@@ -88,7 +113,7 @@
         moveRecordListColumns: [
           {
             title: this.$t('product'),
-            key: 'product_name',
+            key: 'product',
             sortable: true
           },
           {
@@ -131,7 +156,9 @@
     },
     computed: {
       ...mapState('app', {
-        availableProducts: state => state.availableProducts,
+        availableProducts: state => state.availableProducts
+      }),
+      ...mapState('login', {
         currentDepartment: state => state.currentDepartment
       }),
       ...mapState('stock', {
@@ -143,6 +170,25 @@
       ]),
       total: function () {
         return this.moveRecordList.length
+      },
+      aProduct: function () {
+        return this.availableProducts.filter((item, index, array) => {
+          if (this.formInline.productInfo) {
+            if (item.name.toUpperCase().indexOf(this.formInline.productInfo.toUpperCase()) !== -1) {
+              return true
+            } else if (item.sale_price.toString().indexOf(this.formInline.productInfo.toUpperCase()) !== -1) {
+              return true
+            } else if (item.pinyin.toUpperCase().indexOf(this.formInline.productInfo.toUpperCase()) !== -1) {
+              return true
+            } else if (item.py.toUpperCase().indexOf(this.formInline.productInfo.toUpperCase()) !== -1) {
+              return true
+            } else {
+              return false
+            }
+          } else {
+            return true
+          }
+        })
       }
     },
     methods: {
@@ -153,25 +199,30 @@
       ...mapActions('stock', {
         addMoveRecordItem: 'addMoveRecordItem',
         removeMoveRecordItem: 'removeMoveRecordItem',
-        emptyMoveRecordItem: 'emptyMoveRecordItem',
+        emptyMoveRecord: 'emptyMoveRecord',
         setMoveRecordList: 'setMoveRecordList'
       }),
+      handleProductSelected: function (value) {
+        this.formInline.productInfo = value
+        if (value) {
+          if (this.formInline.productInfo.length > 0 && this.availableProducts.length > 0) {
+            let tmpProduct = this.availableProducts.filter((val, index, array) => val.name === this.formInline.productInfo)
+            this.selectedProduct = tmpProduct[0]
+          } else {
+            this.$Message.error('invalideProduct')
+          }
+        }
+      },
       addToList: function () {
-        console.log(this.formInline)
         this.$refs['formInline'].validate((valid) => {
           if (valid) {
             console.log('valid')
-            let payload = {}
-            let product = this.formInline['productInfo'].split('|')
-            this.formInline['product'] = product[0]
-            this.formInline['product_name'] = product[1]
-            this.formInline['sale_price'] = product[3]
-            payload['item'] = JSON.parse(JSON.stringify(this.formInline))
-            payload['move_amount'] = this.formInline.move_amount
-            payload['batch_no'] = this.formInline.batch_no
-            payload['comment'] = this.formInline.comment
-            console.log(product)
-            this.$store.dispatch('stock/addMoveRecordItem', payload)
+            this.$store.dispatch('stock/addMoveRecordItem',
+              { item: this.selectedProduct,
+                move_amount: this.formInline.move_amount,
+                batchNo: this.formInline.batch_no,
+                comment: this.formInline.comment
+              })
           } else {
             this.$Message.error(this.$t('validateFailed'))
           }
@@ -202,7 +253,7 @@
       }
     },
     mounted () {
-      // this.setProducts()
+      // this.emptyMoveRecord()
     }
   }
 </script>

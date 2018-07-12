@@ -110,26 +110,32 @@ export const getUserPermissions = params => {
 }
 
 export const getCustomers = params => {
+  // rest自带的，有limit和offset两参数
   return axios.get(`/user-manage/users/`, {params: params}).then(res => res)
 }
 
 export const getExpresses = params => {
+  // rest自带的，有limit和offset两参数
   return axios.get(`/sale-manage/expresses/`, {params: params}).then(res => res)
 }
 
 export const getPayments = params => {
+  // rest自带的，有limit和offset两参数
   return axios.get(`/sale-manage/payments/`, {params: params}).then(res => res)
 }
 
 export const getLocations = params => {
+  // rest自带的，有limit和offset两参数
   return axios.get(`/user-manage/locations/`, {params: params}).then(res => res)
 }
 
 export const getProducts = params => {
+  // rest自带的，有limit和offset两参数
   return axios.get(`/sale-manage/products/`, {params: params}).then(res => res)
 }
 
 export const searchProducts = params => {
+  // params参数可含 keyword, limit, offset
   return axios.get(`/sale-manage/product/search/`, {params: params}).then(res => res)
 }
 

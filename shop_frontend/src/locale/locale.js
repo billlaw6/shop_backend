@@ -57,6 +57,8 @@ export default {
     delete: '删除',
     stockManage: '库存管理',
     addStockMoveRecord: '添加出入库',
+    addStockMoveIn: '添加入库',
+    addStockMoveOut: '添加出库',
     editStockMoveRecord: '处理入出库',
     addStockCheck: '当前库存',
     submitMoveRecord: '提交入出库单',

@@ -156,6 +156,7 @@
       ...mapActions('app', {
         updateMenuList: 'updateMenuList',
         setCurrentPageName: 'setCurrentPageName',
+        setProducts: 'setProducts',
         setPayments: 'setPayments',
         setDepartments: 'setDepartments',
         setExpresses: 'setExpresses',
@@ -228,12 +229,13 @@
     },
     mounted () {
       this.updateMenuList()
+      this.currDeptName = this.currentDepartment.name
+      // 全局通用的一些数据取一次共用，省得各页面分别取，减少网络请求
+      this.setProducts()
       this.setPayments()
       this.setDepartments()
       this.setExpresses()
       this.setLocations()
-      // console.error(this.currentDepartment)
-      this.currDeptName = this.currentDepartment.name
     },
     created () {
       // window.localStorage.clear()

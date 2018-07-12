@@ -4,7 +4,7 @@ import * as types from '@/vuex-store/types'
 import i18Locales from '@/locale/locale'
 import Vue from 'vue'
 
-import { getPayments, getDepartments, getExpresses, getLocations } from '@/http/api'
+import { getProducts, getPayments, getDepartments, getExpresses, getLocations } from '@/http/api'
 
 const app = {
   namespaced: true,
@@ -42,7 +42,8 @@ const app = {
     availablePayments: window.localStorage['availablePayments'] ? JSON.parse(window.localStorage['availablePayments']) : [],
     availableExpresses: window.localStorage['availableExpresses'] ? JSON.parse(window.localStorage['availableExpresses']) : [],
     availableDepartments: window.localStorage['availableDepartments'] ? JSON.parse(window.localStorage['availableDepartments']) : [],
-    availableLocations: window.localStorage['availableLocations'] ? JSON.parse(window.localStorage['availableLocations']) : []
+    availableLocations: window.localStorage['availableLocations'] ? JSON.parse(window.localStorage['availableLocations']) : [],
+    availableProducts: window.localStorage['availableProducts'] ? JSON.parse(window.localStorage['availableProducts']) : []
   },
 
   getters: {
@@ -248,8 +249,28 @@ const app = {
     'setCurrentPageName': ({ dispatch, commit, getters, rootGetters }, name) => {
       commit(types.SET_CURRENT_PAGENAME, name)
     },
+    'setProducts': ({ dispatch, commit, getters, rootGetters }) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getProducts(paras).then((res) => {
+        let { data, status, statusText } = res
+        if (status !== 200) {
+          console.log('Error in getPayments:' + statusText)
+        } else {
+          commit(types.SET_PAYMENTS, data.results)
+        }
+      }, (error) => {
+        console.log('Error in getProducts:' + error)
+      })
+    },
     'setPayments': ({ dispatch, commit, getters, rootGetters }) => {
-      getPayments().then((res) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getPayments(paras).then((res) => {
         let { data, status, statusText } = res
         if (status !== 200) {
           console.log('Error in getPayments:' + statusText)
@@ -261,7 +282,11 @@ const app = {
       })
     },
     'setDepartments': ({ dispatch, commit, getters, rootGetters }) => {
-      getDepartments().then((res) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getDepartments(paras).then((res) => {
         let { data, status, statusText } = res
         if (status !== 200) {
           console.log('Error in getDepartments:' + statusText)
@@ -273,7 +298,11 @@ const app = {
       })
     },
     'setExpresses': ({ dispatch, commit, getters, rootGetters }) => {
-      getExpresses().then((res) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getExpresses(paras).then((res) => {
         let { data, status, statusText } = res
         if (status !== 200) {
           console.log('Error in getExpresses:' + statusText)
@@ -285,7 +314,11 @@ const app = {
       })
     },
     'setLocations': ({ dispatch, commit, getters, rootGetters }) => {
-      getLocations().then((res) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getLocations(paras).then((res) => {
         let { data, status, statusText } = res
         if (status !== 200) {
           console.log('Error in getLocations:' + statusText)

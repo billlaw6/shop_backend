@@ -69,7 +69,7 @@ export default {
     [types.ADD_MOVE_RECORD_ITEM] (state, {item, moveAmount, batchNo, comment}, rootState, rootGetters) {
       let productIndex = -1
       state.moveRecordList.forEach((el, index, array) => {
-        if (el.id === item.id && el.batchNo === item.batchNo) {
+        if (el.product.id === item.id && el.batchNo === batchNo) {
           productIndex = index
         }
       })

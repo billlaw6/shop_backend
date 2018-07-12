@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="stock-move-in">
     <Table ref="moveRecordList" stripe :columns="moveRecordListColumns" :data="moveRecordList">
       <div class="table-header" slot="header">
         已添加商品
@@ -51,7 +51,7 @@
     <Form>
       <Form-item>
         <br/>
-        <Button type="primary" size="large" @click="submitMoveRecord()">{{ $t('submitMoveRecord') }}</Button>
+        <Button type="primary" size="large" @click="submitMoveRecord()">{{ $t('submitMoveIn') }}</Button>
       </Form-item>
     </Form>
   </div>
@@ -113,22 +113,31 @@
         moveRecordListColumns: [
           {
             title: this.$t('product'),
-            key: 'product',
-            sortable: true
+            key: 'product.name',
+            sortable: true,
+            render: (h, params) => {
+              return h('span', params.row.product.name)
+            }
           },
           {
             title: this.$t('salePrice'),
             key: 'sale_price',
-            sortable: true
+            sortable: true,
+            render: (h, params) => {
+              return h('span', parseFloat(params.row.product.sale_price).toFixed(this.decimals))
+            }
           },
           {
             title: this.$t('moveAmount'),
-            key: 'move_amount',
-            sortable: true
+            key: 'moveAmount',
+            sortable: true,
+            render: (h, params) => {
+              return h('span', params.row.moveAmount.toFixed(this.decimals))
+            }
           },
           {
             title: this.$t('batchNo'),
-            key: 'batch_no',
+            key: 'batchNo',
             sortable: true
           },
           {
@@ -162,7 +171,8 @@
         currentDepartment: state => state.currentDepartment
       }),
       ...mapState('stock', {
-        moveRecordList: state => state.moveRecordList
+        moveRecordList: state => state.moveRecordList,
+        decimals: state => state.decimals
       }),
       ...mapGetters('stock', [
         'moveRecordListCount',
@@ -216,10 +226,10 @@
       addToList: function () {
         this.$refs['formInline'].validate((valid) => {
           if (valid) {
-            console.log('valid')
+            // 参数名对应不上时会直接不执行
             this.$store.dispatch('stock/addMoveRecordItem',
               { item: this.selectedProduct,
-                move_amount: this.formInline.move_amount,
+                moveAmount: this.formInline.move_amount,
                 batchNo: this.formInline.batch_no,
                 comment: this.formInline.comment
               })
@@ -232,23 +242,25 @@
         this.removeMoveRecordItem(this.moveRecordList[index])
       },
       submitMoveRecord: function () {
-        console.log('submitting move record')
-        if (this.currentDepartment) {
+        if (this.currentDepartment && this.moveRecordList.length > 0) {
           let params = {
-            dept_in: this.currentDepartment,
+            deptIn: this.currentDepartment,
             moveRecordList: this.moveRecordList
           }
           addMoveRecord(params).then((res) => {
-            let { status, data, statusText } = res
-            if (status !== 201) {
-              this.$Message.error(this.$t('failed'))
+            // let { status, data, statusText } = res
+            let { status } = res
+            if (status === 201) {
+              // console.log(data)
+              // console.log(statusText)
+              this.$Message.success(this.$t('submitSucceed'))
+              this.emptyMoveRecord()
             } else {
-              console.log(data)
-              console.log(statusText)
+              this.$Message.error(this.$t('failed'))
             }
           })
         } else {
-          this.$Message.error(this.$t('invalideDeptIn'))
+          this.$Message.error(this.$t('请先录入商品'))
         }
       }
     },
@@ -259,4 +271,7 @@
 </script>
 
 <style lang="stylus" scoped>
+  @import '../common/vars'
+  .stock-move-in
+    margin: 6px
 </style>

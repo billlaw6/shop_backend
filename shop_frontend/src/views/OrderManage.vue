@@ -318,8 +318,6 @@
                   on: {
                     click: () => {
                       this.showEdit(params.index)
-                      // this.orderModel = this.orderListData[index]
-                      // this.showOrderProcessModal = true
                     }
                   }
                 }, this.$t('process')),
@@ -468,13 +466,12 @@
         this.getOrderList(this.pageSize, this.pageNumber)
       },
       changePageSize (value) {
-        console.log(value)
         this.pageSize = value
         this.getOrderList(this.pageSize, this.pageNumber)
       },
       handleRemoteSearch (pageSize, pageNumber) {
         let paras = {
-          start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() + 1) + '-' + (this.dateRange[0].getDate() + 1),
+          start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth()) + '-' + (this.dateRange[0].getDate() + 1),
           end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate() + 1),
           keyword: this.keyword,
           limit: pageSize,

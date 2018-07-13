@@ -8,7 +8,6 @@
         共计: <span>{{ total }}</span> 订单，合计: <span></span>
       </div>
     </Table>
-  {{ otherDepartments }}
 
     <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
       <FormItem :label="$t('product')" prop="productInfo">
@@ -49,11 +48,32 @@
         <Button type="primary" size="small" @click="addToList()">{{ $t('addToList') }}</Button>
       </Form-item>
     </Form>
-    <Form>
-      <Form-item>
-        <br/>
-        <Button type="primary" size="large" @click="submitMoveRecord()">{{ $t('submitMoveIn') }}</Button>
-      </Form-item>
+    <Form ref="formInlineSubmit" :model="formInlineSubmit" :rules="ruleInlineSubmit" inline>
+      <Tabs>
+        <TabPane :label="$t('moveIn')" icon="">
+          <Form-item>
+            <br/>
+            <Button type="primary" size="large" @click="submitMoveIn()">{{ $t('submitMoveIn') }}</Button>
+          </Form-item>
+        </TabPane>
+        <TabPane :label="$t('moveOut')" icon="">
+          <FormItem :label="$t('toDepartment')" prop="toDepartment">
+            <AutoComplete v-model="formInlineSubmit.toDept"
+              :placeholder="$t('selectToDept')"
+              icon="ios-search" 
+              :clearable="true"
+              @on-select="handleToDeptSelected">
+              <Option v-for="option in otherDepartments" :value="option.name" :key="option.code">
+                <span class="product-name">{{ option.name }}</span>
+              </Option>
+            </AutoComplete>
+          </FormItem>
+          <Form-item>
+            <br/>
+            <Button type="primary" size="large" @click="submitMoveOut()">{{ $t('submitMoveIn') }}</Button>
+          </Form-item>
+        </TabPane>
+      </Tabs>
     </Form>
   </div>
 </template>
@@ -77,6 +97,17 @@
           }
         }
       }
+      const validateToDepartmentName = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error(this.$t('noDepartmentError')))
+        } else {
+          if (this.otherDepartments.filter((val, index, array) => val.name === value).length > 0) {
+            callback()
+          } else {
+            callback(new Error(this.$t('invalidDepartmentError')))
+          }
+        }
+      }
       const validateMoveAmount = (rule, value, callback) => {
         if (!value) {
           callback(new Error(this.$t('noMoveAmountError')))
@@ -90,6 +121,7 @@
       }
       return {
         selectedProduct: null,
+        selectedToDept: null,
         ruleInline: {
           productInfo: [
             { validator: validateProductName, trigger: 'blur' },
@@ -103,13 +135,21 @@
             { validator: validateMoveAmount, trigger: 'blur' }
           ]
         },
+        ruleInlineSubmit: {
+          toDept: [
+            { validator: validateToDepartmentName, trigger: 'blur' }
+          ]
+        },
         formInline: {
           productInfo: '',
-          move_amount: 0.1,
+          move_amount: 0.0,
           batch_no: '',
           comment: ''
         },
         formInlineErrors: {},
+        formInlineSubmit: {
+          toDept: ''
+        },
         loadingProduct: false,
         moveRecordListColumns: [
           {
@@ -181,16 +221,26 @@
         'moveRecordListSum'
       ]),
       otherDepartments: function () {
-        console.log(this.availableDepartments)
-        console.log(this.currentDepartment)
+        // console.log(this.availableDepartments)
+        // console.log(this.currentDepartment)
         if (this.availableDepartments.length > 0 && this.currentDepartment) {
           return this.availableDepartments.filter((item, index, array) => {
             if (this.currentDepartment.code === item.code) {
               return false
             } else {
-              return true
+              if (this.formInlineSubmit.toDept) {
+                if (item.name.toUpperCase().indexOf(this.formInlineSubmit.toDept.toUpperCase()) !== -1) {
+                  return true
+                } else if (item.pinyin.toUpperCase().indexOf(this.formInlineSubmit.toDept.toUpperCase()) !== -1) {
+                  return true
+                } else if (item.py.toUpperCase().indexOf(this.formInlineSubmit.toDept.toUpperCase()) !== -1) {
+                  return true
+                }
+              }
             }
           })
+        } else {
+          return this.availableDepartments
         }
       },
       total: function () {
@@ -256,10 +306,44 @@
       removeFromList: function (index) {
         this.removeMoveRecordItem(this.moveRecordList[index])
       },
-      submitMoveRecord: function () {
+      handleToDeptSelected: function (value) {
+        this.formInlineSubmit.toDept = value
+        if (value) {
+          if (this.formInlineSubmit.toDept.length > 0 && this.otherDepartments.length > 0) {
+            let tmpDepartment = this.otherDepartments.filter((val, index, array) => val.name === this.formInlineSubmit.toDept)
+            this.selectedToDept = tmpDepartment[0]
+          } else {
+            this.$Message.error('invalideToDept')
+          }
+        }
+      },
+      submitMoveIn: function () {
         if (this.currentDepartment && this.moveRecordList.length > 0) {
           let params = {
             deptIn: this.currentDepartment,
+            moveRecordList: this.moveRecordList
+          }
+          addMoveRecord(params).then((res) => {
+            // let { status, data, statusText } = res
+            let { status } = res
+            if (status === 201) {
+              // console.log(data)
+              // console.log(statusText)
+              this.$Message.success(this.$t('submitSucceed'))
+              this.emptyMoveRecord()
+            } else {
+              this.$Message.error(this.$t('failed'))
+            }
+          })
+        } else {
+          this.$Message.error(this.$t('请先录入商品'))
+        }
+      },
+      submitMoveOut: function () {
+        if (this.currentDepartment && this.moveRecordList.length > 0) {
+          let params = {
+            deptOut: this.currentDepartment,
+            deptIn: this.selectedToDept,
             moveRecordList: this.moveRecordList
           }
           addMoveRecord(params).then((res) => {

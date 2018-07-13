@@ -23,7 +23,7 @@
           </ul>
         </Form-item>
         <Form-item :label="$t('amount')" prop="amount">
-          <InputNumber :max="10000" :min="0.0" :step="0.1" v-model="addModel.amount"></InputNumber>
+          <InputNumber :max="10000" :min="0.1" :step="0.1" v-model="addModel.amount"></InputNumber>
           <ul v-for="error in addModelErrors.amount">
             <li class="error">{{ error }}</li>
           </ul>
@@ -183,7 +183,7 @@
         selectedCustomer: null,
         addModel: {
           name: '', // 绑定以后没有选项时会被赋值成undefined
-          amount: 0,
+          amount: 0.0,
           comment: ''
         },
         ruleAddValidate: {

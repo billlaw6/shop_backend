@@ -173,8 +173,12 @@ export const processStockMoveRecord = params => {
   return axios.post(`/sale-manage/move-record/process/`, params).then(res => res)
 }
 
+// export const getStockMoveRecord = params => {
+//   return axios.get(`/sale-manage/move-records/`, {params: params}).then(res => res)
+// }
+
 export const getStockMoveRecord = params => {
-  return axios.get(`/sale-manage/move-records/`, params).then(res => res)
+  return axios.get(`/sale-manage/move-record/search/`, {params: params}).then(res => res)
 }
 
 export const getStocks = params => {

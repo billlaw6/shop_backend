@@ -17,7 +17,7 @@
         </AutoComplete>
       </Col>
       <Col span="3">
-        <i-button type="primary" @click="handleRemoteSearch()">{{ $t('remoteSearch') }}</i-button>
+        <i-button type="primary" @click="getStockMoveRecordData(pageSize, pageNumber)">{{ $t('remoteSearch') }}</i-button>
       </Col>
     </Row>
 
@@ -132,18 +132,75 @@
             sortable: true
           },
           {
+            title: this.$t('status'),
+            key: 'status',
+            filterMultiple: true,
+            filterMethod (value, row) {
+              // 比较时注意变量类型
+              if (value === true) {
+                return row.is_active === true
+              } else if (value === false) {
+                return row.is_active === false
+              }
+            },
+            render: (h, params) => {
+              let statusTag = ''
+              if (params.row.dept_in_name === this.currentDepartment.name &&
+                params.row.status === 0 && /^0\d{4}/.test(params.row.dept_in)) {
+                statusTag = 'toMoveIn'
+              } else if (params.row.dept_in_name === this.currentDepartment.name &&
+                params.row.status === 1 && /^0\d{4}/.test(params.row.dept_out)) {
+                statusTag = 'toCheck'
+              } else if (params.row.dept_in_name === this.currentDepartment.name &&
+                params.row.status === 1 && !/^0\d{4}/.test(params.row.dept_out)) {
+                statusTag = 'toReceive'
+              } else if (params.row.dept_in_name === this.currentDepartment.name &&
+                params.row.status === 2 && /^0\d{4}/.test(params.row.dept_out)) {
+                statusTag = 'beChecked'
+              } else if (params.row.dept_in_name === this.currentDepartment.name &&
+                params.row.status === 2 && !/^0\d{4}/.test(params.row.dept_out)) {
+                statusTag = 'beReceived'
+              } else if (params.row.dept_out_name === this.currentDepartment.name &&
+                params.row.status === 0) {
+                statusTag = 'toMoveOut'
+              } else if (params.row.dept_out_name === this.currentDepartment.name &&
+                params.row.status === 1) {
+                statusTag = 'toBeReceived'
+              }
+              return h('span', {
+                style: {
+                  marginRight: '5px'
+                }
+              // }, this.$t(statusTag) + params.row.status)
+              }, this.$t(statusTag))
+            }
+          },
+          {
             title: this.$t('process'),
             key: 'action',
             render: (h, params) => {
               let process = 'process'
-              if (params.row.dept_in_name === this.currentDepartment.name) {
+              if (params.row.dept_in_name === this.currentDepartment.name &&
+                params.row.status === 0) {
                 process = 'confirmMoveIn'
-              } else if (params.row.dept_out_name === this.currentDepartment.name) {
+              } else if (params.row.dept_in_name === this.currentDepartment.name &&
+                params.row.status === 1 && /^0\d{4}/.test(params.row.dept_out)) {
+                process = 'confirmCheck'
+              } else if (params.row.dept_in_name === this.currentDepartment.name &&
+                params.row.status === 1 && !/^0\d{4}/.test(params.row.dept_out)) {
+                process = 'confirmReceive'
+              } else if (params.row.dept_out_name === this.currentDepartment.name &&
+                params.row.status === 0) {
                 process = 'confirmMoveOut'
+              } else if (params.row.dept_out_name === this.currentDepartment.name &&
+                params.row.status === 1) {
+                process = 'confirmReceive'
               }
+              let disabled = (process === 'process')
               return h('Button', {
                 props: {
                   type: 'primary',
+                  disabled: disabled,
                   size: 'small'
                 },
                 style: {
@@ -165,27 +222,31 @@
         currentDepartment: state => state.currentDepartment
       }),
       aStockMoveRecord: function () {
-        return this.moveRecordList.filter((item, index, array) => {
-          // console.log(item.product_name)
-          // console.log(this.keyword)
-          if (this.keyword) {
-            if (item.page_no.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
-              return true
-            } else if (item.product_name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
-              return true
-            } else if (item.product_py.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
-              return true
-            } else if (item.dept_in_name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
-              return true
-            } else if (item.dept_out_name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
-              return true
+        if (this.moveRecordList) {
+          return this.moveRecordList.filter((item, index, array) => {
+            // console.log(item.product_name)
+            // console.log(this.keyword)
+            if (this.keyword) {
+              if (item.page_no.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+                return true
+              } else if (item.product_name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+                return true
+              } else if (item.product_py.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+                return true
+              } else if (item.dept_in_name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+                return true
+              } else if (item.dept_out_name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+                return true
+              } else {
+                return false
+              }
             } else {
-              return false
+              return true
             }
-          } else {
-            return true
-          }
-        })
+          })
+        } else {
+          return []
+        }
       }
     },
     methods: {
@@ -197,28 +258,35 @@
         console.log(para)
         processStockMoveRecord(para).then((res) => {
           let { status, data, statusText } = res
-          if (status !== 203) {
-            console.log(statusText)
-          } else {
+          if (status === 201) {
             console.log(data)
+            this.$Message.success(this.$t('processSucceed'))
+            this.$Message.success(this.$t('newStockCreated'))
+            this.getStockMoveRecordData(this.pageSize, this.pageNumber)
+          } else if (status === 203) {
+            console.log(data)
+            this.$Message.success(this.$t('processSucceed'))
+            this.getStockMoveRecordData(this.pageSize, this.pageNumber)
+          } else {
+            console.log(statusText)
+            this.$Message.error(this.$t('processFailed'))
           }
         })
       },
-      getStockMoveRecordData (pageSize, pageNumber) {
+      getStockMoveRecordData: function (pageSize, pageNumber) {
         let paras = {
-          start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth()) + '-' + (this.dateRange[0].getDate() + 1),
+          start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() + 1) + '-' + (this.dateRange[0].getDate()),
           end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate() + 1),
           keyword: this.keyword,
-          department: this.currentDepartment,
+          department: this.currentDepartment.code,
           limit: pageSize,
           offset: (pageNumber - 1) * pageSize
         }
-        console.log(paras)
-        getStockMoveRecord().then((res) => {
+        getStockMoveRecord(paras).then((res) => {
+          console.log(res)
           let { status, data, statusText } = res
           if (status !== 200) {
             console.log(statusText)
-            console.log(data)
           } else {
             console.log(data)
             this.total = data.count

@@ -50,7 +50,7 @@
     </Form>
     <Form ref="formInlineSubmit" :model="formInlineSubmit" :rules="ruleInlineSubmit" inline>
       <Tabs>
-        <TabPane :label="$t('moveIn')" icon="">
+        <TabPane v-if="currentDepartment.level===1" :label="$t('moveIn')" icon="">
           <Form-item>
             <br/>
             <Button type="primary" size="large" @click="submitMoveIn()">{{ $t('submitMoveIn') }}</Button>
@@ -170,7 +170,7 @@
           },
           {
             title: this.$t('moveAmount'),
-            key: 'moveAmount',
+            key: 'move_amount',
             sortable: true,
             render: (h, params) => {
               return h('span', params.row.moveAmount.toFixed(this.decimals))
@@ -178,7 +178,7 @@
           },
           {
             title: this.$t('batchNo'),
-            key: 'batchNo',
+            key: 'batch_no',
             sortable: true
           },
           {

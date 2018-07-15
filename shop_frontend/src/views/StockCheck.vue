@@ -94,7 +94,6 @@
       if (this.currentDepartment) {
         this.getStockData(this.currentDepartment)
       }
-      this.getStockData('20001')
     }
   }
 </script>

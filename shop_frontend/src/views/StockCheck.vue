@@ -66,24 +66,35 @@
         ]
       }
     },
+    watch: {
+      currentDepartment: function (value) {
+        if (value) {
+          this.getStockData(value)
+        } else {
+          console.log('no currentDepartment')
+        }
+      }
+    },
     computed: {
-      ...mapState('app', {
+      ...mapState('login', {
         currentDepartment: state => state.currentDepartment
       })
     },
     methods: {
       getStockData: function (department) {
+        // GET请求不方便传对象
         let params = {
-          department: department
+          department: department.code
         }
+        console.log(params)
         searchStocks(params).then((res) => {
           let { status, data, statusText } = res
           if (status !== 200) {
             console.log(statusText)
             console.log(data)
           } else {
-            console.log('data:')
-            console.log(data)
+            // console.log('data:')
+            // console.log(data)
             this.total = data.count
             this.stockList = data.results
           }
@@ -91,8 +102,12 @@
       }
     },
     mounted () {
+      // 加载时仍为undefined
+      console.log(this.currentDepartment)
       if (this.currentDepartment) {
         this.getStockData(this.currentDepartment)
+      } else {
+        console.log('no currentDepartment')
       }
     }
   }

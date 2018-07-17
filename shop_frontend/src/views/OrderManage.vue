@@ -17,7 +17,7 @@
         </AutoComplete>
       </Col>
       <Col span="3">
-        <i-button type="primary" @click="handleRemoteSearch()">{{ $t('remoteSearch') }}</i-button>
+        <i-button type="primary" @click="getOrderList(pageSize, pageNumber)">{{ $t('remoteSearch') }}</i-button>
       </Col>
       <Col span="4" push="3">
         <i-button type="primary" @click="">{{ $t('addOrder') }}</i-button>
@@ -130,7 +130,7 @@
       }
       return {
         keyword: '',
-        dateRange: [new Date((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate() - 2), new Date()],
+        dateRange: [new Date((new Date().getTime()) - 3 * 24 * 3600 * 1000), new Date((new Date().getTime()) + 2 * 24 * 3600 * 1000)],
         dateOptions: {
           shortcuts: [
             {
@@ -442,8 +442,8 @@
       // },
       getOrderList: function (pageSize, pageNumber) {
         let paras = {
-          // start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() - 1) + '-' + (this.dateRange[0].getDate() + 1),
-          // end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate() + 1),
+          start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() + 1) + '-' + (this.dateRange[0].getDate()),
+          end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate()),
           keyword: this.keyword,
           limit: pageSize,
           offset: (pageNumber - 1) * pageSize
@@ -468,32 +468,6 @@
       changePageSize (value) {
         this.pageSize = value
         this.getOrderList(this.pageSize, this.pageNumber)
-      },
-      handleRemoteSearch (pageSize, pageNumber) {
-        let paras = {
-          start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth()) + '-' + (this.dateRange[0].getDate() + 1),
-          end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate() + 1),
-          keyword: this.keyword,
-          limit: pageSize,
-          offset: (pageNumber - 1) * pageSize
-        }
-        print(paras)
-        this.getOrderList(paras).then((res) => {
-          let { data, status, statusText } = res
-          if (status !== 200) {
-            this.loginMessage = statusText
-          } else {
-            this.$Loading.finish()
-            this.total = res.data.count
-            this.tableData = data.results
-          }
-        }, (error) => {
-          console.log('Error in getProducts: ' + error)
-          this.$Message.error('获取商品列表失败!')
-        }).catch((error) => {
-          console.log('catched in getProducts:' + error)
-          this.$Message.error('获取商品列表失败!')
-        })
       },
       showEdit (index) {
         this.showOrderProcessModal = true

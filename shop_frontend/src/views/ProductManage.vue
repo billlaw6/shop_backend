@@ -197,7 +197,7 @@
       return {
         uploadedFile: null,
         loadingStatus: false,
-        dateRange: [new Date((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate() - 2), new Date()],
+        dateRange: [new Date((new Date().getTime()) - 3 * 24 * 3600 * 1000), new Date((new Date().getTime()) + 2 * 24 * 3600 * 1000)],
         dateOptions: {
           shortcuts: [
             {
@@ -423,19 +423,21 @@
       aList: function () {
         // 用于autocomplete
         if (Array.isArray(this.tableData)) {
-          // 深度拷贝方法
-          let tmpArray = JSON.parse(JSON.stringify(this.tableData))
-          return tmpArray.filter((item, index, array) => {
-            if (item.name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
-              return array.indexOf(item) === index
-            } else if (item.sale_price.toString().indexOf(this.keyword.toUpperCase()) !== -1) {
-              return true
-            } else if (item.pinyin.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
-              return true
-            } else if (item.py.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
-              return true
+          return this.tableData.filter((item, index, array) => {
+            if (this.keyword) {
+              if (item.name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+                return array.indexOf(item) === index
+              } else if (item.sale_price.toString().indexOf(this.keyword.toUpperCase()) !== -1) {
+                return true
+              } else if (item.pinyin.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+                return true
+              } else if (item.py.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+                return true
+              } else {
+                return false
+              }
             } else {
-              return false
+              return true
             }
           })
         } else {
@@ -465,6 +467,8 @@
       getProductData: function (pageSize, pageNumber) {
         this.loadingStatus = true
         let paras = {
+          start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() + 1) + '-' + (this.dateRange[0].getDate()),
+          end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate()),
           keyword: this.keyword,
           limit: pageSize,
           offset: (pageNumber - 1) * pageSize

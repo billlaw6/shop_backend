@@ -57,7 +57,7 @@
       return {
         total: 0,
         keyword: '',
-        dateRange: [new Date((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate() - 2), new Date()],
+        dateRange: [new Date((new Date().getTime()) - 3 * 24 * 3600 * 1000), new Date((new Date().getTime()) + 2 * 24 * 3600 * 1000)],
         dateOptions: {
           shortcuts: [
             {
@@ -276,7 +276,7 @@
       getStockMoveRecordData: function (pageSize, pageNumber) {
         let paras = {
           start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() + 1) + '-' + (this.dateRange[0].getDate()),
-          end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate() + 1),
+          end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate()),
           keyword: this.keyword,
           department: this.currentDepartment.code,
           limit: pageSize,

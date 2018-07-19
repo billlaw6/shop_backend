@@ -86,6 +86,8 @@ export default {
     editStockMoveRecord: '处理入出库',
     addStockCheck: '当前库存',
     submitMoveRecord: '提交入出库单',
+    userList: '用户列表',
+    permissionManage: '权限管理',
     department: '库房',
     submited: '订单',
     toggle: '开/关',

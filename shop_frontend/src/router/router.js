@@ -227,7 +227,7 @@ export const appRouter = [
   },
   {
     path: '/user-manage',
-    icon: 'key',
+    icon: 'person',
     name: 'userManage',
     title: { i18n: 'userManage' },
     meta: {
@@ -238,9 +238,20 @@ export const appRouter = [
     children: [
       {
         path: 'index',
+        icon: 'person-add',
+        title: { i18n: 'userList' },
+        name: 'userList',
+        meta: {
+          requireAuth: true,
+          permission: 'sale_manage.add_orderdetail'
+        },
+        component: resolve => require(['@/views/UserManage.vue'], resolve)
+      },
+      {
+        path: 'index',
         icon: 'key',
-        title: { i18n: 'userManage' },
-        name: 'accessIndex',
+        title: { i18n: 'permissionManage' },
+        name: 'permissionManage',
         meta: {
           requireAuth: true,
           permission: 'sale_manage.add_orderdetail'

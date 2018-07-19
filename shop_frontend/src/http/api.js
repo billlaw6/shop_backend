@@ -188,3 +188,23 @@ export const getStocks = params => {
 export const searchStocks = params => {
   return axios.get(`/sale-manage/stock/search/`, {params: params}).then(res => res)
 }
+
+export const searchCustomer = params => {
+  return axios.get(`/user-manage/customer/search/`, {params: params}).then(res => res)
+}
+
+export const addCustomer = params => {
+  return axios.post(`/user-manage/customer/`, params).then(res => res)
+}
+
+export const createCustomer = params => {
+  return axios.post(`/user-manage/customer/create/`, params).then(res => res)
+}
+
+export const toggleCustomer = params => {
+  return axios.post(`/user-manage/customer/toggle/`, params).then(res => res)
+}
+
+export const updateCustomer = params => {
+  return axios.post(`/user-manage/customer/update/`, params).then(res => res)
+}

@@ -153,7 +153,7 @@
                 statusTag = 'toCheck'
               } else if (params.row.dept_in_name === this.currentDepartment.name &&
                 params.row.status === 1 && !/^0\d{4}/.test(params.row.dept_out)) {
-                statusTag = 'toReceive'
+                statusTag = 'toBeReceived'
               } else if (params.row.dept_in_name === this.currentDepartment.name &&
                 params.row.status === 2 && /^0\d{4}/.test(params.row.dept_out)) {
                 statusTag = 'beChecked'
@@ -194,7 +194,7 @@
                 process = 'confirmMoveOut'
               } else if (params.row.dept_out_name === this.currentDepartment.name &&
                 params.row.status === 1) {
-                process = 'confirmReceive'
+                process = 'process'
               }
               let disabled = (process === 'process')
               return h('Button', {

@@ -48,6 +48,7 @@
         <Button type="primary" size="small" @click="addToList()">{{ $t('addToList') }}</Button>
       </Form-item>
     </Form>
+
     <Form ref="formInlineSubmit" :model="formInlineSubmit" :rules="ruleInlineSubmit" inline>
       <Tabs>
         <TabPane v-if="currentDepartment.level===1" :label="$t('moveIn')" icon="">
@@ -70,7 +71,7 @@
           </FormItem>
           <Form-item>
             <br/>
-            <Button type="primary" size="large" @click="submitMoveOut()">{{ $t('submitMoveIn') }}</Button>
+            <Button type="primary" size="large" @click="submitMoveOut()">{{ $t('submitMoveOut') }}</Button>
           </Form-item>
         </TabPane>
       </Tabs>
@@ -235,7 +236,11 @@
                   return true
                 } else if (item.py.toUpperCase().indexOf(this.formInlineSubmit.toDept.toUpperCase()) !== -1) {
                   return true
+                } else {
+                  return false
                 }
+              } else {
+                return true
               }
             }
           })

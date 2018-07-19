@@ -9,9 +9,9 @@
           :placeholder="$t('localSearch')"
           icon="ios-search"
           :clearable="true">
-          <Option v-for="option in aStockList" :value="option.product.name" :key="option.id">
-            <span class="name">{{ option.product.name }}</span>
-            <span class="name">{{ option.product.sale_price }}</span>
+          <Option v-for="option in aStockList" :value="option.product_name" :key="option.id">
+            <span class="name">{{ option.product_name }}</span>
+            <span class="name">{{ option.product_sale_price }}</span>
             <span class="name">{{ option.batch_no }}</span>
           </Option>
         </AutoComplete>
@@ -99,7 +99,7 @@
           },
           {
             title: this.$t('salePrice'),
-            key: 'sale_price',
+            key: 'product_sale_price',
             sortable: true
           },
           {
@@ -152,13 +152,13 @@
         if (Array.isArray(this.stockList)) {
           return this.stockList.filter((item, index, array) => {
             if (this.keyword) {
-              if (item.product.name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+              if (item.product_name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
                 return array.indexOf(item) === index
-              } else if (item.product.sale_price.toString().indexOf(this.keyword.toUpperCase()) !== -1) {
+              } else if (item.product_sale_price.toString().indexOf(this.keyword.toUpperCase()) !== -1) {
                 return true
-              } else if (item.product.pinyin.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+              } else if (item.product_pinyin.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
                 return true
-              } else if (item.product.py.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+              } else if (item.product_py.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
                 return true
               } else if (item.batch_no.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
                 return true

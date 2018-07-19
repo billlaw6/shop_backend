@@ -20,9 +20,7 @@
     </Row>
 
     <Table ref="table" class="data-table" :loading="loadingStatus" :context="self" :data="aList" :columns="tableColumns" stripe></Table>
-    <Button type="primary" size="large" @click="exportData(1)"><Icon type="ios-download-outline"></Icon>{{ $t('exportSourceData') }}</Button>
-    <Button type="primary" size="large" @click="exportData(2)"><Icon type="ios-download-outline"></Icon>{{ $t('exportSortedOrFilteredData') }}</Button>
-    <Button type="primary" size="large" @click="exportData(3)"><Icon type="ios-download-outline"></Icon>{{ $t('exportCustomedData') }}</Button>
+
     <div style="margin: 10px;overflow: hidden">
       <div style="float: right;">
         <Page :total="total" :current="pageNumber"
@@ -44,6 +42,12 @@
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
+        <Form-item label="cell_phone" prop="cell_phone">
+          <Input v-model="addModel.cell_phone" placeholder="手机号"></Input>
+          <ul v-for="error in addModelErrors.cell_phone">
+            <li class="error">{{ error }}</li>
+          </ul>
+        </Form-item>
         <Form-item label="last_name" prop="last_name">
           <Input v-model="addModel.last_name" placeholder="姓"></Input>
           <ul v-for="error in addModelErrors.last_name">
@@ -56,126 +60,56 @@
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item label="cell_phone" prop="cell_phone">
-          <Input v-model="addModel.cell_phone" placeholder="手机号"></Input>
-          <ul v-for="error in addModelErrors.cell_phone">
-            <li class="error">{{ error }}</li>
-          </ul>
-        </Form-item>
         <Form-item label="email" prop="email">
           <Input v-model="addModel.email" placeholder="邮箱"></Input>
           <ul v-for="error in addModelErrors.email">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item prop="is_active">
-          <Checkbox v-model="addModel.is_active">是否在售</Checkbox>
-          <ul v-for="error in addModelErrors.is_active">
+      </Form>
+    </Modal>
+
+    <Modal v-model="showEditModal" title="维护客户信息" @on-ok="confirmEdit('editModelForm')" @on-cancel="cancelEdit('editModelForm')" >
+      <Form ref="editModelForm" :model="editModel" :rules="ruleValidate" :label-width="100" enctype="multipart/form-data" accept-charset="utf-8">
+        <Form-item label="用户名" prop="username">
+          <Input v-model="editModel.username" placeholder="用户名"></Input>
+          <ul v-for="error in editModelErrors.username">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item prop="is_bestseller">
-          <Checkbox v-model="addModel.is_bestseller">是否热销</Checkbox>
-          <ul v-for="error in addModelErrors.is_bestseller">
+        <Form-item label="cell_phone" prop="cell_phone">
+          <Input v-model="editModel.cell_phone" placeholder="手机号"></Input>
+          <ul v-for="error in editModelErrors.cell_phone">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item label="描述" prop="description">
-          <Input v-model="addModel.description" type="textarea" placeholder="客户描述"></Input>
-          <ul v-for="error in addModelErrors.description">
+        <Form-item label="last_name" prop="last_name">
+          <Input v-model="editModel.last_name" placeholder="姓"></Input>
+          <ul v-for="error in editModelErrors.last_name">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item label="检索词" prop="meta_keywords">
-          <Input v-model="addModel.meta_keywords" placeholder="检索词"></Input>
-          <ul v-for="error in addModelErrors.meta_keywords">
+        <Form-item label="first_name" prop="first_name">
+          <Input v-model="editModel.first_name" placeholder="名"></Input>
+          <ul v-for="error in editModelErrors.first_name">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item label="检索描述" prop="meta_description">
-          <Input v-model="addModel.meta_description" type="textarea" placeholder="检索描述"></Input>
-          <ul v-for="error in addModelErrors.meta_description">
+        <Form-item label="email" prop="email">
+          <Input v-model="editModel.email" placeholder="邮箱"></Input>
+          <ul v-for="error in editModelErrors.email">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
       </Form>
     </Modal>
 
-    <Modal v-model="showEditModal" title="修改客户" @on-ok="confirmEdit('editModelForm')" @on-cancel="cancelEdit('editModelForm')" >
-      <Form ref="editModelForm" :model="editModel" :rules="ruleValidate" :label-width="100">
-        <Form-item label="名称" prop="name">
-          <Input v-model="editModel.name" placeholder="名称"></Input>
-        </Form-item>
-        <Form-item label="品牌" prop="brand">
-          <Input v-model="editModel.brand" placeholder="品牌"></Input>
-        </Form-item>
-        <Form-item label="售价" prop="sale_price">
-          <InputNumber :max="10000" :min="1" :step="0.1" v-model="editModel.sale_price"></InputNumber>
-        </Form-item>
-        <Form-item label="原价" prop="price">
-          <InputNumber :max="10000" :min="1" :step="0.1" v-model="editModel.price"></InputNumber>
-        </Form-item>
-        <Form-item label="图片" prop="image">
-          <template v-if="editModel.image">
-            <img class="customer-image" :src="editModel.image.replace('sale-manage/customers/shop_frontend/dist/', '')" alt="客户图片"/>
-          </template>
-          <Upload
-            ref="editModelUpload"
-            action="http://123.56.115.20/sale-manage/customer/update/"
-            :headers="headers"
-            :data = "editModel"
-            :format="['jpg', 'png', 'jpeg', 'gif', 'bmp', 'svg']"
-            :on-format-error="handleFormatError"
-            :max-size="maxSize"
-            :on-exceeded-size="handleExceededSize"
-            :before-upload="handleEditFileUploaded"
-            :on-success="handleEditFileUploadSuccess"
-          >
-            <div v-if="uploadedFile">
-              <span>选择了图片：{{ uploadedFile.name }}</span>
-            </div>
-            <span>选择图片上传</span>
-            <Button type="ghost" icon="ios-cloud-upload-outline">上传文件</Button>
-          </Upload>
-        </Form-item>
-        <Form-item prop="is_active">
-          <Checkbox v-model="editModel.is_active">是否在售</Checkbox>
-        </Form-item>
-        <Form-item prop="is_bestseller">
-          <Checkbox v-model="editModel.is_bestseller">是否热销</Checkbox>
-        </Form-item>
-        <Form-item label="描述" prop="description">
-          <Input v-model="editModel.description" type="textarea" placeholder="客户描述"></Input>
-        </Form-item>
-        <Form-item label="检索词" prop="meta_keywords">
-          <Input v-model="editModel.meta_keywords" placeholder="检索词"></Input>
-        </Form-item>
-        <Form-item label="检索描述" prop="meta_description">
-          <Input v-model="editModel.meta_description" type="textarea" placeholder="检索描述"></Input>
-        </Form-item>
-      </Form>
-    </Modal>
-
-    <Modal v-model="showDeleteModal" title="删除客户" @on-ok="confirmToggle('deleteModelForm')" @on-cancel="cancelDelete('deleteModelForm')" >
-      <h3 class="warning-title">确认要开关客户？</h3>
-      <Form ref="deleteModelForm" :model="deleteModel" :label-width="100">
-        <Form-item label="名称" prop="name">
-          <Input v-model="deleteModel.name" placeholder="名称" :readonly=true></Input>
-        </Form-item>
-        <Form-item label="售价" prop="sale_price">
-          <InputNumber :max="10000" :min="1" :step="0.1" v-model="editModel.sale_price" :readonly=true></InputNumber>
-        </Form-item>
-        <Form-item label="原价" prop="price">
-          <InputNumber :max="10000" :min="1" :step="0.1" v-model="editModel.price" :readonly=true></InputNumber>
-        </Form-item>
-      </Form>
-    </Modal>
   </div>
 </template>
 
 <script>
-  import { mapState } from 'vuex'
-  import { searchCustomers, createCustomer, updateCustomer, toggleCustomer } from '@/http/api'
+  // import { mapState } from 'vuex'
+  import { searchCustomers, createCustomer, updateCustomer } from '@/http/api'
 
   export default {
     data: function () {
@@ -219,66 +153,33 @@
         showEditModal: false,
         showDeleteModal: false,
         addModel: {
-          name: '',
-          brand: '',
-          effective_month: 0,
-          sale_price: 0.0,
-          price: 0.0,
-          is_active: false,
-          is_bestseller: false,
-          end_datetime: '2017-06-18T03:02:20Z',
-          description: '',
-          meta_keywords: '',
-          meta_description: ''
+          username: '',
+          first_name: '',
+          last_name: '',
+          cell_phone: '',
+          email: ''
         },
         addModelErrors: {},
         editModel: {
-          name: '',
-          brand: '',
-          effective_month: 0,
-          sale_price: 0.0,
-          price: 0.0,
-          is_active: false,
-          is_bestseller: false,
-          end_datetime: '',
-          description: '',
-          meta_keywords: '',
-          meta_description: ''
+          username: '',
+          first_name: '',
+          last_name: '',
+          cell_phone: '',
+          email: ''
         },
         editModelErrors: {},
-        deleteModel: {
-          name: '',
-          sale_price: 0
-        },
         ruleValidate: {
-          name: [
-            { required: true, message: '给客户取个名字吧', trigger: 'blur' },
-            { type: 'string', min: 2, message: '多赐几个字嘛', trigger: 'blur' }
+          username: [
+            { required: true, message: '名字必须的哦', trigger: 'blur' }
           ],
-          brand: [
-            { required: false, trigger: 'blur' },
-            { type: 'string', trigger: 'blur' }
+          first_name: [
+            { min: 1, message: '至少一个字吧', trigger: 'blur' }
           ],
-          sale_price: [
-            { required: true, type: 'number', min: 0, max: 10000, message: '介是几个钱？', trigger: 'blur' }
+          last_name: [
+            { min: 1, message: '至少一个字吧', trigger: 'blur' }
           ],
-          price: [
-            { required: false, type: 'number', min: 0, max: 10000, message: '介是几个钱？', trigger: 'blur' }
-          ],
-          is_active: [
-            { required: true, type: 'boolean', trigger: 'blur' }
-          ],
-          is_bestseller: [
-            { required: true, type: 'boolean', trigger: 'blur' }
-          ],
-          description: [
-            { required: false, message: '不描述一下客户吗？', trigger: 'blur' }
-          ],
-          meta_keywords: [
-            { required: false, message: '添加搜索关键词？', trigger: 'blur' }
-          ],
-          meta_description: [
-            { required: false, message: '添加搜索关键描述？', trigger: 'blur' }
+          cell_phone: [
+            { required: true, message: '留个电话吧', trigger: 'blur' }
           ]
         },
         self: this,
@@ -288,71 +189,23 @@
         pageSize: 10,
         tableColumns: [
           {
-            title: '名称',
-            key: 'name',
+            title: '用户名',
+            key: 'username',
             align: 'center',
             sortable: true
           },
           {
-            title: '价格',
-            key: 'sale_price',
-            align: 'left',
-            sortable: true,
-            render: (h, params) => {
-              return h(
-                'span',
-                // {
-                //   style: {
-                //     color: 'red'
-                //   }
-                // },
-                params.row.sale_price
-              )
-            }
+            title: this.$t('last_name'),
+            key: 'last_name',
+            align: 'left'
           },
           {
-            title: '是否在售',
-            key: 'is_active',
-            align: 'center',
-            sortable: true,
-            filters: [
-              {
-                label: '停售',
-                value: false
-              },
-              {
-                label: '在售',
-                value: true
-              }
-            ],
-            filterMultiple: false,
-            filterMethod (value, row) {
-              // 比较时注意变量类型
-              if (value === true) {
-                return row.is_active === true
-              } else if (value === false) {
-                return row.is_active === false
-              }
-            },
-            render: (h, params) => {
-              let color = params.row.is_active ? 'green' : 'red'
-              let text = params.row.is_active ? '在售' : '停售'
-              return h('Tag', {
-                props: {
-                  type: 'dot',
-                  color: color
-                }
-              }, text)
-            }
+            title: this.$t('first_name'),
+            key: 'first_name',
+            align: 'left'
           },
           {
-            title: '描述',
-            key: 'description',
-            align: 'left',
-            sortable: true
-          },
-          {
-            title: '操作',
+            title: this.$t('action'),
             key: 'action',
             width: 150,
             align: 'center',
@@ -371,21 +224,7 @@
                       this.showEdit(params.index)
                     }
                   }
-                }, this.$t('edit')),
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      this.showDelete(params.index)
-                    }
-                  }
-                }, this.$t('toggle'))
+                }, this.$t('edit'))
               ])
             }
           }
@@ -393,30 +232,18 @@
       }
     },
     computed: {
-      ...mapState('app', {
-        'maxSize': state => state.maxSize
-      }),
-      ...mapState('login', {
-        'accessToken': state => state.accessToken
-      }),
-      // 图片上传时直接发起HTTP请求，所以需要单独设置
-      headers: function () {
-        let tmp = {}
-        tmp['Authorization'] = 'Token ' + this.accessToken
-        return tmp
-      },
       aList: function () {
         // 用于autocomplete
         if (Array.isArray(this.tableData)) {
           return this.tableData.filter((item, index, array) => {
             if (this.keyword) {
-              if (item.name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+              if (item.username.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
                 return array.indexOf(item) === index
-              } else if (item.sale_price.toString().indexOf(this.keyword.toUpperCase()) !== -1) {
+              } else if (item.last_name.toString().indexOf(this.keyword.toUpperCase()) !== -1) {
                 return true
-              } else if (item.pinyin.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+              } else if (item.first_name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
                 return true
-              } else if (item.py.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+              } else if (item.cell_phone.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
                 return true
               } else {
                 return false
@@ -433,20 +260,7 @@
     methods: {
       showEdit (index) {
         this.showEditModal = true
-        // this.editModel = this.tableData[index]
         this.editModel = this.aList[index]
-        // Django-restful-framework将decimal转出来就已经是string类型
-        this.editModel.sale_price = Number(this.editModel.sale_price)
-        this.editModel.price = Number(this.editModel.price)
-        // console.error(this.editModel)
-      },
-      showDelete (index) {
-        this.showDeleteModal = true
-        this.deleteModel = this.tableData[index]
-      },
-      cancelDelete (index) {
-        this.showDeleteModal = false
-        this.$Message.info('点击了取消')
       },
       // 获取客户列表
       getCustomerData: function (pageSize, pageNumber) {
@@ -591,65 +405,11 @@
           }
         })
       },
-      // 开关客户
-      confirmToggle: function (name) {
-        this.$refs[name].validate((valid) => {
-          if (valid) {
-            let deleteModelSubmit = JSON.stringify(this.deleteModel)
-            deleteModelSubmit = JSON.parse(deleteModelSubmit)
-            toggleCustomer(deleteModelSubmit).then((res) => {
-              let { status, statusText } = res
-              if (status !== 201) {
-                this.$Message.error(statusText)
-              } else {
-                this.$Message.success('开关客户成功!')
-                this.getCustomerData(this.pageSize, this.pageNumber)
-              }
-            }, (error) => {
-              console.log('Error in deleteCustomer: ' + error)
-              this.$Message.error('开关客户失败!')
-            }).catch((error) => {
-              console.log('catched in deleteCustomer:' + error)
-              this.$Message.error('开关客户失败!')
-            })
-          } else {
-            this.$Message.error('客户信息校验失败!')
-          }
-        })
-      },
       handleReset (name) {
         this.$refs[name].resetFields()
       },
       handleFormatError: function () {
         this.$Message.error(this.$t('format_error'))
-      },
-      handleExceededSize: function () {
-        this.$Message.error(this.$t('exceeded_size_error'))
-      },
-      handleAddFileUploaded: function (file) {
-        this.uploadedFile = file
-        this.addModel['file'] = this.uploadedFile
-        this.$refs.addModelUpload.clearFiles()
-        this.getCustomerData(this.pageSize, this.pageNumber)
-      },
-      handleAddFileUploadSuccess: function (response, file, fileList) {
-        console.log('file uploaded successfully')
-        this.$refs.addModelUpload.clearFiles()
-        this.getCustomerData(this.pageSize, this.pageNumber)
-        this.$Message.success('修改客户成功!')
-      },
-      handleEditFileUploaded: function (file) {
-        this.uploadedFile = file
-        this.editModel['file'] = this.uploadedFile
-        this.$refs.addModelUpload.clearFiles()
-        this.$refs.editModelUpload.clearFiles()
-        this.getCustomerData(this.pageSize, this.pageNumber)
-      },
-      handleEditFileUploadSuccess: function (response, file, fileList) {
-        console.log('file uploaded successfully')
-        this.$refs.editModelUpload.clearFiles()
-        this.getCustomerData(this.pageSize, this.pageNumber)
-        this.$Message.success('修改客户成功!')
       }
     },
     mounted () {

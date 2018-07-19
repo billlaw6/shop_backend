@@ -30,6 +30,8 @@
       </div>
     </Table>
 
+    <Button type="primary" size="large" @click="exportData(3)"><Icon type="ios-download-outline"></Icon>{{ $t('exportCustomedData') }}</Button>
+
     <div style="margin: 10px; overflow: hidden">
       <div style="float: right;">
         <Page :total="total" :current="pageNumber"
@@ -301,6 +303,24 @@
       changePageSize (value) {
         this.pageSize = value
         this.getStockMoveRecordData(this.pageSize, this.pageNumber)
+      },
+      exportData (type) {
+        if (type === 1) {
+          this.$refs.table.exportCsv({
+            filename: 'List' + new Date()
+          })
+        } else if (type === 2) {
+          this.$refs.table.exportCsv({
+            filename: 'List_sorted_filtered' + new Date(),
+            original: false
+          })
+        } else if (type === 3) {
+          this.$refs.table.exportCsv({
+            filename: 'List_customed' + new Date(),
+            columns: this.tableColumns.filter((col, index) => index < 4),
+            data: this.aStockMoveRecord.filter((data, index) => index < 10)
+          })
+        }
       }
     },
     mounted () {

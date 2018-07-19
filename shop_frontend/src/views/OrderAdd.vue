@@ -13,9 +13,11 @@
           <AutoComplete v-model="addModel.name" :placeholder="$t('selectProduct')" icon="ios-search" 
             :clearable="true"
             @on-select="handleProductSelected">
-            <Option v-for="option in aProduct" :value="option.product.name" :key="option.id">
-              <span class="product-name">{{ option.product.name }}</span>
-              <span class="product-price">{{ option.sale_price | currency }}</span>
+            <Option v-for="option in aStockProduct" :value="option.product_name" :key="option.id">
+              <span class="product-name">{{ option.product_name }}</span>
+              <span class="product-price">{{ option.product_sale_price | currency }}</span>
+              <span class="product-price">{{ option.amount }}</span>
+              <span class="product-price">{{ option.batch_no }}</span>
             </Option>
           </AutoComplete>
           <ul v-for="error in addModelErrors.name">
@@ -53,6 +55,7 @@
               <span class="product-name">{{ option.username }}</span>
               <span class="product-price">{{ option.last_name }}</span>
               <span class="product-price">{{ option.first_name }}</span>
+              <span class="product-price">{{ option.cell_phone }}</span>
             </Option>
           </AutoComplete>
           <ul v-for="error in orderErrors.customer">
@@ -111,7 +114,7 @@
 
 <script>
   import { mapState, mapGetters } from 'vuex'
-  import { searchStocks, getCustomers, getExpresses, getPayments, addOrder } from '@/http/api'
+  import { searchStocks, getCustomers, addOrder } from '@/http/api'
   import CartItems from '@/views/components/cart/CartItems.vue'
 
   export default {
@@ -123,7 +126,7 @@
         if (!value) {
           callback(new Error(this.$t('noProductError')))
         } else {
-          if (this.availableProducts.filter((val, index, array) => val.product.name === value).length > 0) {
+          if (this.availableProducts.filter((val, index, array) => val.name === value).length > 0) {
             callback()
           } else {
             callback(new Error(this.$t('invalidProductError')))
@@ -143,15 +146,15 @@
         }
       }
       const validateCustomer = (rule, value, callback) => {
-        // console.log(value)
+        console.log(value)
         if (!value) {
           callback(new Error(this.$t('noCustomerError')))
         } else {
           if (this.availableCustomers.some((val, index, array) => val.username === value)) {
-            // console.log('name valide')
+            console.log('name valide')
             callback()
           } else {
-            // console.log('name invalide')
+            console.log('name invalide')
             callback(new Error(this.$t('invalidCustomerError')))
           }
         }
@@ -161,10 +164,10 @@
           callback()
         } else {
           if (this.availablePayments.some((val, index, array) => val.name === value)) {
-            // console.log('name valide')
+            console.log('name valide')
             callback()
           } else {
-            // console.log('name invalide')
+            console.log('name invalide')
             callback(new Error(this.$t('invalidPaymentError')))
           }
         }
@@ -175,11 +178,9 @@
         }
       }
       return {
-        availableProducts: [],
+        availableStocks: [],
         selectedProduct: null,
         availableCustomers: [],
-        availablePayments: [],
-        availableExpresses: [],
         selectedCustomer: null,
         addModel: {
           name: '', // 绑定以后没有选项时会被赋值成undefined
@@ -211,8 +212,6 @@
           ],
           cartListLength: [
             { validator: validateCartListLength, trigger: 'blur' }
-            // { type: 'number', message: this.$t('invalideNumber'), trigger: 'blur' },
-            // { min: 1, message: this.$t('invalideNumber'), trigger: 'blur' }
           ]
         },
         orderErrors: {},
@@ -223,13 +222,13 @@
         tableColumns: [
           {
             title: '名称',
-            key: 'product.name',
+            key: 'product_name',
             align: 'center',
             sortable: true
           },
           {
             title: '价格',
-            key: 'sale_price',
+            key: 'product_sale_price',
             align: 'left',
             sortable: true,
             render: (h, params) => {
@@ -259,7 +258,7 @@
                 props: {
                   color: 'red'
                 }
-              }, (Number(params.row.sale_price) * Number(params.row.amount)).foFixed(this.decimals))
+              }, (Number(params.row.product_sale_price) * Number(params.row.amount)).foFixed(this.decimals))
             }
           },
           {
@@ -312,9 +311,10 @@
     computed: {
       ...mapState('app', {
         'maxSize': state => state.maxSize,
-        'currentDepartment': state => state.currentDepartment
-        // 'availableDepartments': state => state.availableDepartments,
-        // 'availablePayments': state => state.availablePayemnts
+        'currentDepartment': state => state.currentDepartment,
+        'availableProducts': state => state.availableProducts,
+        'availableExpresses': state => state.availableExpresses,
+        'availablePayments': state => state.availablePayments
       }),
       ...mapState('login', {
         'currentDepartment': state => state.currentDepartment
@@ -327,22 +327,22 @@
         'cartListCount',
         'cartListSum'
       ]),
-      aProduct: function () {
+      aStockProduct: function () {
         // filter, concat, slice方法会生成亲的数组
         // 手工敲入的字母会被赋值给addModel.name
-        // console.log('aProduct')
         // 使用删除修改选择的内容时会触发两次aProduc计算，
         // 一次addModel.name值为undefined，一次为空字符串
-        // console.log(this.addModel.name)
-        return this.availableProducts.filter((item, index, array) => {
+        console.log(this.addModel.name)
+        console.log(this.availableStocks)
+        return this.availableStocks.filter((item, index, array) => {
           if (this.addModel.name) {
-            if (item.product.name.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
+            if (item.product_name.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
               return true
-            } else if (item.product.sale_price.toString().indexOf(this.addModel.name.toUpperCase()) !== -1) {
+            } else if (item.product_sale_price.toString().indexOf(this.addModel.name.toUpperCase()) !== -1) {
               return true
-            } else if (item.product.pinyin.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
+            } else if (item.product_pinyin.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
               return true
-            } else if (item.product.py.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
+            } else if (item.product_py.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
               return true
             } else {
               return false
@@ -354,11 +354,16 @@
       },
       aCustomer: function () {
         // 用于autocomplete
+        // console.log(this.orderModel.customer)
+        // console.log(Array.isArray(this.availableCustomers))
         if (Array.isArray(this.availableCustomers)) {
           return this.availableCustomers.filter((item, index, array) => {
             // 删除选择项内容时，对应的值会被赋值成undefined
-            if (this.addModel.customer) {
+            // console.log(item)
+            if (this.orderModel.customer) {
               if (item.username.toUpperCase().indexOf(this.orderModel.customer.toUpperCase()) !== -1) {
+                return true
+              } else if (item.cell_phone.toUpperCase().indexOf(this.orderModel.customer.toUpperCase()) !== -1) {
                 return true
               } else {
                 return false
@@ -376,7 +381,7 @@
         if (Array.isArray(this.availableExpresses)) {
           // filter不修改原array
           return this.availableExpresses.filter((item, index, array) => {
-            if (this.addModel.express) {
+            if (this.orderModel.express) {
               if (item.name.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
                 return true
               } else if (item.pinyin.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
@@ -396,6 +401,8 @@
       },
       aPayment: function () {
         // 用于autocomplete
+        console.log(this.orderModel.payment)
+        console.log(this.availablePayments)
         if (Array.isArray(this.availablePayments)) {
           // 深度拷贝方法
           return this.availablePayments.filter((item, index, array) => {
@@ -438,7 +445,7 @@
           } else {
             // console.log(data)
             this.total = res.data.count
-            this.availableProducts = data.results
+            this.availableStocks = data.results
           }
         }, (error) => {
           console.log('Error in getStockDatas: ' + error)
@@ -470,55 +477,15 @@
         })
         this.loadingStatus = false
       },
-      // 获取快递列表
-      getExpressData: function (pageSize, pageNumber) {
-        let paras = {
-          limit: pageSize,
-          offset: (pageNumber - 1) * pageSize
-        }
-        getExpresses(paras).then((res) => {
-          let { data, status, statusText } = res
-          if (status !== 200) {
-            this.loginMessage = statusText
-          } else {
-            this.total = res.data.count
-            this.availableExpresses = data.results
-          }
-        }, (error) => {
-          this.$Message.error(error)
-        }).catch((error) => {
-          this.$Message.error(error)
-        })
-        this.loadingStatus = false
-      },
-      getPaymentData: function (pageSize, pageNumber) {
-        let paras = {
-          limit: pageSize,
-          offset: (pageNumber - 1) * pageSize
-        }
-        getPayments(paras).then((res) => {
-          let { data, status, statusText } = res
-          if (status !== 200) {
-            this.loginMessage = statusText
-          } else {
-            this.total = res.data.count
-            this.availablePayments = data.results
-          }
-        }, (error) => {
-          this.$Message.error(error)
-        }).catch((error) => {
-          this.$Message.error(error)
-        })
-        this.loadingStatus = false
-      },
       handleProductSelected: function (value) {
         // console.log('handleProductSelected')
         this.addModel.name = value
         if (value) {
           if (this.addModel.name.length > 0 && this.availableProducts.length > 0) {
-            let tmpProduct = this.availableProducts.filter((val, index, array) => val.product.name === this.addModel.name)
-            this.selectedProduct = tmpProduct[0].product
+            let tmpProduct = this.availableProducts.filter((val, index, array) => val.name === this.addModel.name)
+            this.selectedProduct = tmpProduct[0]
           } else {
+            console.error('invalideProduct')
             this.$Message.error('invalideProduct')
           }
         }
@@ -557,10 +524,11 @@
         }
       },
       addToCart: function () {
+        console.log('addToCart')
         this.$refs['addModelForm'].validate((valid) => {
-          // console.log('addToCart validating')
+          console.log('addToCart validating')
           if (valid) {
-            // console.log('valid')
+            console.log('valid')
             this.$store.dispatch('cart/addCartItem', {'item': this.selectedProduct, 'amount': this.addModel.amount, 'comment': this.addModel.comment})
             this.$Message.success({
               title: '加入购物车成功',
@@ -573,11 +541,12 @@
         })
       },
       submitOrder: function () {
-        // console.log('submitting')
+        console.log('submitting')
         this.$refs['submitOrderForm'].validate((valid) => {
-          // console.log('submit Order validating')
-          // console.log(valid)
+          console.log('submit Order validating')
+          console.log(valid)
           if (valid) {
+            console.log('alksdfjlasf')
             let params = {
               customer: this.selectedCustomer,
               payment: this.selectedPayment,
@@ -587,6 +556,7 @@
               express: this.selectedExpress,
               express_no: this.orderModel.express_no
             }
+            console.log(params)
             addOrder(params).then((res) => {
               let { data, status, statusText } = res
               if (status !== 201) {
@@ -606,7 +576,7 @@
               this.$Message.error(error)
             })
           } else {
-            // console.log('invalid')
+            console.log('invalid')
             this.$Message.error(this.$t('invalideOrder'))
           }
         })
@@ -615,8 +585,6 @@
     mounted () {
       this.getStockData(this.pageSize, this.pageNumber)
       this.getCustomerData(this.pageSize, this.pageNumber)
-      this.getExpressData(this.pageSize, this.pageNumber)
-      this.getPaymentData(this.pageSize, this.pageNumber)
     }
   }
 </script>

@@ -256,7 +256,7 @@ export const appRouter = [
           requireAuth: true,
           permission: 'sale_manage.add_orderdetail'
         },
-        component: resolve => require(['@/views/Error403.vue'], resolve)
+        component: resolve => require(['@/views/PermissionManage.vue'], resolve)
       }
     ]
   },

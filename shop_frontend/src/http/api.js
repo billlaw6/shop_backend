@@ -189,7 +189,7 @@ export const searchStocks = params => {
   return axios.get(`/sale-manage/stock/search/`, {params: params}).then(res => res)
 }
 
-export const searchCustomer = params => {
+export const searchCustomers = params => {
   return axios.get(`/user-manage/customer/search/`, {params: params}).then(res => res)
 }
 

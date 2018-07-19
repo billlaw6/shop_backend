@@ -24,6 +24,6 @@ urlpatterns = [
     url(r'^product/toggle/$', views.toggle_product, name='toggle_product'),
     url(r'^move-record/add/$', views.add_move_record, name='add_move_record'),
     url(r'^move-record/process/$', views.process_move_record, name='process_move_record'),
-    url(r'^move-record/$', views.get_stock_move_record, name='stock_move_record'),
+    url(r'^move-record/search/$', views.search_stock_move_record, name='stock_move_record'),
     url(r'^stock/search/$', views.search_stock, name='search_stock'),
 ]

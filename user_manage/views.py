@@ -1,8 +1,13 @@
 import hashlib
 # import json
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import get_user_model, logout as core_logout
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, authentication, permissions
+from rest_framework.decorators import (api_view, throttle_classes,
+    permission_classes, renderer_classes, parser_classes,
+    authentication_classes,)
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
@@ -20,7 +25,7 @@ from user_manage.serializers import (UserSerializer,
 # ViewSets define the view behavior.
 def home(request):
     user = request.user
-    print('user: %s' % user)
+    # print('user: %s' % user)
     # social_accounts = UserSocialAuth.objects.filter(id=user.id)
     # print(social_accounts[0].extra_data)
     # return HttpResponse(social_accounts[0].extra_data)
@@ -120,3 +125,78 @@ class AddressViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
+@api_view(['GET'])
+@authentication_classes([authentication.TokenAuthentication,])
+@permission_classes([permissions.IsAuthenticated,])
+def search_customer(request, *args, **kwargs):
+    """
+    """
+    keyword = request.GET.get('keyword', '')
+    limit = request.GET.get('limit', 10)
+    offset = request.GET.get('offset', 0)
+    # print('%s-%s-%s' % (keyword, limit, offset))
+    if limit and offset:
+        if keyword is None:
+            queryset = get_user_model().objects.all()[int(offset): int(offset)+int(limit)]
+        else:
+          queryset = get_user_model().objects.filter(Q(username__icontains=keyword)
+              | Q(cell_phone__icontains=keyword)
+              | Q(last_name__icontains=keyword)
+              | Q(first_name__icontains=keyword))[int(offset): int(offset)+int(limit)]
+    else:
+        queryset = get_user_model().objects.all()
+    res_data = {}
+    res_data['count'] = len(queryset)
+    res_data['results'] = UserSerializer(queryset, many=True).data
+    return Response(res_data, status=200)
+
+
+@api_view(['POST'])
+# @renderer_classes(renderers.JSONRenderer,)
+# @parser_classes([parsers.FormParser, parsers.MultiPartParser,
+#                       parsers.JSONParser,])
+# @throttle_classes([OncePerDayUserThrottle])
+@authentication_classes([authentication.TokenAuthentication,])
+@permission_classes([permissions.IsAdminUser])
+def create_customer(request, *args, **kwargs):
+    """
+    """
+    serializer = UserSerializer(data=request.data)
+    serializer.initial_data['created_by'] = request.user.id
+    serializer.initial_data['updated_by'] = request.user.id
+    if serializer.is_valid():
+        # print(serializer.validated_data)
+        serializer.save()
+        return JsonResponse(serializer.data, status=201)
+    else:
+        # print(serializer.errors)
+        return JsonResponse(serializer.errors, status=303)
+
+@api_view(['POST'])
+# @renderer_classes(renderers.JSONRenderer,)
+# @parser_classes([parsers.FormParser, parsers.MultiPartParser,
+#                       parsers.JSONParser,])
+# @throttle_classes([OncePerDayUserThrottle])
+@authentication_classes([authentication.TokenAuthentication,])
+@permission_classes([permissions.IsAdminUser])
+def update_customer(request, *args, **kwargs):
+    """
+    """
+    # print(request.data)
+    # print(request.data.get('id'))
+    # 如果带ID号，则更新原对象
+    # aim_customer = Customer.objects.get(id=request.data.get('id'))
+    aim_customer = get_object_or_404(get_user_model(), pk=request.data.get('id'))
+    request.data['updated_by']=request.user.id
+    serializer = UserSerializer(aim_customer, data=request.data, partial=True)
+    # print(serializer.initial_data)
+    if serializer.is_valid():
+        # print('validated_data')
+        # print(serializer.validated_data)
+        result = serializer.update(aim_customer, serializer.validated_data)
+        # print('updated: %s' % (result))
+        return JsonResponse(serializer.data, status=201)
+    else:
+        # print("invalid")
+        # print(serializer.errors)
+        return JsonResponse(serializer.errors, status=303)

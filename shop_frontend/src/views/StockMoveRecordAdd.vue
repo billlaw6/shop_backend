@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="stock-move-in">
     <Table ref="moveRecordList" stripe :columns="moveRecordListColumns" :data="moveRecordList">
       <div class="table-header" slot="header">
         已添加商品
@@ -11,19 +11,16 @@
 
     <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
       <FormItem :label="$t('product')" prop="productInfo">
-        <Select 
-          v-model="formInline.productInfo"
-          filterable
-          clearable
-          >
-          <!-- Select自带的filter过滤的是value值 -->
-          <Option v-for="(option, index) in availableProducts"
-            :value="option.id+'|'+option.name+'|'+option.py+'|'+option.sale_price"
-            :key="index">
-            <span>{{ option.name }}</span>
-            <span style="margin-left: 5px; color:red">{{ option.sale_price | currency}}</span>
+        <AutoComplete v-model="formInline.productInfo"
+          :placeholder="$t('selectProduct')"
+          icon="ios-search" 
+          :clearable="true"
+          @on-select="handleProductSelected">
+          <Option v-for="option in aProduct" :value="option.name" :key="option.id">
+            <span class="product-name">{{ option.name }}</span>
+            <span class="product-price">{{ option.sale_price | currency }}</span>
           </Option>
-        </Select>
+        </AutoComplete>
         <ul v-if="formInlineErrors.productInfo" v-for="error in formInlineErrors.productInfo">
           <li class="error">{{ error }}</li>
         </ul>
@@ -51,11 +48,33 @@
         <Button type="primary" size="small" @click="addToList()">{{ $t('addToList') }}</Button>
       </Form-item>
     </Form>
-    <Form>
-      <Form-item>
-        <br/>
-        <Button type="primary" size="large" @click="submitMoveRecord()">{{ $t('submitMoveRecord') }}</Button>
-      </Form-item>
+
+    <Form ref="formInlineSubmit" :model="formInlineSubmit" :rules="ruleInlineSubmit" inline>
+      <Tabs>
+        <TabPane v-if="currentDepartment.level===1" :label="$t('moveIn')" icon="">
+          <Form-item>
+            <br/>
+            <Button type="primary" size="large" @click="submitMoveIn()">{{ $t('submitMoveIn') }}</Button>
+          </Form-item>
+        </TabPane>
+        <TabPane :label="$t('moveOut')" icon="">
+          <FormItem :label="$t('toDepartment')" prop="toDepartment">
+            <AutoComplete v-model="formInlineSubmit.toDept"
+              :placeholder="$t('selectToDept')"
+              icon="ios-search" 
+              :clearable="true"
+              @on-select="handleToDeptSelected">
+              <Option v-for="option in otherDepartments" :value="option.name" :key="option.code">
+                <span class="product-name">{{ option.name }}</span>
+              </Option>
+            </AutoComplete>
+          </FormItem>
+          <Form-item>
+            <br/>
+            <Button type="primary" size="large" @click="submitMoveOut()">{{ $t('submitMoveOut') }}</Button>
+          </Form-item>
+        </TabPane>
+      </Tabs>
     </Form>
   </div>
 </template>
@@ -68,38 +87,95 @@
     components: {
     },
     data: function () {
+      const validateProductName = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error(this.$t('noProductError')))
+        } else {
+          if (this.availableProducts.filter((val, index, array) => val.name === value).length > 0) {
+            callback()
+          } else {
+            callback(new Error(this.$t('invalidProductError')))
+          }
+        }
+      }
+      const validateToDepartmentName = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error(this.$t('noDepartmentError')))
+        } else {
+          if (this.otherDepartments.filter((val, index, array) => val.name === value).length > 0) {
+            callback()
+          } else {
+            callback(new Error(this.$t('invalidDepartmentError')))
+          }
+        }
+      }
+      const validateMoveAmount = (rule, value, callback) => {
+        if (!value) {
+          callback(new Error(this.$t('noMoveAmountError')))
+        } else {
+          if (value >= 0.1 && value < 1000) {
+            callback()
+          } else {
+            callback(new Error(this.$t('invalidMoveAmountError')))
+          }
+        }
+      }
       return {
+        selectedProduct: null,
+        selectedToDept: null,
         ruleInline: {
           productInfo: [
+            { validator: validateProductName, trigger: 'blur' },
             { required: true, message: this.$t('invalidProduct'), trigger: 'blur' }
+          ],
+          move_amount: [
+            // 此两项合并使用时输入了数字也报空
+            // { type: 'number', message: this.$t('invalideNumber'), trigger: 'blur' },
+            // { required: true, message: this.$t('invalidmove_amount'), trigger: 'blur' }
+            // 建议解决方案：Input设为text型，判断空使用系统自带的，判断数字自定义方法。
+            { validator: validateMoveAmount, trigger: 'blur' }
           ]
-          // move_amount: [
-          //   { required: true, message: this.$t('invalidmove_amount'), trigger: 'blur' }
-          // ]
+        },
+        ruleInlineSubmit: {
+          toDept: [
+            { validator: validateToDepartmentName, trigger: 'blur' }
+          ]
         },
         formInline: {
           productInfo: '',
-          move_amount: 0.1,
+          move_amount: 0.0,
           batch_no: '',
           comment: ''
         },
         formInlineErrors: {},
+        formInlineSubmit: {
+          toDept: ''
+        },
         loadingProduct: false,
         moveRecordListColumns: [
           {
             title: this.$t('product'),
-            key: 'product_name',
-            sortable: true
+            key: 'product.name',
+            sortable: true,
+            render: (h, params) => {
+              return h('span', params.row.product.name)
+            }
           },
           {
             title: this.$t('salePrice'),
             key: 'sale_price',
-            sortable: true
+            sortable: true,
+            render: (h, params) => {
+              return h('span', parseFloat(params.row.product.sale_price).toFixed(this.decimals))
+            }
           },
           {
             title: this.$t('moveAmount'),
             key: 'move_amount',
-            sortable: true
+            sortable: true,
+            render: (h, params) => {
+              return h('span', params.row.moveAmount.toFixed(this.decimals))
+            }
           },
           {
             title: this.$t('batchNo'),
@@ -132,17 +208,67 @@
     computed: {
       ...mapState('app', {
         availableProducts: state => state.availableProducts,
+        availableDepartments: state => state.availableDepartments
+      }),
+      ...mapState('login', {
         currentDepartment: state => state.currentDepartment
       }),
       ...mapState('stock', {
-        moveRecordList: state => state.moveRecordList
+        moveRecordList: state => state.moveRecordList,
+        decimals: state => state.decimals
       }),
       ...mapGetters('stock', [
         'moveRecordListCount',
         'moveRecordListSum'
       ]),
+      otherDepartments: function () {
+        // console.log(this.availableDepartments)
+        // console.log(this.currentDepartment)
+        if (this.availableDepartments.length > 0 && this.currentDepartment) {
+          return this.availableDepartments.filter((item, index, array) => {
+            if (this.currentDepartment.code === item.code) {
+              return false
+            } else {
+              if (this.formInlineSubmit.toDept) {
+                if (item.name.toUpperCase().indexOf(this.formInlineSubmit.toDept.toUpperCase()) !== -1) {
+                  return true
+                } else if (item.pinyin.toUpperCase().indexOf(this.formInlineSubmit.toDept.toUpperCase()) !== -1) {
+                  return true
+                } else if (item.py.toUpperCase().indexOf(this.formInlineSubmit.toDept.toUpperCase()) !== -1) {
+                  return true
+                } else {
+                  return false
+                }
+              } else {
+                return true
+              }
+            }
+          })
+        } else {
+          return this.availableDepartments
+        }
+      },
       total: function () {
         return this.moveRecordList.length
+      },
+      aProduct: function () {
+        return this.availableProducts.filter((item, index, array) => {
+          if (this.formInline.productInfo) {
+            if (item.name.toUpperCase().indexOf(this.formInline.productInfo.toUpperCase()) !== -1) {
+              return true
+            } else if (item.sale_price.toString().indexOf(this.formInline.productInfo.toUpperCase()) !== -1) {
+              return true
+            } else if (item.pinyin.toUpperCase().indexOf(this.formInline.productInfo.toUpperCase()) !== -1) {
+              return true
+            } else if (item.py.toUpperCase().indexOf(this.formInline.productInfo.toUpperCase()) !== -1) {
+              return true
+            } else {
+              return false
+            }
+          } else {
+            return true
+          }
+        })
       }
     },
     methods: {
@@ -153,25 +279,30 @@
       ...mapActions('stock', {
         addMoveRecordItem: 'addMoveRecordItem',
         removeMoveRecordItem: 'removeMoveRecordItem',
-        emptyMoveRecordItem: 'emptyMoveRecordItem',
+        emptyMoveRecord: 'emptyMoveRecord',
         setMoveRecordList: 'setMoveRecordList'
       }),
+      handleProductSelected: function (value) {
+        this.formInline.productInfo = value
+        if (value) {
+          if (this.formInline.productInfo.length > 0 && this.availableProducts.length > 0) {
+            let tmpProduct = this.availableProducts.filter((val, index, array) => val.name === this.formInline.productInfo)
+            this.selectedProduct = tmpProduct[0]
+          } else {
+            this.$Message.error('invalideProduct')
+          }
+        }
+      },
       addToList: function () {
-        console.log(this.formInline)
         this.$refs['formInline'].validate((valid) => {
           if (valid) {
-            console.log('valid')
-            let payload = {}
-            let product = this.formInline['productInfo'].split('|')
-            this.formInline['product'] = product[0]
-            this.formInline['product_name'] = product[1]
-            this.formInline['sale_price'] = product[3]
-            payload['item'] = JSON.parse(JSON.stringify(this.formInline))
-            payload['move_amount'] = this.formInline.move_amount
-            payload['batch_no'] = this.formInline.batch_no
-            payload['comment'] = this.formInline.comment
-            console.log(product)
-            this.$store.dispatch('stock/addMoveRecordItem', payload)
+            // 参数名对应不上时会直接不执行
+            this.$store.dispatch('stock/addMoveRecordItem',
+              { item: this.selectedProduct,
+                moveAmount: this.formInline.move_amount,
+                batchNo: this.formInline.batch_no,
+                comment: this.formInline.comment
+              })
           } else {
             this.$Message.error(this.$t('validateFailed'))
           }
@@ -180,32 +311,71 @@
       removeFromList: function (index) {
         this.removeMoveRecordItem(this.moveRecordList[index])
       },
-      submitMoveRecord: function () {
-        console.log('submitting move record')
-        if (this.currentDepartment) {
+      handleToDeptSelected: function (value) {
+        this.formInlineSubmit.toDept = value
+        if (value) {
+          if (this.formInlineSubmit.toDept.length > 0 && this.otherDepartments.length > 0) {
+            let tmpDepartment = this.otherDepartments.filter((val, index, array) => val.name === this.formInlineSubmit.toDept)
+            this.selectedToDept = tmpDepartment[0]
+          } else {
+            this.$Message.error('invalideToDept')
+          }
+        }
+      },
+      submitMoveIn: function () {
+        if (this.currentDepartment && this.moveRecordList.length > 0) {
           let params = {
-            dept_in: this.currentDepartment,
+            deptIn: this.currentDepartment,
             moveRecordList: this.moveRecordList
           }
           addMoveRecord(params).then((res) => {
-            let { status, data, statusText } = res
-            if (status !== 201) {
-              this.$Message.error(this.$t('failed'))
+            // let { status, data, statusText } = res
+            let { status } = res
+            if (status === 201) {
+              // console.log(data)
+              // console.log(statusText)
+              this.$Message.success(this.$t('submitSucceed'))
+              this.emptyMoveRecord()
             } else {
-              console.log(data)
-              console.log(statusText)
+              this.$Message.error(this.$t('failed'))
             }
           })
         } else {
-          this.$Message.error(this.$t('invalideDeptIn'))
+          this.$Message.error(this.$t('请先录入商品'))
+        }
+      },
+      submitMoveOut: function () {
+        if (this.currentDepartment && this.moveRecordList.length > 0) {
+          let params = {
+            deptOut: this.currentDepartment,
+            deptIn: this.selectedToDept,
+            moveRecordList: this.moveRecordList
+          }
+          addMoveRecord(params).then((res) => {
+            // let { status, data, statusText } = res
+            let { status } = res
+            if (status === 201) {
+              // console.log(data)
+              // console.log(statusText)
+              this.$Message.success(this.$t('submitSucceed'))
+              this.emptyMoveRecord()
+            } else {
+              this.$Message.error(this.$t('failed'))
+            }
+          })
+        } else {
+          this.$Message.error(this.$t('请先录入商品'))
         }
       }
     },
     mounted () {
-      // this.setProducts()
+      // this.emptyMoveRecord()
     }
   }
 </script>
 
 <style lang="stylus" scoped>
+  @import '../common/vars'
+  .stock-move-in
+    margin: 6px
 </style>

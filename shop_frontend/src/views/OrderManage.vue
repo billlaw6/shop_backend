@@ -1,11 +1,14 @@
 <template lang="html">
   <div class="order">
-    <Row>
+    <Row class="search-box">
       <Col span="6">
         <Date-picker v-model="dateRange" type="daterange" format="yyyy-MM-dd" :options="dateOptions" placement="bottom-start" placeholder="订单创建时间"></Date-picker>
       </Col>
       <Col span="8">
-        <AutoComplete v-model="keyword" :placeholder="$t('localSearch')" icon="ios-search" :clearable="true">
+        <AutoComplete v-model="keyword" 
+          :placeholder="$t('localSearch')"
+          icon="ios-search"
+          :clearable="true">
           <Option v-for="option in aList" :value="option.order_no" :key="option.order_no">
             <span class="name">{{ option.order_no}}</span>
             <span class="sum_price">{{ option.buyer_name }}</span>
@@ -14,14 +17,14 @@
         </AutoComplete>
       </Col>
       <Col span="3">
-        <i-button type="primary" @click="handleRemoteSearch()">{{ $t('remoteSearch') }}</i-button>
+        <i-button type="primary" @click="getOrderList(pageSize, pageNumber)">{{ $t('remoteSearch') }}</i-button>
       </Col>
       <Col span="4" push="3">
         <i-button type="primary" @click="">{{ $t('addOrder') }}</i-button>
-       </Col>
+      </Col>
     </Row>
 
-    <Table ref="orderList" stripe :columns="orderListColumns" :data="orderListData">
+    <Table ref="orderList" stripe :columns="orderListColumns" :data="aList">
       <div class="table-header" slot="header">
         订单列表
       </div>
@@ -44,6 +47,11 @@
     </div>
 
     <Modal v-model="showOrderProcessModal" :title="$t('orderProcess')" @on-ok="confirmProcess('processOrderForm')" @on-cancel="cancelProcess('orderModelForm')" >
+      <div class="order-info">
+        {{ $t('orderNo') }}: <span class="order_no">{{ orderModel.order_no }}</span></br>
+        {{ $t('buyer') }}: <span class="buyer">{{ orderModel.buyer_name }}</span></br>
+        {{ $t('sum_price') }}: <span class="sum_price">{{ orderModel.sum_price }}</span>
+      </div>
       <Form ref="processOrderForm" :model="orderModel" :rules="ruleOrderValidate"  label-position="left" inline>
         <Form-item :label="$t('express')" prop="express">
           <AutoComplete v-model="orderModel.express" :placeholder="$t('selectExpress')" icon="ios-search" 
@@ -65,9 +73,13 @@
           </ul>
         </Form-item>
         <Form-item :label="$t('payment')" prop="payment">
-          <Select v-model="orderModel.payment">
-            <Option v-for="item in availablePayments" :value="item.code" :key="item.code">{{ item.name }}</Option>
-          </Select>
+          <AutoComplete v-model="orderModel.payment" :placeholder="$t('selectPayment')" icon="ios-search" 
+            :clearable="true"
+            @on-select="handlePaymentSelected">
+            <Option v-for="option in aPayment" :value="option.name" :key="option.code">
+              <span class="product-name">{{ option.name }}</span>
+            </Option>
+          </AutoComplete>
           <ul v-for="error in orderErrors.payment">
             <li class="error">{{ error }}</li>
           </ul>
@@ -97,10 +109,8 @@
       const validateExpress = (rule, value, callback) => {
         if (value) {
           if (this.availableExpresses.some((val, index, array) => val.name === value)) {
-            console.log('name valide')
             callback()
           } else {
-            console.log('name invalide')
             callback(new Error(this.$t('invalidExpressError')))
           }
         } else {
@@ -108,21 +118,19 @@
         }
       }
       const validatePayment = (rule, value, callback) => {
-        if (!value) {
-          callback()
+        if (value) {
+          callback(new Error(this.$t('noPaymentError')))
         } else {
           if (this.availablePayments.some((val, index, array) => val.name === value)) {
-            console.log('name valide')
             callback()
           } else {
-            console.log('name invalide')
             callback(new Error(this.$t('invalidPaymentError')))
           }
         }
       }
       return {
         keyword: '',
-        dateRange: [new Date((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate() - 2), new Date()],
+        dateRange: [new Date((new Date().getTime()) - 3 * 24 * 3600 * 1000), new Date((new Date().getTime()) + 2 * 24 * 3600 * 1000)],
         dateOptions: {
           shortcuts: [
             {
@@ -180,12 +188,17 @@
             key: 'order_no',
             sortable: true,
             render: (h, param) => {
-              let toUrl = {name: 'order', params: {orderNo: param.row.order_no}}
-              return h('router-link',
-                {props: {
-                  to: toUrl
-                }}, param.row.order_no)
+              return h('span', param.row.order_no.substring(0, 4))
             }
+            // render: (h, param) => {
+            //   let toUrl = {name: 'order', params: {orderNo: param.row.order_no}}
+            //   return h('router-link',
+            //     {
+            //       props: {
+            //         to: toUrl
+            //       }
+            //     }, param.row.order_no)
+            // }
           },
           {
             title: this.$t('department'),
@@ -305,8 +318,6 @@
                   on: {
                     click: () => {
                       this.showEdit(params.index)
-                      // this.orderModel = this.orderListData[index]
-                      // this.showOrderProcessModal = true
                     }
                   }
                 }, this.$t('process')),
@@ -320,7 +331,12 @@
                   },
                   on: {
                     click: () => {
-                      this.handleProcessOrder(params.row.id, 9)
+                      let paras = {
+                        order_no: params.row.order_no,
+                        status: 'trashed'
+                      }
+                      processOrder(paras)
+                      this.getOrderList(this.pageSize, this.pageNumber)
                     }
                   }
                 }, this.$t('trash'))
@@ -343,9 +359,7 @@
       aList: function () {
         // 用于autocomplete
         if (Array.isArray(this.orderListData)) {
-          // 深度拷贝方法
-          let tmpArray = JSON.parse(JSON.stringify(this.orderListData))
-          return tmpArray.filter((item, index, array) => {
+          return this.orderListData.filter((item, index, array) => {
             if (item.order_no.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
               return array.indexOf(item) === index
             } else if (item.sum_price.toString().indexOf(this.keyword.toUpperCase()) !== -1) {
@@ -360,20 +374,43 @@
       },
       aExpress: function () {
         // 用于autocomplete
-        // console.error(this.availableExpresses)
         if (Array.isArray(this.availableExpresses)) {
-          // 深度拷贝方法
-          let tmpArray = JSON.parse(JSON.stringify(this.availableExpresses))
-          // console.error(tmpArray)
-          return tmpArray.filter((item, index, array) => {
-            if (item.name.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
-              return true
-            } else if (item.pinyin.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
-              return true
-            } else if (item.py.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
-              return true
+          return this.availableExpresses.filter((item, index, array) => {
+            if (this.orderModel.express) {
+              if (item.name.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
+                return true
+              } else if (item.pinyin.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
+                return true
+              } else if (item.py.toUpperCase().indexOf(this.orderModel.express.toUpperCase()) !== -1) {
+                return true
+              } else {
+                return false
+              }
             } else {
-              return false
+              return true
+            }
+          })
+        } else {
+          return []
+        }
+      },
+      aPayment: function () {
+        // 用于autocomplete
+        console.log(this.orderModel.payment)
+        if (Array.isArray(this.availablePayments)) {
+          return this.availablePayments.filter((item, index, array) => {
+            if (this.orderModel.payment) {
+              if (item.name.toUpperCase().indexOf(this.orderModel.payment.toUpperCase()) !== -1) {
+                return true
+              } else if (item.pinyin.toUpperCase().indexOf(this.orderModel.payment.toUpperCase()) !== -1) {
+                return true
+              } else if (item.py.toUpperCase().indexOf(this.orderModel.payment.toUpperCase()) !== -1) {
+                return true
+              } else {
+                return false
+              }
+            } else {
+              return true
             }
           })
         } else {
@@ -405,8 +442,8 @@
       // },
       getOrderList: function (pageSize, pageNumber) {
         let paras = {
-          // start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() - 1) + '-' + (this.dateRange[0].getDate() + 1),
-          // end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate() + 1),
+          start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() + 1) + '-' + (this.dateRange[0].getDate()),
+          end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate()),
           keyword: this.keyword,
           limit: pageSize,
           offset: (pageNumber - 1) * pageSize
@@ -429,48 +466,18 @@
         this.getOrderList(this.pageSize, this.pageNumber)
       },
       changePageSize (value) {
-        console.log(value)
         this.pageSize = value
         this.getOrderList(this.pageSize, this.pageNumber)
       },
-      handleRemoteSearch (pageSize, pageNumber) {
-        let paras = {
-          start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() + 1) + '-' + (this.dateRange[0].getDate() + 1),
-          end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate() + 1),
-          keyword: this.keyword,
-          limit: pageSize,
-          offset: (pageNumber - 1) * pageSize
-        }
-        this.getOrderList(paras).then((res) => {
-          let { data, status, statusText } = res
-          if (status !== 200) {
-            this.loginMessage = statusText
-          } else {
-            this.$Loading.finish()
-            this.total = res.data.count
-            this.tableData = data.results
-          }
-        }, (error) => {
-          console.log('Error in getProducts: ' + error)
-          this.$Message.error('获取商品列表失败!')
-        }).catch((error) => {
-          console.log('catched in getProducts:' + error)
-          this.$Message.error('获取商品列表失败!')
-        })
-      },
       showEdit (index) {
         this.showOrderProcessModal = true
-        // console.error(this.orderListData[index].express)
         if (this.orderListData[index].express === null) {
           this.orderListData[index].express = ''
         }
-        // console.error(this.orderListData[index].express.toUpperCase())
-        // console.error(this.orderListData[index].payment)
         if (this.orderListData[index].payment === null) {
           this.orderListData[index].payment = ''
         }
-        // console.error(this.orderListData[index].payment.toUpperCase())
-        this.orderModel = this.orderListData[index]
+        this.orderModel = this.aList[index]
       },
       confirmProcess (name) {
         this.$refs[name].validate((valid) => {
@@ -478,12 +485,15 @@
             let orderModelSubmit = JSON.parse(JSON.stringify(this.orderModel))
             console.log(orderModelSubmit)
             processOrder(orderModelSubmit).then((res) => {
+              console.error(res)
               let { data, status, statusText } = res
-              if (status !== 203) {
+              if (status === 204) {
+                this.$Message.error('库存不够')
+              } else if (status !== 203) {
                 console.error('get Order failed:' + statusText)
                 console.error(data)
               } else {
-                console.log(data)
+                console.error(res)
                 this.$Message.success(this.$t('processSucceed'))
                 this.getOrderList(this.pageSize, this.pageNumber)
               }
@@ -492,6 +502,7 @@
             })
           } else {
             this.$Message.error(this.$t('validateFailed'))
+            this.showOrderProcessModal = true
           }
         })
       },
@@ -500,11 +511,24 @@
       },
       handleExpressSelected: function (value) {
         this.orderModel.express = value
-        console.log(this.orderModel.express)
-        let expressList = JSON.parse(JSON.stringify(this.availableExpresses))
-        if (this.orderModel.express.length > 0 && expressList.length > 0) {
-          let tmpExpress = expressList.filter((val, index, array) => val.name === this.orderModel.express)
-          this.selectedExpress = tmpExpress[0]
+        // console.log(this.orderModel.express)
+        if (value) {
+          if (this.orderModel.express.length > 0 && this.availableExpresses.length > 0) {
+            let tmpExpress = this.availableExpresses.filter((val, index, array) => val.name === this.orderModel.express)
+            this.selectedExpress = tmpExpress[0]
+          }
+        }
+      },
+      handlePaymentSelected: function (value) {
+        this.orderModel.payment = value
+        // console.log(this.orderModel.payment)
+        if (value) {
+          if (this.orderModel.payment.length > 0 && this.availablePayments.length > 0) {
+            let tmpPayment = this.availablePayments.filter((val, index, array) => val.name === this.orderModel.payment)
+            this.selectedPayment = tmpPayment[0]
+          } else {
+            this.$Message.error('invalidPayment')
+          }
         }
       }
     },

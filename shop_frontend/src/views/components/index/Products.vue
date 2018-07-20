@@ -74,10 +74,9 @@
 
       searchProduct () {
         // 点击“搜”按钮时执行
-        console.debug('搜')
         if (Array.isArray(this.datas.results)) {
           // 好像filter修改原值，filter以后相应数据没了，所以必须需要深拷贝
-          console.debug(this.datas.results)
+          // console.debug(this.datas.results)
           let tmpArray = JSON.parse(JSON.stringify(this.datas.results))
           let tmpArray1 = tmpArray.filter((item, index, array) => {
             if (item.name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {

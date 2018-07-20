@@ -113,7 +113,7 @@ class ShopUser(AbstractUser):
         related_name='liver', blank=True, null=True)
     home_phone = models.CharField(max_length=20, blank=True, null=True)
     comment = models.CharField(max_length=200, blank=True, null=True)
-    register_on = models.DateTimeField(blank=True, null=True)
+    register_on = models.DateTimeField(_('register_on'), auto_now=True)
     expired_on = models.DateTimeField(_('Expired on'), default='2070-01-01')
     avatar = models.ImageField(_('User avatar'), upload_to='user_avatar',
                                width_field='width', height_field='height',
@@ -184,6 +184,16 @@ class Department(models.Model):
     name = models.CharField(unique=True, max_length=64)
     pinyin = models.CharField(max_length=64, blank=True, null=True)
     py = models.CharField(max_length=16, blank=True, null=True)
+    LEVEL_CHOICES = (
+        (0, _('zero_level')),
+        (1, _('first_level')),
+        (2, _('second_level')),
+        (3, _('third_level')),
+        (4, _('fourth_level'))
+    )
+    level = models.IntegerField(
+        choices = LEVEL_CHOICES,
+        default = 2)
     staff = models.ManyToManyField(
         ShopUser,
         through='DepartmentShopUserRelation',

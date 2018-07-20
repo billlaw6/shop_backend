@@ -25,7 +25,7 @@
         toDepartment: null,
         cartListColumns: [
           {
-            title: '商品名称',
+            title: this.$t('product'),
             key: 'name',
             sortable: true,
             render: (h, param) => {
@@ -37,12 +37,12 @@
             }
           },
           {
-            title: '单价',
-            key: 'price',
+            title: this.$t('sale_price'),
+            key: 'sale_price',
             sortable: true
           },
           {
-            title: '减',
+            title: this.$t('decrease'),
             key: 'decrease',
             render: (h, params) => {
               return h('div', [
@@ -62,7 +62,7 @@
             }
           },
           {
-            title: '数量',
+            title: this.$t('amount'),
             key: 'amount',
             sortable: true,
             render: (h, params) => {
@@ -70,7 +70,7 @@
             }
           },
           {
-            title: '加',
+            title: this.$t('increase'),
             key: 'increase',
             render: (h, params) => {
               return h('div', [
@@ -90,21 +90,21 @@
             }
           },
           {
-            title: '小计',
+            title: this.$t('itemSum'),
             key: 'itemSum',
             render: (h, params) => {
-              return h('span', (params.row.price * params.row.amount).toFixed(this.decimals))
+              return h('span', (params.row.sale_price * params.row.amount).toFixed(this.decimals))
             }
           },
           {
-            title: '备注',
+            title: this.$t('comment'),
             key: 'comment',
             render: (h, params) => {
               return h('span', params.row.comment)
             }
           },
           {
-            title: '操作',
+            title: this.$t('action'),
             key: 'action',
             render: (h, params) => {
               return h('div', [
@@ -118,7 +118,7 @@
                       this.removeCartItem(params.row)
                     }
                   }
-                }, '删除')
+                }, this.$t('delete'))
               ])
             }
           }
@@ -167,17 +167,17 @@
         'resetCartList',
         'decreaseCartItemAmount',
         'increaseCartItemAmount'
-      ]),
-      checkoutCart: function (checkoutList) {
-        console.debug('checkout cart')
-        if (this.loginStatus) {
-          console.debug('checking')
-          this.$store.dispatch('emptyCart')
-        } else {
-          console.debug('redirecting')
-          this.$router.push({ name: 'login' })
-        }
-      }
+      ])
+      // checkoutCart: function (checkoutList) {
+      //   console.debug('checkout cart')
+      //   if (this.loginStatus) {
+      //     console.debug('checking')
+      //     this.$store.dispatch('emptyCart')
+      //   } else {
+      //     console.debug('redirecting')
+      //     this.$router.push({ name: 'login' })
+      //   }
+      // }
     },
     mounted () {
       console.debug('Cart.vue mounted')

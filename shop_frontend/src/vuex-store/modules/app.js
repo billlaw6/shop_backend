@@ -12,8 +12,6 @@ const app = {
   state: {
     cachePage: window.localStorage['cachePage'] ? JSON.parse(window.localStorage['cachePage']) : [],
     lang: '',
-    currentDepartment: '',
-    // currentDepartment: window.localStorage['currentDepartment'] ? JSON.parse(window.localStorage['currentDepartment']) : null,
     pageSize: 10, // 默认取数时每次获取行数，转成limit参数发送给服务器
     isFullScreen: false,
     maxSize: 1024, // 单位kb
@@ -44,7 +42,8 @@ const app = {
     availablePayments: window.localStorage['availablePayments'] ? JSON.parse(window.localStorage['availablePayments']) : [],
     availableExpresses: window.localStorage['availableExpresses'] ? JSON.parse(window.localStorage['availableExpresses']) : [],
     availableDepartments: window.localStorage['availableDepartments'] ? JSON.parse(window.localStorage['availableDepartments']) : [],
-    availableLocations: window.localStorage['availableLocations'] ? JSON.parse(window.localStorage['availableLocations']) : []
+    availableLocations: window.localStorage['availableLocations'] ? JSON.parse(window.localStorage['availableLocations']) : [],
+    availableProducts: window.localStorage['availableProducts'] ? JSON.parse(window.localStorage['availableProducts']) : []
   },
 
   getters: {
@@ -159,10 +158,6 @@ const app = {
       state.pageOpenedList.push(tagObj)
       window.localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
     },
-    [types.SET_CURRENT_DEPARTMENT] (state, department) {
-      state.currentDepartment = department
-      // window.localStorage.currentDepartment = JSON.stringify(state.currentDepartment)
-    },
     [types.SET_PRODUCTS] (state, param) {
       state.availableProducts = param
       window.localStorage.availableProducts = JSON.stringify(state.availableProducts)
@@ -188,9 +183,6 @@ const app = {
   actions: {
     'setMessageCount': ({ dispatch, commit, getters, rootGetters }, count) => {
       commit(types.SET_MESSAGE_COUNT, count)
-    },
-    'setCurrentDepartment': ({ dispatch, commit, getters, rootGetters }, department) => {
-      commit(types.SET_CURRENT_DEPARTMENT, department)
     },
     // 用actions中的rootGetters绕开mutations中取不到rootState的问题
     'updateMenuList': ({ dispatch, commit, getters, rootGetters }, count) => {
@@ -254,20 +246,31 @@ const app = {
       })
       commit(types.UPDATE_MENU_LIST, tmpMenuList)
     },
+    'setCurrentPageName': ({ dispatch, commit, getters, rootGetters }, name) => {
+      commit(types.SET_CURRENT_PAGENAME, name)
+    },
     'setProducts': ({ dispatch, commit, getters, rootGetters }) => {
-      getProducts().then((res) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getProducts(paras).then((res) => {
         let { data, status, statusText } = res
         if (status !== 200) {
-          console.log('Error in getProducts:' + statusText)
+          console.log('Error in getPayments:' + statusText)
         } else {
-          commit(types.SET_PRODUCTS, data.results)
+          commit(types.SET_PAYMENTS, data.results)
         }
       }, (error) => {
         console.log('Error in getProducts:' + error)
       })
     },
     'setPayments': ({ dispatch, commit, getters, rootGetters }) => {
-      getPayments().then((res) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getPayments(paras).then((res) => {
         let { data, status, statusText } = res
         if (status !== 200) {
           console.log('Error in getPayments:' + statusText)
@@ -279,7 +282,11 @@ const app = {
       })
     },
     'setDepartments': ({ dispatch, commit, getters, rootGetters }) => {
-      getDepartments().then((res) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getDepartments(paras).then((res) => {
         let { data, status, statusText } = res
         if (status !== 200) {
           console.log('Error in getDepartments:' + statusText)
@@ -291,7 +298,11 @@ const app = {
       })
     },
     'setExpresses': ({ dispatch, commit, getters, rootGetters }) => {
-      getExpresses().then((res) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getExpresses(paras).then((res) => {
         let { data, status, statusText } = res
         if (status !== 200) {
           console.log('Error in getExpresses:' + statusText)
@@ -303,7 +314,11 @@ const app = {
       })
     },
     'setLocations': ({ dispatch, commit, getters, rootGetters }) => {
-      getLocations().then((res) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getLocations(paras).then((res) => {
         let { data, status, statusText } = res
         if (status !== 200) {
           console.log('Error in getLocations:' + statusText)

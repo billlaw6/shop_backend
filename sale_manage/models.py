@@ -290,8 +290,8 @@ class VisitLog(models.Model):
 class Stock(models.Model):
     """库存管理到批次"""
     department = models.ForeignKey(Department, on_delete=models.CASCADE,
-                            related_name=_('stock_record'), null=False)
-    product = models.ForeignKey(Product, related_name=_('stock_record'),
+                            related_name=_('stock_records'), null=False)
+    product = models.ForeignKey(Product, related_name=_('stock_records'),
                                 blank=False, null=False)
     produced_at = models.DateField(_('produced_at'), blank=False, null=False, default=date.today)
     batch_no = models.CharField(_('batch_no'), max_length=128, blank=True, null=False, default='')
@@ -315,8 +315,7 @@ class Stock(models.Model):
 
 
 class StockMoveRecord(models.Model):
-    page_no = models.CharField(max_length=64, unique=True, blank=True,
-                                default='')
+    page_no = models.CharField(max_length=64, unique=False, null=False, blank=True, default='')
     product = models.ForeignKey(Product, related_name=_('stock_move_record'),
                                 blank=False, null=False)
     produced_at = models.DateField(_('produced_at'), blank=False, null=False, default=date.today)
@@ -341,6 +340,7 @@ class StockMoveRecord(models.Model):
     checked_on = models.DateTimeField(_('checked_on'), blank=True, null=True)
     checked_by = models.ForeignKey(get_user_model(), models.SET_NULL,
                             related_name='checked_stock_move_records', null=True)
+    # 出入库记录:0为录入，1为已入库，2为已结算或已接收
     status = models.IntegerField(blank=False, null=False, default=0)
     comment = models.CharField(max_length=200, blank=True, null=True)
 

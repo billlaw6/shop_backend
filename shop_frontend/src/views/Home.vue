@@ -38,15 +38,18 @@
                 <message-tip v-model="msgCount"></message-tip>
               </MenuItem>
               <!--
+              {{ currentDepartment }}
               <MenuItem name="theme-switch">
                 <theme-switch></theme-switch>
               </MenuItem>
               -->
               <MenuItem v-if="currentUser.dept_belong" name="current-dept">
-                <Select v-model="currentDepartment"
-                  @on-change="handleCurrentDeptChange">
-                  <Option v-for="item in currentUser.dept_belong" :value="item.code" :key="item.code">{{ item.name }}</Option>
-                </Select>
+                <AutoComplete v-model="currDeptName"
+                  :placeholder="$t('selectDepartment')"
+                  @on-select="handleCurrentDeptChange"
+                  >
+                  <Option v-for="item in currentUser.dept_belong" :value="item.name" :key="item.code">{{ item.name }}</Option>
+                </AutoComplete>
               </MenuItem>
               <div class="user-dropdown-menu">
                 <Row type="flex" justify="end" align="middle" class="user-dropdown-innercon">
@@ -108,7 +111,7 @@
       return {
         shrink: false,
         userName: '',
-        current_dept: '',
+        currDeptName: '',
         isFullScreen: false
       }
     },
@@ -121,11 +124,11 @@
         'lang': state => state.lang,
         'menuTheme': state => state.menuTheme,
         'cachePage': state => state.cachePage,
-        'msgCount': state => state.messageCount,
-        'currentDepartment': state => state.currentDepartment
+        'msgCount': state => state.messageCount
       }),
       ...mapState('login', {
-        'currentUser': state => state.currentUser
+        'currentUser': state => state.currentUser,
+        'currentDepartment': state => state.currentDepartment
       }),
       rotateIcon () {
         return [
@@ -143,21 +146,21 @@
         setTagList: types.SET_TAG_LIST,
         changeMenuTheme: types.CHANGE_MENU_THEME,
         changeMainTheme: types.CHANGE_MAIN_THEME,
-        setCurrentPageName: types.SET_CURRENT_PAGENAME,
         addOpenedSubmenu: types.ADD_OPENED_SUBMENU,
         clearOpenedSubmenu: types.CLEAR_OPENED_SUBMENU
       }),
       ...mapActions('login', {
-        logout: 'logout'
+        logout: 'logout',
+        setCurrentDepartment: 'setCurrentDepartment'
       }),
       ...mapActions('app', {
         updateMenuList: 'updateMenuList',
+        setCurrentPageName: 'setCurrentPageName',
         setProducts: 'setProducts',
         setPayments: 'setPayments',
         setDepartments: 'setDepartments',
         setExpresses: 'setExpresses',
-        setLocations: 'setLocations',
-        setCurrentDepartment: 'setCurrentDepartment'
+        setLocations: 'setLocations'
       }),
       toggleClick () {
         this.shrink = !this.shrink
@@ -191,8 +194,19 @@
         }
       },
       handleCurrentDeptChange (value) {
-        console.log(value)
-        this.setCurrentDepartment(value)
+        // filter() 方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素。
+        // console.log(value)
+        let current = this.currentUser.dept_belong.filter((val, index, array) => {
+          return val.name === value
+        })
+        // console.log(current)
+        if (current.length > 0) {
+          this.setCurrentDepartment(current[0])
+        } else {
+          // 编辑内容时value为undefined，所以将它修改回原值。
+          this.$Message.error(this.$t('invalidDepartment'))
+          this.currDeptName = this.currentDepartment.name
+        }
       }
     },
     watch: {
@@ -215,12 +229,13 @@
     },
     mounted () {
       this.updateMenuList()
+      this.currDeptName = this.currentDepartment.name
+      // 全局通用的一些数据取一次共用，省得各页面分别取，减少网络请求
       this.setProducts()
       this.setPayments()
       this.setDepartments()
       this.setExpresses()
       this.setLocations()
-      this.setCurrentDepartment()
     },
     created () {
       // window.localStorage.clear()

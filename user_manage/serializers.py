@@ -5,9 +5,13 @@ from user_manage.models import (Group, Department, DictEmployeeRank,
       Address, Location,
       DictEmployeeStatus, DictSex, DictUserStatus )
 from sale_manage.models import (Order)
+from sale_manage.serializers import StockSerializer
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
+    # nested方式会导致内容太多
+    # stock_records = StockSerializer(many=True)
+    stock_records = serializers.StringRelatedField(many=True, read_only=True)
     class Meta:
         model = Department
         fields = "__all__"
@@ -31,7 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = get_user_model()
         # 如果添加url，必须有shopuser-detail名的url配置
         # fields = "__all__"
-        fields = ('id', 'username', 'first_name', 'last_name', 'email',
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'cell_phone',
                   'dept_belong', 'group_belong', 'is_staff', 'is_superuser')
 
 

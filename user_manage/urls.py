@@ -18,4 +18,7 @@ urlpatterns = [
     url(r'^weixin-check', views.weixin_token_check, name='weixin_check'),
     url(r'^user-info', views.UserInfo.as_view(), name='user_info'),
     url(r'^user-perms', views.UserPermissions.as_view(), name='user_perms'),
+    url(r'^customer/search/$', views.search_customer, name='customer'),
+    url(r'^customer/create/$', views.create_customer, name='add_customer'),
+    url(r'^customer/update/$', views.update_customer, name='update_customer'),
 ]

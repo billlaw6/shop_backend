@@ -61,7 +61,9 @@ export default {
   },
   methods: {
     handleChange (name) {
+      console.log(name)
       let willpush = true
+      console.log(this.beforePush)
       if (this.beforePush !== undefined) {
         if (!this.beforePush(name)) {
           willpush = false

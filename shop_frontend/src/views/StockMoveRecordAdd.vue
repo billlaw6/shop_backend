@@ -1,255 +1,205 @@
 <template>
-  <div class="stockMoveRecord-manage">
-    <!-- 已添加列表 -->
-    <div class="move-record-items">
-      <move-record-items>
-      </move-record-items>
-    </div>
+  <div class="stock-move-in">
+    <Table ref="moveRecordList" stripe :columns="moveRecordListColumns" :data="moveRecordList">
+      <div class="table-header" slot="header">
+        已添加商品
+      </div>
+      <div class="table-footer" slot="footer">
+        共计: <span>{{ total }}</span> 订单，合计: <span></span>
+      </div>
+    </Table>
 
-    <!-- 录入框 -->
-    <div class="cart-enter">
-      <Form ref="addModelForm" :model="addModel" :rules="ruleAddValidate"  label-position="left" inline>
-        <Form-item :label="$t('product')" prop="name">
-          <AutoComplete v-model="addModel.name" :placeholder="$t('selectProduct')" icon="ios-search" 
-            :clearable="true"
-            @on-select="handleProductSelected"
-          >
-            <Option v-for="option in aList" :value="option.name" :key="option.id">
-              <span class="product-name">{{ option.name }}</span>
-              <span class="product-price">{{ option.sale_price | currency }}</span>
-            </Option>
-          </AutoComplete>
-          <ul v-for="error in addModelErrors.name">
-            <li class="error">{{ error }}</li>
-          </ul>
-        </Form-item>
-        <Form-item :label="$t('amount')" prop="amount">
-          <InputNumber :max="10000" :min="0.0" :step="0.1" v-model="addModel.amount"></InputNumber>
-          <ul v-for="error in addModelErrors.amount">
-            <li class="error">{{ error }}</li>
-          </ul>
-        </Form-item>
-        <Form-item :label="$t('comment')" prop="comment">
-          <Input v-model="addModel.comment" type="text"></Input>
-          <ul v-for="error in addModelErrors.comment">
-            <li class="error">{{ error }}</li>
-          </ul>
-        </Form-item>
-        <Form-item>
-          <br/>
-          <Button type="primary" @click="addToCart()">{{ $t('addToCart') }}</Button>
-        </Form-item>
-      </Form>
-      <br/>
-    </div>
+    <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
+      <FormItem :label="$t('product')" prop="productInfo">
+        <AutoComplete v-model="formInline.productInfo"
+          :placeholder="$t('selectProduct')"
+          icon="ios-search" 
+          :clearable="true"
+          @on-select="handleProductSelected">
+          <Option v-for="option in aProduct" :value="option.name" :key="option.id">
+            <span class="product-name">{{ option.name }}</span>
+            <span class="product-price">{{ option.sale_price | currency }}</span>
+          </Option>
+        </AutoComplete>
+        <ul v-if="formInlineErrors.productInfo" v-for="error in formInlineErrors.productInfo">
+          <li class="error">{{ error }}</li>
+        </ul>
+      </FormItem>
+      <FormItem :label="$t('moveAmount')" prop="move_amount">
+        <InputNumber :max="10000" :min="0.1" :step="0.1" v-model="formInline.move_amount"></InputNumber>
+        <ul v-if="formInlineErrors.move_amount" v-for="error in formInlineErrors.move_amount">
+          <li class="error">{{ error }}</li>
+        </ul>
+      </FormItem>
+      <FormItem :label="$t('batchNo')" prop="batch_no">
+        <Input v-model="formInline.batch_no"></Input>
+        <ul v-if="formInlineErrors.batch_no" v-for="error in formInlineErrors.batch_no">
+          <li class="error">{{ error }}</li>
+        </ul>
+      </FormItem>
+      <FormItem :label="$t('comment')" prop="comment">
+        <Input v-model="formInline.comment" type="text"></Input>
+        <ul v-if="formInlineErrors.comment" v-for="error in formInlineErrors.comment">
+          <li class="error">{{ error }}</li>
+        </ul>
+      </FormItem>
+      <Form-item>
+        <br/>
+        <Button type="primary" size="small" @click="addToList()">{{ $t('addToList') }}</Button>
+      </Form-item>
+    </Form>
 
-    <div class="stockMoveRecord-info">
-      <Form ref="submitOrderForm" :model="stockMoveRecordModel" :rules="ruleOrderValidate"  label-position="left" inline>
-        <Form-item :label="$t('dept_in')" prop="dept_in">
-          <Select v-model="stockMoveRecordModel.dept_in">
-            <Option v-for="option in otherDepartments" :value="option.code" :key="option.code">{{ option.name }}</Option>
-          </Select>
-          <ul v-for="error in stockMoveRecordErrors.dept_in">
-            <li class="error">{{ error }}</li>
-          </ul>
-        </Form-item>
-        <Form-item :label="$t('comment')" prop="comment">
-          <Input v-model="stockMoveRecordModel.comment" type="text"></Input>
-          <ul v-for="error in stockMoveRecordErrors.comment">
-            <li class="error">{{ error }}</li>
-          </ul>
-        </Form-item>
-        <Form-item>
-          <br/>
-          <Button type="primary" size="large" @click="submitMoveRecord"><Icon type="ios-download-outline"></Icon>{{ $t('submitMoveRecord') }}</Button>
-        </Form-item>
-      </Form>
-    </div>
+    <Form ref="formInlineSubmit" :model="formInlineSubmit" :rules="ruleInlineSubmit" inline>
+      <Tabs>
+        <TabPane v-if="currentDepartment.level===1" :label="$t('moveIn')" icon="">
+          <Form-item>
+            <br/>
+            <Button type="primary" size="large" @click="submitMoveIn()">{{ $t('submitMoveIn') }}</Button>
+          </Form-item>
+        </TabPane>
+        <TabPane :label="$t('moveOut')" icon="">
+          <FormItem :label="$t('toDepartment')" prop="toDepartment">
+            <AutoComplete v-model="formInlineSubmit.toDept"
+              :placeholder="$t('selectToDept')"
+              icon="ios-search" 
+              :clearable="true"
+              @on-select="handleToDeptSelected">
+              <Option v-for="option in otherDepartments" :value="option.name" :key="option.code">
+                <span class="product-name">{{ option.name }}</span>
+              </Option>
+            </AutoComplete>
+          </FormItem>
+          <Form-item>
+            <br/>
+            <Button type="primary" size="large" @click="submitMoveOut()">{{ $t('submitMoveOut') }}</Button>
+          </Form-item>
+        </TabPane>
+      </Tabs>
+    </Form>
   </div>
 </template>
 
 <script>
-  import { mapState, mapGetters } from 'vuex'
-  import { getProducts, getCustomers, getExpresses, getPayments, addOrder } from '@/http/api'
-  import MoveRecordItems from '@/views/components/stock/MoveRecordItems.vue'
+  import { mapState, mapGetters, mapActions } from 'vuex'
+  import { addMoveRecord } from '@/http/api'
 
-  export default {
+  export default{
     components: {
-      'move-record-items': MoveRecordItems
     },
     data: function () {
       const validateProductName = (rule, value, callback) => {
-        // console.log(value)
         if (!value) {
           callback(new Error(this.$t('noProductError')))
         } else {
-          if (this.availableProducts.some((val, index, array) => val.name === value)) {
-            console.log('name valide')
+          if (this.availableProducts.filter((val, index, array) => val.name === value).length > 0) {
             callback()
           } else {
-            console.log('name valide')
             callback(new Error(this.$t('invalidProductError')))
           }
         }
       }
-      const validateAmount = (rule, value, callback) => {
-        console.log(value)
+      const validateToDepartmentName = (rule, value, callback) => {
         if (!value) {
-          callback(new Error(this.$t('noAmountError')))
+          callback(new Error(this.$t('noDepartmentError')))
         } else {
-          if (value === 0) {
-            callback(new Error(this.$t('invalidAmountError')))
-          } else {
+          if (this.otherDepartments.filter((val, index, array) => val.name === value).length > 0) {
             callback()
+          } else {
+            callback(new Error(this.$t('invalidDepartmentError')))
           }
         }
       }
-      const validateCustomer = (rule, value, callback) => {
-        console.log(value)
+      const validateMoveAmount = (rule, value, callback) => {
         if (!value) {
-          callback(new Error(this.$t('noCustomerError')))
+          callback(new Error(this.$t('noMoveAmountError')))
         } else {
-          if (this.availableCustomers.some((val, index, array) => val.username === value)) {
-            console.log('name valide')
+          if (value >= 0.1 && value < 1000) {
             callback()
           } else {
-            console.log('name invalide')
-            callback(new Error(this.$t('invalidCustomerError')))
-          }
-        }
-      }
-      const validatePayment = (rule, value, callback) => {
-        if (!value) {
-          callback()
-        } else {
-          if (this.availablePayments.some((val, index, array) => val.name === value)) {
-            console.log('name valide')
-            callback()
-          } else {
-            console.log('name invalide')
-            callback(new Error(this.$t('invalidPaymentError')))
+            callback(new Error(this.$t('invalidMoveAmountError')))
           }
         }
       }
       return {
-        addModel: {
-          name: '',
-          amount: 0,
+        selectedProduct: null,
+        selectedToDept: null,
+        ruleInline: {
+          productInfo: [
+            { validator: validateProductName, trigger: 'blur' },
+            { required: true, message: this.$t('invalidProduct'), trigger: 'blur' }
+          ],
+          move_amount: [
+            // 此两项合并使用时输入了数字也报空
+            // { type: 'number', message: this.$t('invalideNumber'), trigger: 'blur' },
+            // { required: true, message: this.$t('invalidmove_amount'), trigger: 'blur' }
+            // 建议解决方案：Input设为text型，判断空使用系统自带的，判断数字自定义方法。
+            { validator: validateMoveAmount, trigger: 'blur' }
+          ]
+        },
+        ruleInlineSubmit: {
+          toDept: [
+            { validator: validateToDepartmentName, trigger: 'blur' }
+          ]
+        },
+        formInline: {
+          productInfo: '',
+          move_amount: 0.0,
+          batch_no: '',
           comment: ''
         },
-        ruleAddValidate: {
-          name: [
-            { validator: validateProductName, trigger: 'blur' }
-          ],
-          amount: [
-            { validator: validateAmount, trigger: 'blur' }
-          ]
+        formInlineErrors: {},
+        formInlineSubmit: {
+          toDept: ''
         },
-        addModelErrors: {},
-        stockMoveRecordModel: {
-          dept_in: '',
-          customer: '',
-          payment: '',
-          express: '',
-          express_no: ''
-        },
-        ruleOrderValidate: {
-          customer: [
-            { validator: validateCustomer, trigger: 'blur' }
-          ],
-          payment: [
-            { validator: validatePayment, trigger: 'blur' }
-          ]
-        },
-        stockMoveRecordErrors: {},
-        addedProducts: [],
-        total: 0,
-        pageNumber: 1,
-        pageSize: 100000,
-        tableColumns: [
+        loadingProduct: false,
+        moveRecordListColumns: [
           {
-            title: '名称',
+            title: this.$t('product'),
             key: 'product.name',
-            align: 'center',
-            sortable: true
+            sortable: true,
+            render: (h, params) => {
+              return h('span', params.row.product.name)
+            }
           },
           {
-            title: '价格',
+            title: this.$t('salePrice'),
             key: 'sale_price',
-            align: 'left',
             sortable: true,
             render: (h, params) => {
-              return h(
-                'span',
-                params.row.sale_price
-              )
+              return h('span', parseFloat(params.row.product.sale_price).toFixed(this.decimals))
             }
           },
           {
-            title: '数量',
-            key: 'amount',
-            align: 'center',
+            title: this.$t('moveAmount'),
+            key: 'move_amount',
             sortable: true,
             render: (h, params) => {
-              return h('span', {
-              }, Number(params.row.amount).toFixed(this.decimals))
+              return h('span', params.row.moveAmount.toFixed(this.decimals))
             }
           },
           {
-            title: '小计',
-            key: 'itemSum',
-            align: 'left',
-            sortable: true,
-            render: (h, params) => {
-              return h('span', {
-                props: {
-                  color: 'red'
-                }
-              }, params.row.sale_price * params.row.amount)
-            }
-          },
-          {
-            title: '备注',
-            key: 'comment',
-            align: 'left',
+            title: this.$t('batchNo'),
+            key: 'batch_no',
             sortable: true
           },
           {
             title: '操作',
             key: 'action',
-            width: 150,
-            align: 'center',
             render: (h, params) => {
-              return h('div', [
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      this.showEdit(params.index)
-                    }
+              return h('Button', {
+                props: {
+                  type: 'error',
+                  size: 'small'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.removeFromList(params.index)
                   }
-                }, '编辑'),
-                h('Button', {
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  style: {
-                    marginRight: '5px'
-                  },
-                  on: {
-                    click: () => {
-                      this.showDelete(params.index)
-                    }
-                  }
-                }, '开/关')
-              ])
+                }
+              }, this.$t('remove'))
             }
           }
         ]
@@ -257,291 +207,175 @@
     },
     computed: {
       ...mapState('app', {
-        'maxSize': state => state.maxSize,
-        'availableExpresses': state => state.availableExpresses,
-        'availableDepartments': state => state.availableDepartments,
-        'availablePayments': state => state.availablePayemnts
+        availableProducts: state => state.availableProducts,
+        availableDepartments: state => state.availableDepartments
       }),
-      ...mapState('cart', {
-        'cartList': state => state.cartList,
-        'decimals': state => state.decimals
+      ...mapState('login', {
+        currentDepartment: state => state.currentDepartment
       }),
-      ...mapGetters('cart', [
-        'cartListCount',
-        'cartListSum'
+      ...mapState('stock', {
+        moveRecordList: state => state.moveRecordList,
+        decimals: state => state.decimals
+      }),
+      ...mapGetters('stock', [
+        'moveRecordListCount',
+        'moveRecordListSum'
       ]),
-      aList: function () {
-        // 用于autocomplete
-        if (Array.isArray(this.availableProducts)) {
-          // 深度拷贝方法
-          let tmpArray = JSON.parse(JSON.stringify(this.availableProducts))
-          return tmpArray.filter((item, index, array) => {
-            if (item.name.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
-              // return array.indexOf(item) === index
-              return true
-            } else if (item.price.toString().indexOf(this.addModel.name.toUpperCase()) !== -1) {
-              return true
-            } else if (item.pinyin.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
-              return true
-            } else if (item.py.toUpperCase().indexOf(this.addModel.name.toUpperCase()) !== -1) {
-              return true
-            } else {
+      otherDepartments: function () {
+        // console.log(this.availableDepartments)
+        // console.log(this.currentDepartment)
+        if (this.availableDepartments.length > 0 && this.currentDepartment) {
+          return this.availableDepartments.filter((item, index, array) => {
+            if (this.currentDepartment.code === item.code) {
               return false
+            } else {
+              if (this.formInlineSubmit.toDept) {
+                if (item.name.toUpperCase().indexOf(this.formInlineSubmit.toDept.toUpperCase()) !== -1) {
+                  return true
+                } else if (item.pinyin.toUpperCase().indexOf(this.formInlineSubmit.toDept.toUpperCase()) !== -1) {
+                  return true
+                } else if (item.py.toUpperCase().indexOf(this.formInlineSubmit.toDept.toUpperCase()) !== -1) {
+                  return true
+                } else {
+                  return false
+                }
+              } else {
+                return true
+              }
             }
           })
         } else {
-          return []
+          return this.availableDepartments
         }
       },
-      aCustomer: function () {
-        // 用于autocomplete
-        if (Array.isArray(this.availableCustomers)) {
-          // 深度拷贝方法
-          let tmpArray = JSON.parse(JSON.stringify(this.availableCustomers))
-          return tmpArray.filter((item, index, array) => {
-            if (item.username.toUpperCase().indexOf(this.stockMoveRecordModel.customer.toUpperCase()) !== -1) {
-              return true
-            } else {
-              return false
-            }
-          })
-        } else {
-          return []
-        }
+      total: function () {
+        return this.moveRecordList.length
       },
-      aExpress: function () {
-        // 用于autocomplete
-        if (Array.isArray(this.availableExpresses)) {
-          // 深度拷贝方法
-          let tmpArray = JSON.parse(JSON.stringify(this.availableExpresses))
-          return tmpArray.filter((item, index, array) => {
-            if (item.name.toUpperCase().indexOf(this.stockMoveRecordModel.express.toUpperCase()) !== -1) {
+      aProduct: function () {
+        return this.availableProducts.filter((item, index, array) => {
+          if (this.formInline.productInfo) {
+            if (item.name.toUpperCase().indexOf(this.formInline.productInfo.toUpperCase()) !== -1) {
               return true
-            } else if (item.pinyin.toUpperCase().indexOf(this.stockMoveRecordModel.express.toUpperCase()) !== -1) {
+            } else if (item.sale_price.toString().indexOf(this.formInline.productInfo.toUpperCase()) !== -1) {
               return true
-            } else if (item.py.toUpperCase().indexOf(this.stockMoveRecordModel.express.toUpperCase()) !== -1) {
+            } else if (item.pinyin.toUpperCase().indexOf(this.formInline.productInfo.toUpperCase()) !== -1) {
               return true
-            } else {
-              return false
-            }
-          })
-        } else {
-          return []
-        }
-      },
-      aPayment: function () {
-        // 用于autocomplete
-        if (Array.isArray(this.availablePayments)) {
-          // 深度拷贝方法
-          let tmpArray = JSON.parse(JSON.stringify(this.availablePayments))
-          return tmpArray.filter((item, index, array) => {
-            if (item.name.toUpperCase().indexOf(this.stockMoveRecordModel.payment.toUpperCase()) !== -1) {
-              // return array.indexOf(item) === index
-              return true
-            } else if (item.pinyin.toUpperCase().indexOf(this.stockMoveRecordModel.payment.toUpperCase()) !== -1) {
-              return true
-            } else if (item.py.toUpperCase().indexOf(this.stockMoveRecordModel.payment.toUpperCase()) !== -1) {
+            } else if (item.py.toUpperCase().indexOf(this.formInline.productInfo.toUpperCase()) !== -1) {
               return true
             } else {
               return false
             }
-          })
-        } else {
-          return []
-        }
+          } else {
+            return true
+          }
+        })
       }
     },
     methods: {
-      // 获取商品列表
-      getProduct: function (pageSize, pageNumber) {
-        let paras = {
-          limit: pageSize,
-          offset: (pageNumber - 1) * pageSize
-        }
-        getProducts(paras).then((res) => {
-          let { data, status, statusText } = res
-          if (status !== 200) {
-            this.loginMessage = statusText
-          } else {
-            this.total = res.data.count
-            this.availableProducts = data.results
-          }
-        }, (error) => {
-          console.log('Error in getProducts: ' + error)
-          this.$Message.error('获取商品列表失败!')
-        }).catch((error) => {
-          console.log('catched in getProducts:' + error)
-          this.$Message.error('获取商品列表失败!')
-        })
-        this.loadingStatus = false
-      },
-      // 获取顾客列表
-      getCustomer: function (pageSize, pageNumber) {
-        let paras = {
-          limit: pageSize,
-          offset: (pageNumber - 1) * pageSize
-        }
-        getCustomers(paras).then((res) => {
-          let { data, status, statusText } = res
-          if (status !== 200) {
-            this.loginMessage = statusText
-          } else {
-            this.total = res.data.count
-            this.availableCustomers = data.results
-          }
-        }, (error) => {
-          this.$Message.error(error)
-        }).catch((error) => {
-          this.$Message.error(error)
-        })
-        this.loadingStatus = false
-      },
-      // 获取快递列表
-      getExpress: function (pageSize, pageNumber) {
-        let paras = {
-          limit: pageSize,
-          offset: (pageNumber - 1) * pageSize
-        }
-        getExpresses(paras).then((res) => {
-          let { data, status, statusText } = res
-          if (status !== 200) {
-            this.loginMessage = statusText
-          } else {
-            this.total = res.data.count
-            this.availableExpresses = data.results
-          }
-        }, (error) => {
-          this.$Message.error(error)
-        }).catch((error) => {
-          this.$Message.error(error)
-        })
-        this.loadingStatus = false
-      },
-      getPayment: function (pageSize, pageNumber) {
-        let paras = {
-          limit: pageSize,
-          offset: (pageNumber - 1) * pageSize
-        }
-        getPayments(paras).then((res) => {
-          let { data, status, statusText } = res
-          if (status !== 200) {
-            this.loginMessage = statusText
-          } else {
-            this.total = res.data.count
-            this.availablePayments = data.results
-          }
-        }, (error) => {
-          this.$Message.error(error)
-        }).catch((error) => {
-          this.$Message.error(error)
-        })
-        this.loadingStatus = false
-      },
+      ...mapActions('app', {
+        setProducts: 'setProducts',
+        setCurrentDepartment: 'setCurrentDepartment'
+      }),
+      ...mapActions('stock', {
+        addMoveRecordItem: 'addMoveRecordItem',
+        removeMoveRecordItem: 'removeMoveRecordItem',
+        emptyMoveRecord: 'emptyMoveRecord',
+        setMoveRecordList: 'setMoveRecordList'
+      }),
       handleProductSelected: function (value) {
-        this.addModel.name = value
-        console.log(this.availableProducts)
-        let productList = JSON.parse(JSON.stringify(this.availableProducts))
-        if (this.addModel.name.length > 0 && productList.length > 0) {
-          let tmpProduct = productList.filter((val, index, array) => val.name === this.addModel.name)
-          this.selectedProduct = tmpProduct[0]
-        }
-      },
-      handleCustomerSelected: function (value) {
+        this.formInline.productInfo = value
         if (value) {
-          this.stockMoveRecordModel.customer = value
-        }
-        console.log(this.stockMoveRecordModel.customer)
-        console.log(this.availableCustomers)
-        let customerList = JSON.parse(JSON.stringify(this.availableCustomers))
-        console.log(customerList)
-        if (this.stockMoveRecordModel.customer.length > 0 && customerList.length > 0) {
-          let tmpCustomer = customerList.filter((val, index, array) => val.username === this.stockMoveRecordModel.customer)
-          this.selectedCustomer = tmpCustomer[0]
-        }
-      },
-      handleExpressSelected: function (value) {
-        this.stockMoveRecordModel.express = value
-        console.log(this.stockMoveRecordModel.express)
-        let expressList = JSON.parse(JSON.stringify(this.availableExpresses))
-        if (this.stockMoveRecordModel.express.length > 0 && expressList.length > 0) {
-          let tmpExpress = expressList.filter((val, index, array) => val.name === this.stockMoveRecordModel.express)
-          this.selectedExpress = tmpExpress[0]
-        }
-      },
-      handlePaymentSelected: function (value) {
-        this.stockMoveRecordModel.payment = value
-        console.log(this.stockMoveRecordModel.payment)
-        let paymentList = JSON.parse(JSON.stringify(this.availablePayments))
-        if (this.stockMoveRecordModel.payment.length > 0 && paymentList.length > 0) {
-          let tmpPayment = paymentList.filter((val, index, array) => val.name === this.stockMoveRecordModel.payment)
-          this.selectedPayment = tmpPayment[0]
-        }
-      },
-      addToCart: function () {
-        this.$refs['addModelForm'].validate((valid) => {
-          console.log('addToCart validating')
-          if (valid) {
-            console.log('valid')
-            this.$store.dispatch('cart/addCartItem', {'item': this.selectedProduct, 'amount': this.addModel.amount, 'comment': this.addModel.comment})
-            this.$Message.success({
-              title: '加入购物车成功',
-              content: '加入购物车成功'
-            })
+          if (this.formInline.productInfo.length > 0 && this.availableProducts.length > 0) {
+            let tmpProduct = this.availableProducts.filter((val, index, array) => val.name === this.formInline.productInfo)
+            this.selectedProduct = tmpProduct[0]
           } else {
-            console.log('invalid')
-            this.$Message.error('Fail!')
+            this.$Message.error('invalideProduct')
+          }
+        }
+      },
+      addToList: function () {
+        this.$refs['formInline'].validate((valid) => {
+          if (valid) {
+            // 参数名对应不上时会直接不执行
+            this.$store.dispatch('stock/addMoveRecordItem',
+              { item: this.selectedProduct,
+                moveAmount: this.formInline.move_amount,
+                batchNo: this.formInline.batch_no,
+                comment: this.formInline.comment
+              })
+          } else {
+            this.$Message.error(this.$t('validateFailed'))
           }
         })
       },
-      submitOrder: function () {
-        console.log('submitting')
-        this.$refs['submitOrderForm'].validate((valid) => {
-          console.log('submit Order validating')
-          console.log(valid)
-          if (valid) {
-            let params = {
-              customer: this.selectedCustomer,
-              payment: this.selectedPayment,
-              cartList: this.cartList,
-              cartListCount: this.cartListCount,
-              cartListSum: this.cartListSum.toFixed(this.decimals),
-              express: this.selectedExpress,
-              express_no: this.stockMoveRecordModel.express_no
+      removeFromList: function (index) {
+        this.removeMoveRecordItem(this.moveRecordList[index])
+      },
+      handleToDeptSelected: function (value) {
+        this.formInlineSubmit.toDept = value
+        if (value) {
+          if (this.formInlineSubmit.toDept.length > 0 && this.otherDepartments.length > 0) {
+            let tmpDepartment = this.otherDepartments.filter((val, index, array) => val.name === this.formInlineSubmit.toDept)
+            this.selectedToDept = tmpDepartment[0]
+          } else {
+            this.$Message.error('invalideToDept')
+          }
+        }
+      },
+      submitMoveIn: function () {
+        if (this.currentDepartment && this.moveRecordList.length > 0) {
+          let params = {
+            deptIn: this.currentDepartment,
+            moveRecordList: this.moveRecordList
+          }
+          addMoveRecord(params).then((res) => {
+            // let { status, data, statusText } = res
+            let { status } = res
+            if (status === 201) {
+              // console.log(data)
+              // console.log(statusText)
+              this.$Message.success(this.$t('submitSucceed'))
+              this.emptyMoveRecord()
+            } else {
+              this.$Message.error(this.$t('failed'))
             }
-            addOrder(params).then((res) => {
-              let { data, status, statusText } = res
-              if (status !== 201) {
-                console.log('submit stockMoveRecord fail:' + statusText)
-              } else {
-                this.total = res.data.count
-                this.availableExpresses = data.results
-              }
-            }, (error) => {
-              this.$Message.error(error)
-            }).catch((error) => {
-              this.$Message.error(error)
-            })
-          } else {
-            console.log('invalid')
-            this.$Message.error('Fail!')
+          })
+        } else {
+          this.$Message.error(this.$t('请先录入商品'))
+        }
+      },
+      submitMoveOut: function () {
+        if (this.currentDepartment && this.moveRecordList.length > 0) {
+          let params = {
+            deptOut: this.currentDepartment,
+            deptIn: this.selectedToDept,
+            moveRecordList: this.moveRecordList
           }
-        })
+          addMoveRecord(params).then((res) => {
+            // let { status, data, statusText } = res
+            let { status } = res
+            if (status === 201) {
+              // console.log(data)
+              // console.log(statusText)
+              this.$Message.success(this.$t('submitSucceed'))
+              this.emptyMoveRecord()
+            } else {
+              this.$Message.error(this.$t('failed'))
+            }
+          })
+        } else {
+          this.$Message.error(this.$t('请先录入商品'))
+        }
       }
     },
     mounted () {
-      this.getProduct(this.pageSize, this.pageNumber)
+      // this.emptyMoveRecord()
     }
   }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="stylus" scoped>
   @import '../common/vars'
-
-  .move-record-items
-    margin: 4px
-  .cart-enter
-    margin: 4px
-  .stockMoveRecord-info
-    margin: 4px
+  .stock-move-in
+    margin: 6px
 </style>

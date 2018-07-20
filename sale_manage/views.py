@@ -100,7 +100,6 @@ def update_product(request, *args, **kwargs):
     # 如果带ID号，则更新原对象
     # aim_product = Product.objects.get(id=request.data.get('id'))
     aim_product = get_object_or_404(Product, pk=request.data.get('id'))
-    request.data['created_by']=aim_product.created_by.id
     request.data['updated_by']=request.user.id
     serializer = ProductSerializer(aim_product, data=request.data, partial=True)
     serializer.initial_data.pop('stock_record', None)
@@ -182,28 +181,28 @@ def add_order(request, *args, **kwargs):
 # transaction 方式二
 # with transaction.atomic():
     order_serializer = OrderSerializer(data=order)
-    print(order_serializer.initial_data)
+    # print(order_serializer.initial_data)
     if order_serializer.is_valid() and (request.data.get('cartList')) == 0:
         # print(order_serializer.validated_data)
         new_order = order_serializer.save()
         # print(new_order)
     else:
         # print('order invalid')
-        print(order_serializer.errors)
+        # print(order_serializer.errors)
         return JsonResponse(order_serializer.errors, status=303)
     for item in request.data.get('cartList'):
         item['order'] = new_order.order_no
-        print(item)
+        # print(item)
         item['product'] = item['id']
         item['amount'] = item['amount']
         detail_serializer = OrderDetailSerializer(data=item)
         if detail_serializer.is_valid():
-            print('validated_data')
-            print(detail_serializer.validated_data)
+            # print('validated_data')
+            # print(detail_serializer.validated_data)
             result = detail_serializer.save()
         else:
-            print("invalid")
-            print(detail_serializer.errors)
+            # print("invalid")
+            # print(detail_serializer.errors)
             return JsonResponse(detail_serializer.errors, status=303)
     return JsonResponse(order_serializer.data, status=201)
 
@@ -234,7 +233,7 @@ def process_order(request):
             params['comment'] = request.data.get('comment')
         if (request.data.get('status', '') == 'trashed'):
             order = Order.objects.filter(pk=request.data.get('order_no'))
-            print(order[0].status)
+            # print(order[0].status)
             if order[0].status.code in ('cart', 'submited',):
                 order.update(status='trashed')
                 return Response('trashed', status=203)
@@ -245,16 +244,15 @@ def process_order(request):
         # 减库存
         for item in OrderDetail.objects.filter(order_id=request.data.get('order_no')):
             aim = Stock.objects.filter(department=order[0].department.code, product=item.product.id)
-            print("aim: %s" % aim)
+            # print("aim: %s" % aim)
             if len(aim) > 0:
-                print("> 0")
                 if aim[0].amount >= item.amount:
                     aim.update(amount=aim[0].amount - item.amount)
                 else:
                     return Response('notEnoughStock', status=204)
             else:
                 return Response('noStock', status=204)
-            print(params)
+            # print(params)
             # 更新订单状态
             order.update(**params)
             return Response(params['status'], status=203)
@@ -347,11 +345,10 @@ def search_stock_move_record(request, *args, **kwargs):
         Q(entered_on__gte=start) & Q(entered_on__lte=end),
         Q(dept_out=department) | Q(dept_in=department)
       )[int(offset): int(offset)+int(limit)]
-    print(queryset)
+    # print(queryset)
     # 如果不是一级库房，不取状态为0，接收单位为自己的数据
     source_dept_re = re.compile(r'^1\d{4}')
     if not source_dept_re.match(department):
-        print('not first')
         queryset = StockMoveRecord.objects.filter(
             Q(entered_on__gte=start) & Q(entered_on__lte=end),
             Q(dept_out=department) | Q(dept_in=department)
@@ -375,7 +372,7 @@ def search_stock(request, *args, **kwargs):
     keyword = request.GET.get('keyword', '')
     limit = request.GET.get('limit', 10)
     offset = request.GET.get('offset', 0)
-    print('%s-%s-%s-%s' % (department, keyword, limit, offset))
+    # print('%s-%s-%s-%s' % (department, keyword, limit, offset))
     rs_product = Product.objects.filter(
         Q(pinyin__icontains=keyword) |
         Q(py__icontains=keyword) |

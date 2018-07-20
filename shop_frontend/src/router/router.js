@@ -205,7 +205,7 @@ export const appRouter = [
         path: 'edit',
         icon: 'edit',
         title: { i18n: 'editStockMoveRecord' },
-        name: 'editStockMoveRecord',
+        name: 'editStockMoveOut',
         meta: {
           requireAuth: true,
           permission: 'sale_manage.add_orderdetail'
@@ -227,7 +227,7 @@ export const appRouter = [
   },
   {
     path: '/user-manage',
-    icon: 'key',
+    icon: 'person',
     name: 'userManage',
     title: { i18n: 'userManage' },
     meta: {
@@ -238,14 +238,25 @@ export const appRouter = [
     children: [
       {
         path: 'index',
-        icon: 'key',
-        title: { i18n: 'userManage' },
-        name: 'accessIndex',
+        icon: 'person-add',
+        title: { i18n: 'userList' },
+        name: 'userList',
         meta: {
           requireAuth: true,
           permission: 'sale_manage.add_orderdetail'
         },
-        component: resolve => require(['@/views/Error403.vue'], resolve)
+        component: resolve => require(['@/views/UserManage.vue'], resolve)
+      },
+      {
+        path: 'index',
+        icon: 'key',
+        title: { i18n: 'permissionManage' },
+        name: 'permissionManage',
+        meta: {
+          requireAuth: true,
+          permission: 'sale_manage.add_orderdetail'
+        },
+        component: resolve => require(['@/views/PermissionManage.vue'], resolve)
       }
     ]
   },

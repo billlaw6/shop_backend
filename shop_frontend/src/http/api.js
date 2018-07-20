@@ -1,8 +1,7 @@
 // 直接在一个文件里定义全部API更合理
-//
 import axios from 'axios'
 import store from '@/vuex-store/index'
-import * as types from '@/vuex-store/types'
+// import * as types from '@/vuex-store/types'
 import { router } from '@/router/index'
 
 axios.defaults.baseURL = 'http://123.56.115.20'
@@ -10,32 +9,43 @@ axios.defaults.timeout = 5000
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 axios.defaults.headers.post['X-Requested-With'] = 'XMLHttpRequest'
 
-// 添加响应拦截器
+// 添加请求拦截器
 // 如果本地有Token则每次请求都带上Token
 axios.interceptors.request.use(
+  // 请求之前做的事
   config => {
     if (store.state.login.accessToken) {
-      console.debug('setting accessToken to: ' + store.state.login.accessToken)
       config.headers.Authorization = 'Token ' + store.state.login.accessToken
-    } else {
-      console.debug('No accessToken')
     }
     return config
   },
+  // 请求错误处理
   err => {
-    console.debug(err)
-    if (err.response) {
-      if (err.response.status === 401) {
-        // 如果返回401 即没有权限，跳到登录页重新登录
-        store.commit(types.SET_ACCESS_TOKEN, null)
-        alert('请重新登录')
-        router.replace({
-          path: 'login',
-          query: {redirect: router.currentRoute.fullPath}
-        })
-      }
-      return Promise.reject(err)
+    return Promise.reject(err)
+  }
+)
+
+// 添加响应拦截器
+// 如果Token过期导致401错误，测清空本地Token再登录
+axios.interceptors.response.use(
+  response => {
+    return response
+  },
+  error => {
+    console.error(error.response)
+    if (error.response.status === 401) {
+      // 如果Token过期等原因导致401错误，测清空本地Token再登录
+      // store.commit(types.SET_ACCESS_TOKEN, null)
+      store.commit('login/SET_ACCESS_TOKEN', null)
+      // this.$Message(this.$t('loginPlease'))
+      router.replace({
+        name: 'login',
+        query: {redirect: router.currentRoute.fullPath}
+      })
+    } else {
+      console.error(error.response.status)
     }
+    return Promise.reject(error)
   }
 )
 
@@ -100,26 +110,33 @@ export const getUserPermissions = params => {
 }
 
 export const getCustomers = params => {
+  // rest自带的，有limit和offset两参数
   return axios.get(`/user-manage/users/`, {params: params}).then(res => res)
 }
 
 export const getExpresses = params => {
+  // rest自带的，有limit和offset两参数
   return axios.get(`/sale-manage/expresses/`, {params: params}).then(res => res)
 }
 
 export const getPayments = params => {
+  // rest自带的，有limit和offset两参数
   return axios.get(`/sale-manage/payments/`, {params: params}).then(res => res)
 }
 
 export const getLocations = params => {
+  // rest自带的，有limit和offset两参数
   return axios.get(`/user-manage/locations/`, {params: params}).then(res => res)
 }
 
 export const getProducts = params => {
-  // if (params['keyword'] === '') {
-  //   delete params['keyword']
-  // }
+  // rest自带的，有limit和offset两参数
   return axios.get(`/sale-manage/products/`, {params: params}).then(res => res)
+}
+
+export const searchProducts = params => {
+  // params参数可含 keyword, limit, offset
+  return axios.get(`/sale-manage/product/search/`, {params: params}).then(res => res)
 }
 
 export const getProductDetail = params => { return axios.get(`/sale-manage/products/${params}`).then(res => res) }
@@ -149,13 +166,45 @@ export const addOrder = params => {
 }
 
 export const addMoveRecord = params => {
-  return axios.post(`/sale-manage/remove-record/add/`, params).then(res => res)
+  return axios.post(`/sale-manage/move-record/add/`, params).then(res => res)
 }
+
+export const processStockMoveRecord = params => {
+  return axios.post(`/sale-manage/move-record/process/`, params).then(res => res)
+}
+
+// export const getStockMoveRecord = params => {
+//   return axios.get(`/sale-manage/move-records/`, {params: params}).then(res => res)
+// }
 
 export const getStockMoveRecord = params => {
-  return axios.get(`/sale-manage/move-record/`, params).then(res => res)
+  return axios.get(`/sale-manage/move-record/search/`, {params: params}).then(res => res)
 }
 
-export const getStock = params => {
-  return axios.get(`/sale-manage/stock/`, params).then(res => res)
+export const getStocks = params => {
+  return axios.get(`/sale-manage/stock/`, {params: params}).then(res => res)
+}
+
+export const searchStocks = params => {
+  return axios.get(`/sale-manage/stock/search/`, {params: params}).then(res => res)
+}
+
+export const searchCustomers = params => {
+  return axios.get(`/user-manage/customer/search/`, {params: params}).then(res => res)
+}
+
+export const addCustomer = params => {
+  return axios.post(`/user-manage/customer/`, params).then(res => res)
+}
+
+export const createCustomer = params => {
+  return axios.post(`/user-manage/customer/create/`, params).then(res => res)
+}
+
+export const toggleCustomer = params => {
+  return axios.post(`/user-manage/customer/toggle/`, params).then(res => res)
+}
+
+export const updateCustomer = params => {
+  return axios.post(`/user-manage/customer/update/`, params).then(res => res)
 }

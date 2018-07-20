@@ -12,7 +12,6 @@ const app = {
   state: {
     cachePage: window.localStorage['cachePage'] ? JSON.parse(window.localStorage['cachePage']) : [],
     lang: '',
-    currentDepartment: window.localStorage['currentDepartment'] ? JSON.parse(window.localStorage['currentDepartment']) : null,
     pageSize: 10, // 默认取数时每次获取行数，转成limit参数发送给服务器
     isFullScreen: false,
     maxSize: 1024, // 单位kb
@@ -43,7 +42,8 @@ const app = {
     availablePayments: window.localStorage['availablePayments'] ? JSON.parse(window.localStorage['availablePayments']) : [],
     availableExpresses: window.localStorage['availableExpresses'] ? JSON.parse(window.localStorage['availableExpresses']) : [],
     availableDepartments: window.localStorage['availableDepartments'] ? JSON.parse(window.localStorage['availableDepartments']) : [],
-    availableLocations: window.localStorage['availableLocations'] ? JSON.parse(window.localStorage['availableLocations']) : []
+    availableLocations: window.localStorage['availableLocations'] ? JSON.parse(window.localStorage['availableLocations']) : [],
+    availableProducts: window.localStorage['availableProducts'] ? JSON.parse(window.localStorage['availableProducts']) : []
   },
 
   getters: {
@@ -85,8 +85,8 @@ const app = {
       })
     },
     [types.INIT_CACHE_PAGE] (state) {
-      if (localStorage.cachePage) {
-        state.cachePage = JSON.parse(localStorage.cachePage)
+      if (window.localStorage.cachePage) {
+        state.cachePage = JSON.parse(window.localStorage.cachePage)
       }
     },
     [types.REMOVE_TAG] (state, name) {
@@ -105,12 +105,12 @@ const app = {
         openedPage.query = get.query
       }
       state.pageOpenedList.splice(get.index, 1, openedPage)
-      localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
+      window.localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
     },
     [types.CLEAR_ALL_TAGS] (state) {
       state.pageOpenedList.splice(1)
       state.cachePage.length = 0
-      localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
+      window.localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
     },
     [types.CLEAR_OTHER_TAGS] (state, vm) {
       let currentName = vm.$route.name
@@ -133,7 +133,7 @@ const app = {
       window.localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
     },
     [types.SET_OPENED_LIST] (state) {
-      state.pageOpenedList = localStorage.pageOpenedList ? JSON.parse(localStorage.pageOpenedList) : [otherRouter.children[0]]
+      state.pageOpenedList = window.localStorage.pageOpenedList ? JSON.parse(window.localStorage.pageOpenedList) : [otherRouter.children[0]]
     },
     [types.SET_CURRENT_PATH] (state, pathArr) {
       state.currentPath = pathArr
@@ -142,7 +142,7 @@ const app = {
       state.currentPageName = name
     },
     [types.SET_AVATOR] (state, path) {
-      localStorage.avatorImgPath = path
+      window.localStorage.avatorImgPath = path
     },
     [types.SWITCH_LANG] (state, lang) {
       state.lang = lang
@@ -156,40 +156,33 @@ const app = {
     },
     [types.INCREATE_TAG] (state, tagObj) {
       state.pageOpenedList.push(tagObj)
-      localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
-    },
-    [types.SET_CURRENT_DEPARTMENT] (state, department) {
-      state.currentDepartment = department
-      localStorage.currentDepartment = JSON.stringify(state.currentDepartment)
+      window.localStorage.pageOpenedList = JSON.stringify(state.pageOpenedList)
     },
     [types.SET_PRODUCTS] (state, param) {
       state.availableProducts = param
-      localStorage.availableProducts = JSON.stringify(state.availableProducts)
+      window.localStorage.availableProducts = JSON.stringify(state.availableProducts)
     },
     [types.SET_PAYMENTS] (state, param) {
       state.availablePayments = param
-      localStorage.availablePayments = JSON.stringify(state.availablePayments)
+      window.localStorage.availablePayments = JSON.stringify(state.availablePayments)
     },
     [types.SET_DEPARTMENTS] (state, param) {
       state.availableDepartments = param
-      localStorage.availableDepartments = JSON.stringify(state.availableDepartments)
+      window.localStorage.availableDepartments = JSON.stringify(state.availableDepartments)
     },
     [types.SET_EXPRESSES] (state, param) {
       state.availableExpresses = param
-      localStorage.availableExpresses = JSON.stringify(state.availableExpresses)
+      window.localStorage.availableExpresses = JSON.stringify(state.availableExpresses)
     },
     [types.SET_LOCATIONS] (state, param) {
       state.availableLocations = param
-      localStorage.availableLocations = JSON.stringify(state.availableLocations)
+      window.localStorage.availableLocations = JSON.stringify(state.availableLocations)
     }
   },
 
   actions: {
     'setMessageCount': ({ dispatch, commit, getters, rootGetters }, count) => {
       commit(types.SET_MESSAGE_COUNT, count)
-    },
-    'setCurrentDepartment': ({ dispatch, commit, getters, rootGetters }, department) => {
-      commit(types.SET_MESSAGE_COUNT, department)
     },
     // 用actions中的rootGetters绕开mutations中取不到rootState的问题
     'updateMenuList': ({ dispatch, commit, getters, rootGetters }, count) => {
@@ -253,20 +246,31 @@ const app = {
       })
       commit(types.UPDATE_MENU_LIST, tmpMenuList)
     },
+    'setCurrentPageName': ({ dispatch, commit, getters, rootGetters }, name) => {
+      commit(types.SET_CURRENT_PAGENAME, name)
+    },
     'setProducts': ({ dispatch, commit, getters, rootGetters }) => {
-      getProducts().then((res) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getProducts(paras).then((res) => {
         let { data, status, statusText } = res
         if (status !== 200) {
-          console.log('Error in getProducts:' + statusText)
+          console.log('Error in getPayments:' + statusText)
         } else {
-          commit(types.SET_PRODUCTS, data.results)
+          commit(types.SET_PAYMENTS, data.results)
         }
       }, (error) => {
         console.log('Error in getProducts:' + error)
       })
     },
     'setPayments': ({ dispatch, commit, getters, rootGetters }) => {
-      getPayments().then((res) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getPayments(paras).then((res) => {
         let { data, status, statusText } = res
         if (status !== 200) {
           console.log('Error in getPayments:' + statusText)
@@ -278,7 +282,11 @@ const app = {
       })
     },
     'setDepartments': ({ dispatch, commit, getters, rootGetters }) => {
-      getDepartments().then((res) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getDepartments(paras).then((res) => {
         let { data, status, statusText } = res
         if (status !== 200) {
           console.log('Error in getDepartments:' + statusText)
@@ -290,7 +298,11 @@ const app = {
       })
     },
     'setExpresses': ({ dispatch, commit, getters, rootGetters }) => {
-      getExpresses().then((res) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getExpresses(paras).then((res) => {
         let { data, status, statusText } = res
         if (status !== 200) {
           console.log('Error in getExpresses:' + statusText)
@@ -302,7 +314,11 @@ const app = {
       })
     },
     'setLocations': ({ dispatch, commit, getters, rootGetters }) => {
-      getLocations().then((res) => {
+      let paras = {
+        limit: 10000,
+        offset: 0
+      }
+      getLocations(paras).then((res) => {
         let { data, status, statusText } = res
         if (status !== 200) {
           console.log('Error in getLocations:' + statusText)

@@ -1,92 +1,97 @@
 <template>
-  <div>
-    <Table ref="addedProduct" stripe :columns="addedProductColumns" :data="moveRecordList">
+  <div class="stock-list">
+    <Row class="search-box">
+      <Col span="6">
+        <Date-picker v-model="dateRange" type="daterange" format="yyyy-MM-dd" :options="dateOptions" placement="bottom-start" placeholder="订单创建时间"></Date-picker>
+      </Col>
+      <Col span="8">
+        <AutoComplete v-model="keyword" 
+          :placeholder="$t('localSearch')"
+          icon="ios-search"
+          :clearable="true">
+          <Option v-for="option in aStockList" :value="option.product_name" :key="option.id">
+            <span class="name">{{ option.product_name }}</span>
+            <span class="name">{{ option.product_sale_price }}</span>
+            <span class="name">{{ option.batch_no }}</span>
+          </Option>
+        </AutoComplete>
+      </Col>
+      <Col span="3">
+        <i-button type="primary" @click="getStockData(pageSize, pageNumber)">{{ $t('remoteSearch') }}</i-button>
+      </Col>
+    </Row>
+
+    <Table ref="stockList" stripe :columns="stockColumns" :data="stockList">
       <div class="table-header" slot="header">
-        已添加商品
+        <span style="text-align: center; font: 1.8em">当前库存</span>
       </div>
       <div class="table-footer" slot="footer">
         共计: <span>{{ total }}</span> 订单，合计: <span></span>
       </div>
     </Table>
 
-    <Form ref="formInline" :model="formInline" :rules="ruleInline" inline>
-      <FormItem :label="$t('product')" prop="productInfo">
-        <Select 
-          v-model="formInline.productInfo"
-          filterable
-          clearable
-          >
-          <!-- Select自带的filter过滤的是value值 -->
-          <Option v-for="(option, index) in availableProducts"
-            :value="option.id+'|'+option.name+'|'+option.py+'|'+option.sale_price"
-            :key="index">
-            <span>{{ option.name }}</span>
-            <span style="margin-left: 5px; color:red">{{ option.sale_price | currency}}</span>
-          </Option>
-        </Select>
-        <ul v-if="formInlineErrors.productInfo" v-for="error in formInlineErrors.productInfo">
-          <li class="error">{{ error }}</li>
-        </ul>
-      </FormItem>
-      <FormItem :label="$t('moveAmount')" prop="move_amount">
-        <InputNumber :max="10000" :min="0.1" :step="0.1" v-model="formInline.move_amount"></InputNumber>
-        <ul v-if="formInlineErrors.move_amount" v-for="error in formInlineErrors.move_amount">
-          <li class="error">{{ error }}</li>
-        </ul>
-      </FormItem>
-      <FormItem :label="$t('batchNo')" prop="batch_no">
-        <Input v-model="formInline.batch_no"></Input>
-        <ul v-if="formInlineErrors.batch_no" v-for="error in formInlineErrors.batch_no">
-          <li class="error">{{ error }}</li>
-        </ul>
-      </FormItem>
-      <FormItem :label="$t('comment')" prop="comment">
-        <Input v-model="formInline.comment" type="text"></Input>
-        <ul v-if="formInlineErrors.comment" v-for="error in formInlineErrors.comment">
-          <li class="error">{{ error }}</li>
-        </ul>
-      </FormItem>
-      <Form-item>
-        <br/>
-        <Button type="primary" size="small" @click="addToList()">{{ $t('addToList') }}</Button>
-      </Form-item>
-    </Form>
-    <Form>
-      <Form-item>
-        <br/>
-        <Button type="primary" size="small" @click="submitMoveRecord()">{{ $t('submitMoveRecord') }}</Button>
-      </Form-item>
-    </Form>
+    <div style="margin: 10px; overflow: hidden">
+      <div style="float: right;">
+        <Page :total="total" :current="pageNumber"
+          show-sizer show-elevator show-total
+          :page-size=pageSize
+          :page-size-opts=[10,20,40,10000]
+          @on-change="changePage" 
+          @on-page-size-change="changePageSize"
+        >
+        </Page>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-  import { mapState, mapGetters, mapActions } from 'vuex'
-  import { addMoveRecord } from '@/http/api'
+  import { mapState } from 'vuex'
+  import { searchStocks } from '@/http/api'
 
   export default{
     components: {
     },
     data: function () {
       return {
-        ruleInline: {
-          productInfo: [
-            { required: true, message: this.$t('invalidProduct'), trigger: 'blur' }
+        total: 0,
+        stockList: [],
+        keyword: '',
+        dateRange: [new Date((new Date().getTime()) - 3 * 24 * 3600 * 1000), new Date((new Date().getTime()) + 2 * 24 * 3600 * 1000)],
+        dateOptions: {
+          shortcuts: [
+            {
+              text: '最近一周',
+              value () {
+                const end = new Date()
+                const start = new Date()
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+                return [start, end]
+              }
+            },
+            {
+              text: '最近一个月',
+              value () {
+                const end = new Date()
+                const start = new Date()
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+                return [start, end]
+              }
+            },
+            {
+              text: '最近三个月',
+              value () {
+                const end = new Date()
+                const start = new Date()
+                start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+                return [start, end]
+              }
+            }
           ]
-          // move_amount: [
-          //   { required: true, message: this.$t('invalidmove_amount'), trigger: 'blur' }
-          // ]
         },
-        formInline: {
-          productInfo: '',
-          move_amount: 0.1,
-          batch_no: '',
-          comment: ''
-        },
-        formInlineErrors: {},
-        loadingProduct: false,
-        addedProduct: [],
-        addedProductColumns: [
+        pageSize: 10,
+        pageNumber: 1,
+        stockColumns: [
           {
             title: this.$t('product'),
             key: 'product_name',
@@ -94,12 +99,12 @@
           },
           {
             title: this.$t('salePrice'),
-            key: 'sale_price',
+            key: 'product_sale_price',
             sortable: true
           },
           {
-            title: this.$t('move_amount'),
-            key: 'move_amount',
+            title: this.$t('amount'),
+            key: 'amount',
             sortable: true
           },
           {
@@ -108,12 +113,12 @@
             sortable: true
           },
           {
-            title: '操作',
+            title: this.$t('process'),
             key: 'action',
             render: (h, params) => {
               return h('Button', {
                 props: {
-                  type: 'error',
+                  type: 'primary',
                   size: 'small'
                 },
                 style: {
@@ -121,88 +126,95 @@
                 },
                 on: {
                   click: () => {
-                    this.removeFromList(params.index)
+                    this.handleProcessMoveRecord(params)
                   }
                 }
-              }, this.$t('remove'))
+              }, this.$t('toggle'))
             }
           }
         ]
       }
     },
+    // watch: {
+    //   currentDepartment: function (value) {
+    //     if (value) {
+    //       this.getStockData(value)
+    //     } else {
+    //       console.log('no currentDepartment')
+    //     }
+    //   }
+    // },
     computed: {
-      ...mapState('app', {
-        availableProducts: state => state.availableProducts
+      ...mapState('login', {
+        currentDepartment: state => state.currentDepartment
       }),
-      ...mapState('stock', {
-        moveRecordList: state => state.moveRecordList
-      }),
-      ...mapGetters('stock', [
-        'moveRecordListCount',
-        'moveRecordListSum'
-      ]),
-      total: function () {
-        return this.addedProduct.length
-      }
-    },
-    methods: {
-      ...mapActions('app', {
-        setProducts: 'setProducts',
-        setCurrentDepartment: 'setCurrentDepartment'
-      }),
-      ...mapActions('stock', {
-        addMoveRecordItem: 'addMoveRecordItem',
-        removeMoveRecordItem: 'removeMoveRecordItem',
-        emptyMoveRecordItem: 'emptyMoveRecordItem',
-        setMoveRecordList: 'setMoveRecordList'
-      }),
-      addToList: function () {
-        // console.log(this.formInline)
-        this.$refs['formInline'].validate((valid) => {
-          if (valid) {
-            // console.log('valid')
-            let payload = {}
-            let product = this.formInline['productInfo'].split('|')
-            this.formInline['id'] = product[0]
-            this.formInline['product_name'] = product[1]
-            this.formInline['sale_price'] = product[3]
-            payload['item'] = JSON.parse(JSON.stringify(this.formInline))
-            payload['move_amount'] = this.formInline.move_amount
-            payload['batch_no'] = this.formInline.batch_no
-            payload['comment'] = this.formInline.comment
-            // console.log(product)
-            this.$store.dispatch('stock/addMoveRecordItem', payload)
-          } else {
-            this.$Message.error(this.$t('validateFailed'))
-          }
-        })
-      },
-      removeFromList: function (index) {
-        this.removeMoveRecordItem(this.moveRecordList[index])
-      },
-      submitMoveRecord: function () {
-        console.log('submitting move record')
-        if (this.currentDepartment) {
-          let params = {
-            dept_in: this.currentDepartment,
-            moveRecordList: this.moveRecordList
-          }
-          addMoveRecord(params).then((res) => {
-            let { status, data, statusText } = res
-            if (status !== 201) {
-              this.$Message.error(this.$t('failed'))
+      aStockList: function () {
+        if (Array.isArray(this.stockList)) {
+          return this.stockList.filter((item, index, array) => {
+            if (this.keyword) {
+              if (item.product_name.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+                return array.indexOf(item) === index
+              } else if (item.product_sale_price.toString().indexOf(this.keyword.toUpperCase()) !== -1) {
+                return true
+              } else if (item.product_pinyin.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+                return true
+              } else if (item.product_py.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+                return true
+              } else if (item.batch_no.toUpperCase().indexOf(this.keyword.toUpperCase()) !== -1) {
+                return true
+              } else {
+                return false
+              }
             } else {
-              console.log(data)
-              console.log(statusText)
+              return true
             }
           })
         } else {
-          this.$Message.error(this.$t('invalideDeptIn'))
+          return []
         }
       }
     },
+    methods: {
+      getStockData: function (pageSize, pageNumber) {
+        // GET请求不方便传对象
+        let params = {
+          start: this.dateRange[0].getFullYear() + '-' + (this.dateRange[0].getMonth() + 1) + '-' + (this.dateRange[0].getDate()),
+          end: this.dateRange[1].getFullYear() + '-' + (this.dateRange[1].getMonth() + 1) + '-' + (this.dateRange[1].getDate()),
+          keyword: this.keyword,
+          department: this.currentDepartment.code,
+          limit: pageSize,
+          offset: (pageNumber - 1) * pageSize
+        }
+        console.log(params)
+        searchStocks(params).then((res) => {
+          let { status, data, statusText } = res
+          if (status !== 200) {
+            console.log(statusText)
+            console.log(data)
+          } else {
+            // console.log('data:')
+            // console.log(data)
+            this.total = data.count
+            this.stockList = data.results
+          }
+        })
+      },
+      changePage (value) {
+        console.log(value)
+        this.pageNumber = value
+        this.getStockData(this.pageSize, this.pageNumber)
+      },
+      changePageSize (value) {
+        this.pageSize = value
+        this.getStockData(this.pageSize, this.pageNumber)
+      }
+    },
     mounted () {
-      // this.setProducts()
+      if (this.currentDepartment) {
+        this.getStockData(this.pageSize, this.pageNumber)
+      } else {
+        console.log('no currentDepartment')
+      }
     }
   }
 </script>

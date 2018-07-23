@@ -259,7 +259,7 @@ const app = {
         if (status !== 200) {
           console.log('Error in getPayments:' + statusText)
         } else {
-          commit(types.SET_PAYMENTS, data.results)
+          commit(types.SET_PRODUCTS, data.results)
         }
       }, (error) => {
         console.log('Error in getProducts:' + error)

@@ -222,14 +222,14 @@
             render: (h, params) => {
               let columns = [
                 { title: this.$t('product'), key: 'product_name' },
-                { title: this.$t('price'),
-                  key: 'price',
+                { title: this.$t('sale_price'),
+                  key: 'sale_price',
                   render: (h, params) => {
                     return h('span', {
                       style: {
                         color: 'red'
                       }
-                    }, params.row.price)
+                    }, params.row.sale_price)
                   }
                 },
                 { title: this.$t('amount'), key: 'amount' }
@@ -473,9 +473,13 @@
         this.showOrderProcessModal = true
         if (this.orderListData[index].express === null) {
           this.orderListData[index].express = ''
+        } else {
+          this.orderListData[index].express = this.orderListData[index].express_name
         }
         if (this.orderListData[index].payment === null) {
           this.orderListData[index].payment = ''
+        } else {
+          this.orderListData[index].payment = this.orderListData[index].payment_name
         }
         this.orderModel = this.aList[index]
       },
@@ -483,22 +487,25 @@
         this.$refs[name].validate((valid) => {
           if (valid) {
             let orderModelSubmit = JSON.parse(JSON.stringify(this.orderModel))
+            orderModelSubmit['payment'] = this.selectedPayment.code
+            orderModelSubmit['express'] = this.selectedExpress.code
             console.log(orderModelSubmit)
             processOrder(orderModelSubmit).then((res) => {
               console.error(res)
               let { data, status, statusText } = res
               if (status === 204) {
                 this.$Message.error('库存不够')
-              } else if (status !== 203) {
-                console.error('get Order failed:' + statusText)
-                console.error(data)
-              } else {
-                console.error(res)
+              } else if (status === 203) {
                 this.$Message.success(this.$t('processSucceed'))
                 this.getOrderList(this.pageSize, this.pageNumber)
+              } else {
+                console.error('get Order failed:' + statusText)
+                console.error(data)
+                this.$Message.error(this.$t('processFailed'))
               }
             }, (error) => {
               console.log('Error in getOrderList:' + error)
+              this.$Message.error(this.$t('processFailed'))
             })
           } else {
             this.$Message.error(this.$t('validateFailed'))

@@ -73,6 +73,7 @@ class OrderSerializer(serializers.ModelSerializer):
     buyer_name = serializers.ReadOnlyField(required=False, source='buyer.__str__')
     # 字段可为空时不要使用__str__函数，否则报错
     payment_name = serializers.ReadOnlyField(required=False, source='payment.name')
+    express_name = serializers.ReadOnlyField(required=False, source='express.name')
     address_name = serializers.ReadOnlyField(required=False, source='address.name')
     status_name = serializers.ReadOnlyField(required=False, source='status.__str__')
     # 名字和related_name一致才会包含在__all__中

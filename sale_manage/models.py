@@ -251,9 +251,12 @@ class OrderDetail(models.Model):
                                 blank=False, null=False)
     product = models.ForeignKey(Product, related_name=_('order_detail'),
                                 blank=False, null=False)
+    batch_no = models.CharField(_('batch_no'), max_length=128, blank=True, null=False, default='')
     amount = models.DecimalField(_('amount'), max_digits=9, decimal_places=2,
                                 default=0.00)
     price = models.DecimalField(_('price'), max_digits=9, decimal_places=2,
+                                default=0.00)
+    sale_price = models.DecimalField(_('sale_price'), max_digits=9, decimal_places=2,
                                 default=0.00)
     comment = models.CharField(_('comment'), max_length=300, blank=True,
                                default='')

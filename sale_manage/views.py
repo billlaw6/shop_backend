@@ -157,47 +157,42 @@ def add_order(request, *args, **kwargs):
     order = {}
     order['order_no'] = utils._generate_order_no()
     # order['order_no'] = str(uuid.uuid4())
-    order['created_by'] = request.user.id
-    if request.data.get('department') is not None:
-        order['department'] = request.data.get('department')
-    else:
-        order['department'] = '20001'
     # 默认为购物车状态
     order['status'] = 'cart'
+    order['created_by'] = request.user.id
+    order['department'] = request.data.get('department')['code']
+    if order['department'] is None:
+        return Response('no department', status=303)
     if request.data.get('customer') is not None:
-        order['buyer'] = request.data.get('customer').get('id')
         order['status'] = 'submited'
-    if request.data.get('cartListSum') is not None:
-        order['sum_price'] = request.data.get('cartListSum')
+        order['buyer'] = request.data.get('customer')['id']
     if request.data.get('express') is not None:
-        order['express'] = request.data.get('express').get('id')
         order['status'] = 'sent'
+        order['express'] = request.data.get('express')['code']
     if request.data.get('payment') is not None:
-        order['payment'] = request.data.get('payment').get('id')
         order['status'] = 'checked'
-    if request.data.get('status') is not None:
-        order['status'] = request.data.get('status')
+        order['payment'] = request.data.get('payment')['code']
+    order['sum_price'] = request.data.get('cartListSum')
 
 # transaction 方式二
 # with transaction.atomic():
     order_serializer = OrderSerializer(data=order)
-    # print(order_serializer.initial_data)
-    if order_serializer.is_valid() and (request.data.get('cartList')) == 0:
+    print(order_serializer.initial_data)
+    if order_serializer.is_valid() and len(request.data.get('cartList')) > 0:
         # print(order_serializer.validated_data)
         new_order = order_serializer.save()
-        # print(new_order)
+        print(new_order)
     else:
-        # print('order invalid')
-        # print(order_serializer.errors)
+        print('order invalid')
+        print(order_serializer.errors)
         return JsonResponse(order_serializer.errors, status=303)
     for item in request.data.get('cartList'):
         item['order'] = new_order.order_no
-        # print(item)
         item['product'] = item['id']
         item['amount'] = item['amount']
         detail_serializer = OrderDetailSerializer(data=item)
+        # print(item)
         if detail_serializer.is_valid():
-            # print('validated_data')
             # print(detail_serializer.validated_data)
             result = detail_serializer.save()
         else:
@@ -252,7 +247,7 @@ def process_order(request):
                     return Response('notEnoughStock', status=204)
             else:
                 return Response('noStock', status=204)
-            # print(params)
+            print(params)
             # 更新订单状态
             order.update(**params)
             return Response(params['status'], status=203)

@@ -251,6 +251,12 @@
         }
       }
     },
+    watch: {
+      currentDepartment: function (newVal, oldVal) {
+        console.log(newVal.code)
+        this.getStockMoveRecordData(this.pageSize, this.pageNumber)
+      }
+    },
     methods: {
       handleProcessMoveRecord: function (params) {
         let para = {

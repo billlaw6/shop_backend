@@ -15,9 +15,9 @@
             @on-select="handleProductSelected">
             <Option v-for="option in aStockProduct" :value="option.product_name" :key="option.id">
               <span class="product-name">{{ option.product_name }}</span>
-              <span class="product-price">{{ option.product_sale_price | currency }}</span>
-              <span class="product-price">{{ option.amount }}</span>
-              <span class="product-price">{{ option.batch_no }}</span>
+              <span class="product-sale-price">{{ option.product_sale_price | currency }}</span>
+              <span class="product-amount">{{ option.amount }}</span>
+              <span class="product-batch-no">{{ option.batch_no }}</span>
             </Option>
           </AutoComplete>
           <ul v-for="error in addModelErrors.name">
@@ -175,6 +175,8 @@
       const validateCartListLength = (rule, value, callback) => {
         if (this.cartList.length === 0) {
           callback(new Error(this.$t('invalidCartListLengthError')))
+        } else {
+          callback()
         }
       }
       return {
@@ -401,8 +403,8 @@
       },
       aPayment: function () {
         // 用于autocomplete
-        console.log(this.orderModel.payment)
-        console.log(this.availablePayments)
+        // console.log(this.orderModel.payment)
+        // console.log(this.availablePayments)
         if (Array.isArray(this.availablePayments)) {
           // 深度拷贝方法
           return this.availablePayments.filter((item, index, array) => {
@@ -541,13 +543,13 @@
         })
       },
       submitOrder: function () {
-        console.log('submitting')
+        // console.log('submitting')
         this.$refs['submitOrderForm'].validate((valid) => {
-          console.log('submit Order validating')
+          // console.log('submit Order validating')
           console.log(valid)
           if (valid) {
-            console.log('alksdfjlasf')
             let params = {
+              department: this.currentDepartment,
               customer: this.selectedCustomer,
               payment: this.selectedPayment,
               cartList: this.cartList,

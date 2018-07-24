@@ -135,15 +135,11 @@
         ]
       }
     },
-    // watch: {
-    //   currentDepartment: function (value) {
-    //     if (value) {
-    //       this.getStockData(value)
-    //     } else {
-    //       console.log('no currentDepartment')
-    //     }
-    //   }
-    // },
+    watch: {
+      currentDepartment: function (newVal, oldVal) {
+        this.getStockData(this.pageSize, this.pageNumber)
+      }
+    },
     computed: {
       ...mapState('login', {
         currentDepartment: state => state.currentDepartment

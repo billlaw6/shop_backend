@@ -36,32 +36,32 @@
 
     <Modal v-model="showAddModal" title="添加客户" @on-ok="confirmAdd('addModelForm')" @on-cancel="cancelAdd('addModelForm')" >
       <Form ref="addModelForm" :model="addModel" :rules="ruleValidate" :label-width="100" enctype="multipart/form-data" accept-charset="utf-8">
-        <Form-item label="用户名" prop="username">
-          <Input v-model="addModel.username" placeholder="用户名"></Input>
+        <Form-item :label="$t('username')" prop="username">
+          <Input v-model="addModel.username" :placeholder="$t('username')"></Input>
           <ul v-for="error in addModelErrors.username">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item label="cell_phone" prop="cell_phone">
-          <Input v-model="addModel.cell_phone" placeholder="手机号"></Input>
+        <Form-item :label="$t('cell_phone')" prop="cell_phone">
+          <Input v-model="addModel.cell_phone" :placeholder="$t('cell_phone')"></Input>
           <ul v-for="error in addModelErrors.cell_phone">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item label="last_name" prop="last_name">
-          <Input v-model="addModel.last_name" placeholder="姓"></Input>
+        <Form-item :label="$t('last_name')" prop="last_name">
+          <Input v-model="addModel.last_name" :placeholder="$t('last_name')"></Input>
           <ul v-for="error in addModelErrors.last_name">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item label="first_name" prop="first_name">
-          <Input v-model="addModel.first_name" placeholder="名"></Input>
+        <Form-item :label="$t('first_name')" prop="first_name">
+          <Input v-model="addModel.first_name" :placeholder="$t('first_name')"></Input>
           <ul v-for="error in addModelErrors.first_name">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item label="email" prop="email">
-          <Input v-model="addModel.email" placeholder="邮箱"></Input>
+        <Form-item :label="$t('email')" prop="email">
+          <Input v-model="addModel.email" :placeholder="$t('email')"></Input>
           <ul v-for="error in addModelErrors.email">
             <li class="error">{{ error }}</li>
           </ul>
@@ -69,34 +69,34 @@
       </Form>
     </Modal>
 
-    <Modal v-model="showEditModal" title="维护客户信息" @on-ok="confirmEdit('editModelForm')" @on-cancel="cancelEdit('editModelForm')" >
+    <Modal v-model="showEditModal" :title="$t('customerManage')" @on-ok="confirmEdit('editModelForm')" @on-cancel="cancelEdit('editModelForm')" >
       <Form ref="editModelForm" :model="editModel" :rules="ruleValidate" :label-width="100" enctype="multipart/form-data" accept-charset="utf-8">
-        <Form-item label="用户名" prop="username">
-          <Input v-model="editModel.username" placeholder="用户名"></Input>
+        <Form-item :label="$t('username')" prop="username">
+          <Input v-model="editModel.username" :placeholder="$t('username')"></Input>
           <ul v-for="error in editModelErrors.username">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item label="cell_phone" prop="cell_phone">
-          <Input v-model="editModel.cell_phone" placeholder="手机号"></Input>
+        <Form-item :label="$t('cell_phone')" prop="cell_phone">
+          <Input v-model="editModel.cell_phone" :placeholder="$t('cell_phone')"></Input>
           <ul v-for="error in editModelErrors.cell_phone">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item label="last_name" prop="last_name">
-          <Input v-model="editModel.last_name" placeholder="姓"></Input>
+        <Form-item :label="$t('last_name')" prop="last_name">
+          <Input v-model="editModel.last_name" :placeholder="$t('last_name')"></Input>
           <ul v-for="error in editModelErrors.last_name">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item label="first_name" prop="first_name">
-          <Input v-model="editModel.first_name" placeholder="名"></Input>
+        <Form-item :label="$t('first_name')" prop="first_name">
+          <Input v-model="editModel.first_name" :placeholder="$t('first_name')"></Input>
           <ul v-for="error in editModelErrors.first_name">
             <li class="error">{{ error }}</li>
           </ul>
         </Form-item>
-        <Form-item label="email" prop="email">
-          <Input v-model="editModel.email" placeholder="邮箱"></Input>
+        <Form-item :label="$t('email')" prop="email">
+          <Input v-model="editModel.email" :placeholder="$t('email')"></Input>
           <ul v-for="error in editModelErrors.email">
             <li class="error">{{ error }}</li>
           </ul>

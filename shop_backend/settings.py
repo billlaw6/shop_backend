@@ -115,7 +115,7 @@ DATABASES = {
     'CHARSET': 'utf8',
     'OPTIONS': {
       # 'sql_mode': 'STRICT_TRANS_TABLES'
-      'sql_mode': 'STRICT_ALL_TABLES'
+      # 'sql_mode': 'STRICT_ALL_TABLES'
     }
   }
 }
@@ -209,12 +209,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 CORS_ORIGIN_WHITELIST = (
-    'localhost:8080',
-    'localhost:8000',
     '127.0.0.1:8080',
     '127.0.0.1:8000',
-    '123.56.115.20:8080',
-    '123.56.115.20:8000',
+    'carryon.top:80',
 )
 
 # django-rest-auth

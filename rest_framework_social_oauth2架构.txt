@@ -1,2 +1,0 @@
-﻿rest_framework_social_oauth2依赖python-social-auth和django-oauth-toolkit两个包。django-oauth-toolkit依赖OAuthLib，python-social-auth则参考并替代了django-social-auth。
-rest_framework_social_oauth2直接包含social_django的urls，在authorize地址背后直接使用了oauth2_provider的视图。
